@@ -244,8 +244,7 @@ source "amazon-ebs" "build_image" {
     "us-west-2",
   ]
 
-  // make underlying snapshot public
-  snapshot_groups = ["all"]
+  snapshot_groups = var.aws_private_ami ? [] : ["all"]
 
   tags = var.aws_tags
 
