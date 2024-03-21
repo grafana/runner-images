@@ -217,7 +217,6 @@ source "azure-arm" "build_image" {
   }
 }
 
-
 source "amazon-ebs" "build_image" {
   aws_polling {
     delay_seconds = 30
