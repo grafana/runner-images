@@ -1,3 +1,4 @@
+Import-Module "$PSScriptRoot/../helpers/Common.Helpers.psm1"
 Describe "azcopy" {
     It "azcopy" {
         "azcopy --version" | Should -ReturnZeroExitCode
@@ -36,18 +37,18 @@ Describe "Rust" {
     It "Rustfmt is installed" {
         "rustfmt --version" | Should -ReturnZeroExitCode
     }
+    
+    It "cargo" {
+        "cargo --version" | Should -ReturnZeroExitCode
+    }
 
-    Context "Cargo dependencies" {
+    Context "Cargo dependencies" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
         It "bindgen" {
             "bindgen --version" | Should -ReturnZeroExitCode
         }
 
         It "cbindgen" {
             "cbindgen --version" | Should -ReturnZeroExitCode
-        }
-
-        It "cargo" {
-            "cargo --version" | Should -ReturnZeroExitCode
         }
 
         It "cargo-clippy" {
@@ -105,7 +106,7 @@ Describe "Docker images" {
     }
 }
 
-Describe "Docker-compose v1" {
+Describe "Docker-compose v1" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "docker-compose" {
         "docker-compose --version"| Should -ReturnZeroExitCode
     }
@@ -117,7 +118,7 @@ Describe "Ansible" {
     }
 }
 
-Describe "Bazel" {
+Describe "Bazel" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "<ToolName>" -TestCases @(
         @{ ToolName = "bazel" }
         @{ ToolName = "bazelisk" }
@@ -144,7 +145,7 @@ Describe "Cmake" {
     }
 }
 
-Describe "erlang" -Skip:(Test-IsUbuntu22) {
+Describe "erlang" -Skip:(-not (Test-IsUbuntu20)) {
     $testCases = @("erl -version", "erlc -v", "rebar3 -v") | ForEach-Object { @{ErlangCommand = $_} }
 
     It "erlang <ErlangCommand>" -TestCases $testCases {
@@ -168,7 +169,7 @@ Describe "gfortran" {
     }
 }
 
-Describe "Mono" {
+Describe "Mono" -Skip:(Test-IsUbuntu24) {
     It "mono" {
         "mono --version" | Should -ReturnZeroExitCode
     }
@@ -182,27 +183,27 @@ Describe "Mono" {
     }
 }
 
-Describe "MSSQLCommandLineTools" {
+Describe "MSSQLCommandLineTools" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "sqlcmd" {
         "sqlcmd -?" | Should -ReturnZeroExitCode
     }
 }
 
 if (Test-IsAmd64) {
-    Describe "SqlPackage" {
+    Describe "SqlPackage" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
         It "sqlpackage" {
             "sqlpackage /version" | Should -ReturnZeroExitCode
         }
     }
 
-    Describe "R" {
+    Describe "R" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
         It "r" {
             "R --version" | Should -ReturnZeroExitCode
         }
     }
 }
 
-Describe "Sbt" {
+Describe "Sbt" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "sbt" {
         "sbt --version" | Should -ReturnZeroExitCode
     }
@@ -215,7 +216,7 @@ Describe "Selenium" {
     }
 }
 
-Describe "Terraform" {
+Describe "Terraform" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "terraform" {
         "terraform --version" | Should -ReturnZeroExitCode
     }
@@ -254,14 +255,14 @@ Describe "Git-lfs" {
 }
 
 if (Test-IsAmd64) {
-    Describe "Heroku" {
+    Describe "Heroku" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
         It "heroku" {
             "heroku --version" | Should -ReturnZeroExitCode
         }
     }
 }
 
-Describe "HHVM" -Skip:(Test-IsUbuntu22) {
+Describe "HHVM" -Skip:(-not (Test-IsUbuntu20)) {
     It "hhvm" {
         "hhvm --version" | Should -ReturnZeroExitCode
     }
@@ -303,7 +304,7 @@ Describe "Kubernetes tools" {
     }
 }
 
-Describe "Leiningen" {
+Describe "Leiningen" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "leiningen" {
         "lein --version" | Should -ReturnZeroExitCode
     }
@@ -315,7 +316,7 @@ Describe "Conda" {
     }
 }
 
-Describe "Packer" {
+Describe "Packer" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "packer" {
         "packer --version" | Should -ReturnZeroExitCode
     }
@@ -327,14 +328,14 @@ Describe "Pulumi" {
     }
 }
 
-Describe "Phantomjs" -Skip:(Test-IsUbuntu22) {
+Describe "Phantomjs" -Skip:(-not (Test-IsUbuntu20)) {
     It "phantomjs" {
         $env:OPENSSL_CONF="/etc/ssl"
         "phantomjs --version" | Should -ReturnZeroExitCode
     }
 }
 
-Describe "Containers" {
+Describe "Containers" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     $testCases = @("podman", "buildah", "skopeo") | ForEach-Object { @{ContainerCommand = $_} }
 
     It "<ContainerCommand>" -TestCases $testCases {
@@ -350,7 +351,7 @@ Describe "Containers" {
 
 }
 
-Describe "nvm" {
+Describe "nvm" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "nvm" {
         "source /etc/skel/.nvm/nvm.sh && nvm --version" | Should -ReturnZeroExitCode
     }
@@ -386,7 +387,7 @@ Describe "yq" {
     }
 }
 
-Describe "Kotlin" {
+Describe "Kotlin" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu20))) {
     It "kapt" {
         "kapt -version" | Should -ReturnZeroExitCode
     }

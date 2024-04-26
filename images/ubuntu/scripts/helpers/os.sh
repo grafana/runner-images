@@ -5,11 +5,11 @@
 ################################################################################
 
 is_ubuntu20() {
-    lsb_release -d | grep -q 'Ubuntu 20'
+    lsb_release -rs | grep -q '20.04'
 }
 
 is_ubuntu22() {
-    lsb_release -d | grep -q 'Ubuntu 22'
+    lsb_release -rs | grep -q '22.04'
 }
 
 get_arch() {
@@ -17,5 +17,5 @@ get_arch() {
 }
 
 is_ubuntu24() {
-    lsb_release -d | grep -q 'Ubuntu 24'
+    lsb_release -rs | grep -q '24.04'
 }

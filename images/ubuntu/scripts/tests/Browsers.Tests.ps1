@@ -1,4 +1,4 @@
-Describe "Firefox" {
+Describe "Firefox" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
     It "Firefox" {
         "firefox --version" | Should -ReturnZeroExitCode
     }
@@ -25,7 +25,7 @@ if (Test-IsAmd64) {
         }
     }
 
-    Describe "Edge" {
+    Describe "Edge" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
         It "Edge" {
             "microsoft-edge --version" | Should -ReturnZeroExitCode
         }
