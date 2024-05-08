@@ -1,5 +1,4 @@
-Describe "Toolset" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
-    $arch = Get-Architecture
+Describe "Toolset" {
     $tools = (Get-ToolsetContent).toolcache
 
     $toolsExecutables = @{
