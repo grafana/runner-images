@@ -1,6 +1,6 @@
 Import-Module "$PSScriptRoot/../helpers/Common.Helpers.psm1" -DisableNameChecking
 
-Describe "Java" -Skip:(Test-IsUbuntu24) {
+Describe "Java" {
     $arch = (Get-Architecture) -eq "amd64" ? "X64" : "ARM64"
     $toolsetJava = (Get-ToolsetContent).java
     $defaultVersion = $toolsetJava.default
