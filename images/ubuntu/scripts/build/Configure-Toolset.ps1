@@ -6,6 +6,8 @@
 
 Import-Module "$env:HELPER_SCRIPTS/../tests/Helpers.psm1"
 
+$arch = Get-Architecture
+
 function Get-TCToolVersionPath {
     param(
         [Parameter(Mandatory)]
@@ -19,6 +21,9 @@ function Get-TCToolVersionPath {
     $toolPath = Join-Path -Path $env:AGENT_TOOLSDIRECTORY -ChildPath $ToolName
     $toolPathVersion = Join-Path -Path $toolPath -ChildPath $ToolVersion
     $foundVersion = Get-Item $toolPathVersion | Sort-Object -Property { [version] $_.name } -Descending | Select-Object -First 1
+    if (-not $foundVersion) {
+        return $null
+    }
     $installationDir = Join-Path -Path $foundVersion -ChildPath $ToolArchitecture
 
     return $installationDir
@@ -40,10 +45,11 @@ function Add-GlobalEnvironmentVariable {
 $ErrorActionPreference = "Stop"
 
 Write-Host "Configure toolcache tools environment..."
+$toolEnvArch = ($arch -eq "arm64") ? "ARM64" : "X64"
 $toolEnvConfigs = @{
     go = @{
         command          = "ln -s {0}/bin/* /usr/bin/"
-        variableTemplate = "GOROOT_{0}_{1}_X64"
+        variableTemplate = "GOROOT_{0}_{1}_${toolEnvArch}"
     }
 }
 
@@ -56,7 +62,11 @@ foreach ($tool in $tools) {
     if (-not ([string]::IsNullOrEmpty($toolEnvConfig.variableTemplate))) {
         foreach ($toolVersion in $tool.versions) {
             Write-Host "Set $($tool.name) $toolVersion environment variable..."
-            $toolPath = Get-TCToolVersionPath -ToolName $tool.name -ToolVersion $toolVersion -ToolArchitecture $tool.arch
+            $toolPath = Get-TCToolVersionPath -ToolName $tool.name -ToolVersion $toolVersion -ToolArchitecture $arch
+            if (-not $toolPath) {
+                Write-Host "Tool $($tool.name) $toolVersion not found in toolcache for $arch"
+                continue
+            }
             $envVariableName = $toolEnvConfig.variableTemplate -f $toolVersion.split(".")
 
             Add-GlobalEnvironmentVariable -Name $envVariableName -Value $toolPath
@@ -65,7 +75,11 @@ foreach ($tool in $tools) {
 
     # Invoke command and add env variable for the default tool version
     if (-not ([string]::IsNullOrEmpty($tool.default))) {
-        $toolDefaultPath = Get-TCToolVersionPath -ToolName $tool.name -ToolVersion $tool.default -ToolArchitecture $tool.arch
+        $toolDefaultPath = Get-TCToolVersionPath -ToolName $tool.name -ToolVersion $tool.default -ToolArchitecture $arch
+        if (-not $toolDefaultPath) {
+            Write-Host "Tool $($tool.name) $($tool.default) not found in toolcache for $arch"
+            continue
+        }
 
         if (-not ([string]::IsNullOrEmpty($toolEnvConfig.defaultVariable))) {
             Write-Host "Set default $($toolEnvConfig.defaultVariable) for $($tool.name) $($tool.default) environment variable..."
