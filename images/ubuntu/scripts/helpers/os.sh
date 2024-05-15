@@ -15,3 +15,7 @@ is_ubuntu22() {
 is_ubuntu24() {
     lsb_release -rs | grep -q '24.04'
 }
+
+get_arch() {
+    dpkg --print-architecture
+}
