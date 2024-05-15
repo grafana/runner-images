@@ -6,12 +6,23 @@
 
 # Source the helpers for use with the script
 source $HELPER_SCRIPTS/install.sh
+source $HELPER_SCRIPTS/os.sh
+
+arch=$(get_arch)
+
+if [[ $arch == "amd64" ]]; then
+    arch="x86_64"
+fi
+
+if [[ $arch == "arm64" ]]; then
+    arch="aarch64"
+fi
 
 # Install required dependencies
 apt-get install chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
 
 # Define the version and hash of PhantomJS to be installed
-DIR_NAME=phantomjs-2.1.1-linux-x86_64
+DIR_NAME=phantomjs-2.1.1-linux-$arch
 ARCHIVE_HASH="86dd9a4bf4aee45f1a84c9f61cf1947c1d6dce9b9e8d2a907105da7852460d2f"
 
 # Download the archive and verify its integrity using checksum comparison

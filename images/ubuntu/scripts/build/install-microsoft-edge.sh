@@ -7,6 +7,9 @@
 # Source the helpers for use with the script
 source $HELPER_SCRIPTS/install.sh
 source $HELPER_SCRIPTS/etc-environment.sh
+source $HELPER_SCRIPTS/os.sh
+
+arch=$(get_arch)
 
 REPO_URL="https://packages.microsoft.com/repos/edge"
 GPG_KEY="/usr/share/keyrings/microsoft-edge.gpg"
@@ -14,7 +17,7 @@ REPO_PATH="/etc/apt/sources.list.d/microsoft-edge.list"
 
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > $GPG_KEY
 # Specify an arch as Microsoft repository supports armhf and arm64 as well
-echo "deb [arch=amd64 signed-by=$GPG_KEY] $REPO_URL stable main" > $REPO_PATH
+echo "deb [arch=$arch signed-by=$GPG_KEY] $REPO_URL stable main" > $REPO_PATH
 
 apt-get update
 apt-get install --no-install-recommends microsoft-edge-stable
