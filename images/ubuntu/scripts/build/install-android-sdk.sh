@@ -9,6 +9,8 @@ source $HELPER_SCRIPTS/os.sh
 source $HELPER_SCRIPTS/install.sh
 source $HELPER_SCRIPTS/etc-environment.sh
 
+arch=$(get_arch)
+
 add_filtered_installation_components() {
     local minimum_version=$1
     shift
@@ -87,6 +89,7 @@ ndk_default_full_version=$(get_full_ndk_version $android_ndk_major_default)
 ndk_latest_full_version=$(get_full_ndk_version $android_ndk_major_latest)
 ANDROID_NDK=${ANDROID_SDK_ROOT}/ndk/${ndk_default_full_version}
 # ANDROID_NDK, ANDROID_NDK_HOME, and ANDROID_NDK_ROOT variables should be set as many customer builds depend on them https://github.com/actions/runner-images/issues/5879
+set_etc_environment_variable "ANDROID_ARCH" "${arch}"
 set_etc_environment_variable "ANDROID_NDK" "${ANDROID_NDK}"
 set_etc_environment_variable "ANDROID_NDK_HOME" "${ANDROID_NDK}"
 set_etc_environment_variable "ANDROID_NDK_ROOT" "${ANDROID_NDK}"
@@ -97,6 +100,11 @@ extras=$(get_toolset_value '.android.extra_list[] | "extras;" + .')
 addons=$(get_toolset_value '.android.addon_list[] | "add-ons;" + .')
 additional=$(get_toolset_value '.android.additional_tools[]')
 components=("${extras[@]}" "${addons[@]}" "${additional[@]}")
+
+# ARM64 cant handle additional components
+if [[ $arch == "arm64" ]]; then
+    components=("${extras[@]}" "${addons[@]}")
+fi
 
 for ndk_major_version in "${android_ndk_major_versions[@]}"; do
     ndk_full_version=$(get_full_ndk_version $ndk_major_version)
