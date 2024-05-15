@@ -1,3 +1,5 @@
+Import-Module "$PSScriptRoot/../helpers/Common.Helpers.psm1" -DisableNameChecking
+
 function Get-JavaVersionsTable {
     $javaToolcacheVersions = Get-ChildItem $env:AGENT_TOOLSDIRECTORY/Java*/* -Directory | Sort-Object { [int] $_.Name.Split(".")[0] }
 
@@ -5,8 +7,11 @@ function Get-JavaVersionsTable {
         $majorVersion = $_.Name.split(".")[0]
         $fullVersion = $_.Name.Replace("-", "+")
         $defaultJavaPath = $env:JAVA_HOME
-        $javaPath = Get-Item env:JAVA_HOME_${majorVersion}_X64
-
+        if (Test-IsArm64) {
+            $javaPath = Get-Item env:JAVA_HOME_${majorVersion}_ARM64
+        } else {
+            $javaPath = Get-Item env:JAVA_HOME_${majorVersion}_X64
+        }
         $defaultPostfix = ($javaPath.Value -eq $defaultJavaPath) ? " (default)" : ""
 
         [PSCustomObject] @{
