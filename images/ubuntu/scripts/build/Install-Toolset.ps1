@@ -5,6 +5,15 @@
 ################################################################################
 
 Import-Module "$env:HELPER_SCRIPTS/../tests/Helpers.psm1"
+$arch = Get-Architecture
+
+if ($arch -eq "amd64") {
+    $assetArchs = @("x64", "amd64")
+}
+
+if ($arch -eq "arm64") {
+    $assetArchs = @("arm64", "aarch64")
+}
 
 function Install-Asset {
     param(
@@ -39,15 +48,15 @@ foreach ($tool in $tools) {
     foreach ($toolVersion in $tool.versions) {
         $asset = $assets | Where-Object version -like $toolVersion `
             | Select-Object -ExpandProperty files `
-            | Where-Object { ($_.platform -eq $tool.platform) -and ($_.arch -eq $tool.arch) -and ($_.platform_version -eq $tool.platform_version)} `
+            | Where-Object { ($_.platform -eq $tool.platform) -and ($_.platform_version -eq $tool.platform_version) -and ($assetArchs -contains $_.arch) } `
             | Select-Object -First 1
 
         if (-not $asset) {
-            Write-Host "Asset for $($tool.name) $toolVersion $($tool.arch) not found in versions manifest"
-            exit 1
+            Write-Host "Asset for $($tool.name) $toolVersion $($arch) not found in versions manifest"
+            continue
         }
 
-        Write-Host "Installing $($tool.name) $toolVersion $($tool.arch)..."
+        Write-Host "Installing $($tool.name) $toolVersion $($arch)..."
         Install-Asset -ReleaseAsset $asset
     }
 
