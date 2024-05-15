@@ -327,9 +327,11 @@ function Get-AptPackages {
 
         $version = $version -replace '~','\~'
 
-        $output += [PSCustomObject] @{
-            Name    = $pkg
-            Version = $version
+        if ($version) {
+            $output += [PSCustomObject] @{
+                Name    = $pkg
+                Version = $version
+            }
         }
     }
     return ($output | Sort-Object Name)
