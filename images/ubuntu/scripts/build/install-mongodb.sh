@@ -6,6 +6,9 @@
 
 # Source the helpers
 source $HELPER_SCRIPTS/install.sh
+source $HELPER_SCRIPTS/os.sh
+
+arch=$(get_arch)
 
 toolset_version=$(get_toolset_value '.mongodb.version')
 REPO_URL="https://repo.mongodb.org/apt/ubuntu"
@@ -14,7 +17,7 @@ REPO_PATH="/etc/apt/sources.list.d/mongodb-org-$toolset_version.list"
 
 # add Mongo DB repository to apt
 curl -fsSL https://www.mongodb.org/static/pgp/server-$toolset_version.asc | gpg --dearmor -o $GPG_KEY
-echo "deb [ arch=amd64,arm64 signed-by=$GPG_KEY ] $REPO_URL $(lsb_release -cs)/mongodb-org/$toolset_version multiverse" > $REPO_PATH
+echo "deb [ arch=$arch signed-by=$GPG_KEY ] $REPO_URL $(lsb_release -cs)/mongodb-org/$toolset_version multiverse" > $REPO_PATH
 
 # Install Mongo DB
 sudo apt-get update
