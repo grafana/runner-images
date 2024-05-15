@@ -1,13 +1,14 @@
 Import-Module "$PSScriptRoot/../helpers/Common.Helpers.psm1" -DisableNameChecking
 
 Describe "Java" {
+    $arch = (Get-Architecture) -eq "amd64" ? "X64" : "ARM64"
     $toolsetJava = (Get-ToolsetContent).java
     $defaultVersion = $toolsetJava.default
     $jdkVersions = $toolsetJava.versions
 
-    It "Java <DefaultJavaVersion> is default" -TestCases @{ DefaultJavaVersion = $defaultVersion } {
+    It "Java <DefaultJavaVersion> is default" -TestCases @{ DefaultJavaVersion = $defaultVersion; Arch = $arch } {
         $actualJavaPath = [System.Environment]::GetEnvironmentVariable("JAVA_HOME")
-        $expectedJavaPath = [System.Environment]::GetEnvironmentVariable("JAVA_HOME_${DefaultJavaVersion}_X64")
+        $expectedJavaPath = [System.Environment]::GetEnvironmentVariable("JAVA_HOME_${DefaultJavaVersion}_${Arch}")
 
         $actualJavaPath | Should -Not -BeNullOrEmpty
         $expectedJavaPath | Should -Not -BeNullOrEmpty
@@ -21,10 +22,10 @@ Describe "Java" {
         "$ToolName -version" | Should -ReturnZeroExitCode
     }
 
-    $testCases = $jdkVersions | ForEach-Object { @{Version = $_ } }
+    $testCases = $jdkVersions | ForEach-Object { @{Version = $_; Arch = $arch} }
 
     It "Java <Version>" -TestCases $testCases {
-        $javaVariableValue = [System.Environment]::GetEnvironmentVariable("JAVA_HOME_${Version}_X64")
+        $javaVariableValue = [System.Environment]::GetEnvironmentVariable("JAVA_HOME_${Version}_${Arch}")
         $javaVariableValue | Should -Not -BeNullOrEmpty
         $javaPath = Join-Path $javaVariableValue "bin/java"
 
