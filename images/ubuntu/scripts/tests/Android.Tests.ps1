@@ -46,6 +46,7 @@ Describe "Android" {
         return Get-Content $packagesListFile
     }
 
+    $arch = Get-Architecture
     $androidSdkManagerPackages = Get-AndroidPackages
     [int]$platformMinVersion = (Get-ToolsetContent).android.platform_min_version
     [version]$buildToolsMinVersion = (Get-ToolsetContent).android.build_tools_min_version
@@ -73,9 +74,12 @@ Describe "Android" {
         $buildTools,
         $ndkFullVersions,
         ((Get-ToolsetContent).android.extra_list | ForEach-Object { "extras/${_}" }),
-        ((Get-ToolsetContent).android.addon_list | ForEach-Object { "add-ons/${_}" }),
-        ((Get-ToolsetContent).android.additional_tools | ForEach-Object { "${_}" })
+        ((Get-ToolsetContent).android.addon_list | ForEach-Object { "add-ons/${_}" })
     )
+
+    if (Test-IsAmd64) {
+        $androidPackages += ((Get-ToolsetContent).android.additional_tools | ForEach-Object { "${_}" })
+    }
 
     $androidPackages = $androidPackages | ForEach-Object { $_ }
 
