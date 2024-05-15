@@ -182,15 +182,17 @@ Describe "MSSQLCommandLineTools" {
     }
 }
 
-Describe "SqlPackage" {
-    It "sqlpackage" {
-        "sqlpackage /version" | Should -ReturnZeroExitCode
+if (Test-IsAmd64) {
+    Describe "SqlPackage" {
+        It "sqlpackage" {
+            "sqlpackage /version" | Should -ReturnZeroExitCode
+        }
     }
-}
 
-Describe "R" {
-    It "r" {
-        "R --version" | Should -ReturnZeroExitCode
+    Describe "R" {
+        It "r" {
+            "R --version" | Should -ReturnZeroExitCode
+        }
     }
 }
 
@@ -245,9 +247,11 @@ Describe "Git-lfs" {
     }
 }
 
-Describe "Heroku" {
-    It "heroku" {
-        "heroku --version" | Should -ReturnZeroExitCode
+if (Test-IsAmd64) {
+    Describe "Heroku" {
+        It "heroku" {
+            "heroku --version" | Should -ReturnZeroExitCode
+        }
     }
 }
 
@@ -257,9 +261,11 @@ Describe "HHVM" -Skip:(Test-IsUbuntu22) {
     }
 }
 
-Describe "Homebrew" {
-    It "homebrew" {
-        "/home/linuxbrew/.linuxbrew/bin/brew --version" | Should -ReturnZeroExitCode
+if (Test-IsAmd64) {
+    Describe "Homebrew" {
+        It "homebrew" {
+            "/home/linuxbrew/.linuxbrew/bin/brew --version" | Should -ReturnZeroExitCode
+        }
     }
 }
 

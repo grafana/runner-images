@@ -7,13 +7,21 @@
 # Source the helpers for use with the script
 source $HELPER_SCRIPTS/install.sh
 source $HELPER_SCRIPTS/etc-environment.sh
+source $HELPER_SCRIPTS/os.sh
+
+arch=$(get_arch)
+suffix=""
+
+if [[ $arch == "arm64" ]]; then
+    suffix="-aarch64"
+fi
 
 # Install
 image_label="ubuntu$(lsb_release -rs)"
 swift_version=$(curl -fsSL "https://api.github.com/repos/apple/swift/releases/latest" | jq -r '.tag_name | match("[0-9.]+").string')
-swift_release_name="swift-${swift_version}-RELEASE-${image_label}"
+swift_release_name="swift-${swift_version}-RELEASE-${image_label}${suffix}"
 
-archive_url="https://swift.org/builds/swift-${swift_version}-release/${image_label//./}/swift-${swift_version}-RELEASE/${swift_release_name}.tar.gz"
+archive_url="https://download.swift.org/swift-${swift_version}-release/${image_label//./}${suffix}/swift-${swift_version}-RELEASE/${swift_release_name}.tar.gz"
 archive_path=$(download_with_retry "$archive_url")
 
 # Verifying PGP signature using official Swift PGP key. Referring to https://www.swift.org/install/linux/#Installation-via-Tarball

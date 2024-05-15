@@ -150,3 +150,16 @@ function Invoke-DownloadWithRetry {
 
     return $DestinationPath
 }
+
+function Test-IsArm64 {
+    return (dpkg --print-architecture) -eq "arm64"
+}
+
+function Test-IsAmd64 {
+    return (dpkg --print-architecture) -eq "amd64"
+}
+
+function Get-Architecture {
+    $arch = dpkg --print-architecture
+    return $arch
+}

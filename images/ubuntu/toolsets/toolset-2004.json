@@ -32,7 +32,6 @@
             "name": "node",
             "url" : "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
             "platform" : "linux",
-            "arch": "x64",
             "versions": [
                 "16.*",
                 "18.*",
@@ -42,7 +41,6 @@
         {
             "name": "go",
             "url" : "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
-            "arch": "x64",
             "platform" : "linux",
             "versions": [
                 "1.20.*",
@@ -54,7 +52,6 @@
         {
             "name": "Ruby",
             "platform_version": "20.04",
-            "arch": "x64",
             "versions": [
                 "3.0.*",
                 "3.1.*"
@@ -63,7 +60,6 @@
         {
             "name": "CodeQL",
             "platform" : "linux",
-            "arch": "x64",
             "versions": [
                 "*"
             ]
@@ -247,12 +243,18 @@
             {
                 "plugin": "buildx",
                 "version": "latest",
-                "asset": "linux-amd64"
-            },
+                "asset": {
+                    "amd64": "linux-amd64",
+                    "arm64": "linux-arm64"
+                }
+            },            
             {
                 "plugin": "compose",
                 "version": "2.23.3",
-                "asset": "linux-x86_64"
+                "asset": {
+                    "amd64": "linux-x86_64",
+                    "arm64": "linux-aarch64"
+                }
             }
         ]
     },
@@ -376,7 +378,7 @@
         "version": "14"
     },
     "pwsh": {
-        "version": "7.4"
+        "version": "7.4.1"
     },
     "aliyunCli": {
         "version": "3.0.174",
