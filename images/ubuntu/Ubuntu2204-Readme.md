@@ -1,7 +1,13 @@
+| Announcements |
+|-|
+| [Ubuntu 24.04 is now available](https://github.com/actions/runner-images/issues/9848) |
+| [[Ubuntu, Windows] Docker Compose v1 will be removed from images on July, 9](https://github.com/actions/runner-images/issues/9692) |
+| [[Ubuntu] ubuntu-toolchain-r/test repository will be removed from images on May 13](https://github.com/actions/runner-images/issues/9679) |
+***
 # Ubuntu 22.04
 - OS Version: 22.04.4 LTS
-- Kernel Version: 6.5.0-1020-aws
-- Image Version: dev
+- Kernel Version: 6.5.0-1021-azure
+- Image Version: 20240514.2.0
 - Systemd version: 249.11-0ubuntu3.12
 
 ## Installed Software
@@ -16,6 +22,10 @@
 - GNU Fortran: 10.5.0, 11.4.0, 12.3.0
 - Julia 1.10.3
 - Kotlin 1.9.24-release-822
+- GNU C++: 10.5.0, 11.4.0, 12.3.0
+- GNU Fortran: 10.5.0, 11.4.0, 12.3.0
+- Julia 1.10.3
+- Kotlin 1.9.24-release-822
 - Mono 6.12.0.200
 - MSBuild 16.10.1.31701 (Mono 6.12.0.200)
 - Node.js 18.20.2
@@ -26,6 +36,7 @@
 
 ### Package Management
 - cpan 1.64
+- Helm 3.14.4
 - Homebrew 4.3.0
 - Miniconda 24.3.0
 - Npm 10.5.0
@@ -34,7 +45,7 @@
 - Pip3 22.0.2
 - Pipx 1.5.0
 - RubyGems 3.3.5
-- Vcpkg (build from commit 28c4ec867)
+- Vcpkg (build from commit bd2b54836)
 - Yarn 1.22.22
 
 #### Environment variables
@@ -55,16 +66,25 @@ to accomplish this.
 - Ant 1.10.12
 - Gradle 8.7
 - Lerna 8.1.3
+- Ant 1.10.12
+- Gradle 8.7
+- Lerna 8.1.3
 - Maven 3.8.8
+- Sbt 1.10.0
 - Sbt 1.10.0
 
 ### Tools
 - Ansible 2.16.6
 - AzCopy 10.24.0 - available by `azcopy` and `azcopy10` aliases
 - Bazel 7.1.2
+- Bazel 7.1.2
 - Bazelisk 1.19.0
 - Bicep 0.27.1
+- Bicep 0.27.1
 - Buildah 1.23.1
+- CMake 3.29.3
+- CodeQL Action Bundle 2.17.2
+- Docker Amazon ECR Credential Helper 0.8.0
 - CMake 3.29.3
 - CodeQL Action Bundle 2.17.2
 - Docker Amazon ECR Credential Helper 0.8.0
@@ -79,44 +99,51 @@ to accomplish this.
 - Git-ftp 1.6.0
 - Haveged 1.9.14
 - Heroku 8.11.5
+- Heroku 8.11.5
 - jq 1.6
 - Kind 0.23.0
-- Kubectl 1.30.1
+- Kubectl 1.30.0
 - Kustomize 5.4.1
 - Leiningen 2.11.2
 - MediaInfo 21.09
 - Mercurial 6.1.1
+- Minikube 1.33.1
 - Minikube 1.33.1
 - n 9.2.3
 - Newman 6.1.2
 - nvm 0.39.7
 - OpenSSL 3.0.2-0ubuntu1.15
 - Packer 1.10.3
+- Packer 1.10.3
 - Parcel 2.12.0
 - Podman 3.4.4
-- Pulumi 3.116.1
+- Pulumi 3.116.0
 - R 4.4.0
 - Skopeo 1.4.1
 - Sphinx Open Source Search Server 2.2.11
 - SVN 1.14.1
 - Terraform 1.8.3
+- Terraform 1.8.3
 - yamllint 1.35.1
+- yq 4.44.1
 - yq 4.44.1
 - zstd 1.5.6
 
 ### CLI Tools
 - Alibaba Cloud CLI 3.0.205
-- AWS CLI 2.15.51
+- AWS CLI 2.15.50
 - AWS CLI Session Manager Plugin 1.2.553.0
+- AWS SAM CLI 1.116.0
+- Azure CLI 2.60.0
 - AWS SAM CLI 1.116.0
 - Azure CLI 2.60.0
 - Azure CLI (azure-devops) 1.0.0
 - GitHub CLI 2.49.2
 - Google Cloud CLI 476.0.0
 - Netlify CLI 17.23.5
-- OpenShift CLI 4.15.13
+- OpenShift CLI 4.15.12
 - ORAS CLI 1.1.0
-- Vercel CLI 34.2.0
+- Vercel CLI 34.1.14
 
 ### Java
 | Version             | Environment Variable |
@@ -125,9 +152,14 @@ to accomplish this.
 | 11.0.23+9 (default) | JAVA_HOME_11_X64     |
 | 17.0.11+9           | JAVA_HOME_17_X64     |
 | 21.0.3+9            | JAVA_HOME_21_X64     |
+| 8.0.412+8           | JAVA_HOME_8_X64      |
+| 11.0.23+9 (default) | JAVA_HOME_11_X64     |
+| 17.0.11+9           | JAVA_HOME_17_X64     |
+| 21.0.3+9            | JAVA_HOME_21_X64     |
 
 ### PHP Tools
 - PHP: 8.1.2
+- Composer 2.7.6
 - Composer 2.7.6
 - PHPUnit 8.5.38
 ```
@@ -137,10 +169,16 @@ Both Xdebug and PCOV extensions are installed, but only Xdebug is enabled.
 ### Haskell Tools
 - Cabal 3.10.3.0
 - GHC 9.10.1
+- GHC 9.10.1
 - GHCup 0.1.22.0
+- Stack 2.15.7
 - Stack 2.15.7
 
 ### Rust Tools
+- Cargo 1.78.0
+- Rust 1.78.0
+- Rustdoc 1.78.0
+- Rustup 1.27.1
 - Cargo 1.78.0
 - Rust 1.78.0
 - Rustdoc 1.78.0
@@ -150,16 +188,17 @@ Both Xdebug and PCOV extensions are installed, but only Xdebug is enabled.
 - Bindgen 0.69.4
 - Cargo audit 0.20.0
 - Cargo clippy 0.1.78
+- Cargo clippy 0.1.78
 - Cargo outdated 0.15.0
 - Cbindgen 0.26.0
 - Rustfmt 1.7.0
 
 ### Browsers and Drivers
-- Google Chrome 125.0.6422.60
-- ChromeDriver 125.0.6422.60
-- Chromium 125.0.6422.0
+- Google Chrome 124.0.6367.207
+- ChromeDriver 124.0.6367.207
+- Chromium 124.0.6367.0
 - Microsoft Edge 124.0.2478.105
-- Microsoft Edge WebDriver 124.0.2478.105
+- Microsoft Edge WebDriver 124.0.2478.97
 - Selenium server 4.20.0
 - Mozilla Firefox 126.0
 - Geckodriver 0.34.0
@@ -173,13 +212,14 @@ Both Xdebug and PCOV extensions are installed, but only Xdebug is enabled.
 | SELENIUM_JAR_PATH | /usr/share/java/selenium-server.jar   |
 
 ### .NET Tools
-- .NET Core SDK: 6.0.422, 7.0.119, 7.0.203, 7.0.316, 7.0.409, 8.0.105, 8.0.205, 8.0.300
+- .NET Core SDK: 6.0.422, 7.0.409, 8.0.300
 - nbgv 3.6.133+2d32d93cb1
 
 ### Databases
 - sqlite3 3.37.2
 
 #### PostgreSQL
+- PostgreSQL 14.12
 - PostgreSQL 14.12
 ```
 User: postgres
@@ -206,10 +246,13 @@ Use the following command as a part of your job to start the service: 'sudo syst
 - 1.20.14
 - 1.21.10
 - 1.22.3
+- 1.21.10
+- 1.22.3
 
 #### Node.js
 - 16.20.2
 - 18.20.2
+- 20.13.1
 - 20.13.1
 
 #### Python
@@ -225,8 +268,11 @@ Use the following command as a part of your job to start the service: 'sudo syst
 - 3.8.16 [PyPy 7.3.11]
 - 3.9.19 [PyPy 7.3.16]
 - 3.10.14 [PyPy 7.3.16]
+- 3.9.19 [PyPy 7.3.16]
+- 3.10.14 [PyPy 7.3.16]
 
 #### Ruby
+- 3.1.5
 - 3.1.5
 
 ### PowerShell Tools
@@ -235,6 +281,7 @@ Use the following command as a part of your job to start the service: 'sudo syst
 #### PowerShell Modules
 - Az: 11.3.1
 - MarkdownPS: 1.9
+- Microsoft.Graph: 2.19.0
 - Microsoft.Graph: 2.19.0
 - Pester: 5.5.0
 - PSScriptAnalyzer: 1.22.0
@@ -277,8 +324,17 @@ Use the following command as a part of your job to start the service: 'sudo syst
 | debian:10            | sha256:6e7bd55a5705914837aad8db01b349f4617510c11e47ccae8e87f6f14e489626  | 2024-05-14 |
 | debian:11            | sha256:2c7a92a41cb814c00e7d455b2bc0c90ccdb9a4ced2ffdc10e562c7a84a186032  | 2024-05-14 |
 | moby/buildkit:latest | sha256:9194b5ec1be368f41c516df7f93f7f540630ea06136056b2ffebb62226ed4ad6  | 2024-04-25 |
+| debian:10            | sha256:6e7bd55a5705914837aad8db01b349f4617510c11e47ccae8e87f6f14e489626  | 2024-05-14 |
+| debian:11            | sha256:2c7a92a41cb814c00e7d455b2bc0c90ccdb9a4ced2ffdc10e562c7a84a186032  | 2024-05-14 |
+| moby/buildkit:latest | sha256:9194b5ec1be368f41c516df7f93f7f540630ea06136056b2ffebb62226ed4ad6  | 2024-04-25 |
 | node:16              | sha256:f77a1aef2da8d83e45ec990f45df50f1a286c5fe8bbfb8c6e4246c6389705c0b  | 2023-09-07 |
 | node:16-alpine       | sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787  | 2023-08-10 |
+| node:18              | sha256:5bac3a1edff13e76586b8eaef1d411fcd80e4f18cce5bc40ea6993245e0721ec  | 2024-05-14 |
+| node:18-alpine       | sha256:4837c2ac8998cf172f5892fb45f229c328e4824c43c8506f8ba9c7996d702430  | 2024-04-23 |
+| node:20              | sha256:d6925dc84f8c0d1c1f8df4ea6a9a54e57d430241cb734b1b0c45ed6d26e8e9c0  | 2024-05-14 |
+| node:20-alpine       | sha256:291e84d956f1aff38454bbd3da38941461ad569a185c20aa289f71f37ea08e23  | 2024-05-09 |
+| ubuntu:20.04         | sha256:874aca52f79ae5f8258faff03e10ce99ae836f6e7d2df6ecd3da5c1cad3a912b  | 2024-04-27 |
+| ubuntu:22.04         | sha256:a6d2b38300ce017add71440577d5b0a90460d0e57fd7aec21dd0d1b0761bbfb2  | 2024-04-27 |
 | node:18              | sha256:5bac3a1edff13e76586b8eaef1d411fcd80e4f18cce5bc40ea6993245e0721ec  | 2024-05-14 |
 | node:18-alpine       | sha256:4837c2ac8998cf172f5892fb45f229c328e4824c43c8506f8ba9c7996d702430  | 2024-04-23 |
 | node:20              | sha256:d6925dc84f8c0d1c1f8df4ea6a9a54e57d430241cb734b1b0c45ed6d26e8e9c0  | 2024-05-14 |
@@ -325,6 +381,7 @@ Use the following command as a part of your job to start the service: 'sudo syst
 | libgbm-dev             | 23.2.1-1ubuntu3.1\~22.04.2          |
 | libgconf-2-4           | 3.2.6-7ubuntu2                      |
 | libgsl-dev             | 2.7.1+dfsg-3                        |
+| libgtk-3-0             | 3.24.33-1ubuntu2.1                  |
 | libgtk-3-0             | 3.24.33-1ubuntu2.1                  |
 | libmagic-dev           | 1:5.41-3ubuntu0.1                   |
 | libmagickcore-dev      | 8:6.9.11.60+dfsg-1.3ubuntu0.22.04.3 |
