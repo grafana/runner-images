@@ -9,6 +9,12 @@ source $HELPER_SCRIPTS/etc-environment.sh
 source $HELPER_SCRIPTS/install.sh
 source $HELPER_SCRIPTS/os.sh
 
+arch=$(get_arch)
+
+if [[ $arch == "amd64" ]]; then
+    arch="x64"
+fi
+
 extract_dotnet_sdk() {
     local archive_name=$1
 
@@ -74,13 +80,24 @@ done
 
 sorted_sdks=$(echo ${sdks[@]} | tr ' ' '\n' | sort -r | uniq -w 5)
 
+# Manually install SDK for arm64 in case it's not available in the apt repository
+if [[ $arch == "arm64" && ! -d "/usr/share/dotnet" ]]; then
+    curl -SL -o dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Sdk/master/dotnet-sdk-latest-linux-arm64.tar.gz
+    mkdir -p /usr/share/dotnet
+    tar -zxf dotnet.tar.gz -C /usr/share/dotnet
+    rm -f /usr/bin/dotnet
+    ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
+fi
+
+
 # Download/install additional SDKs in parallel
 export -f download_with_retry
 export -f extract_dotnet_sdk
 
 parallel --jobs 0 --halt soon,fail=1 \
-    'url="https://dotnetcli.blob.core.windows.net/dotnet/Sdk/{}/dotnet-sdk-{}-linux-x64.tar.gz"; \
-    download_with_retry $url' ::: "${sorted_sdks[@]}"
+    'url="https://dotnetcli.blob.core.windows.net/dotnet/Sdk/{}/dotnet-sdk-{}-linux-'"$arch"'.tar.gz"; \
+    path="dotnet-sdk-{}-linux-'"$arch"'.tar.gz"; \
+    download_with_retry $url $path' ::: "${sorted_sdks[@]}"
 
 find . -name "*.tar.gz" | parallel --halt soon,fail=1 'extract_dotnet_sdk {}'
 
