@@ -1,4 +1,4 @@
-Describe "Firefox" {
+Describe "Firefox" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
     It "Firefox" {
         "firefox --version" | Should -ReturnZeroExitCode
     }

@@ -4,10 +4,9 @@
             "name": "Python",
             "url" : "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
             "platform" : "linux",
-            "platform_version": "22.04",
+            "platform_version": "24.04",
+            "arch": "x64",
             "versions": [
-                "3.7.*",
-                "3.8.*",
                 "3.9.*",
                 "3.10.*",
                 "3.11.*",
@@ -16,10 +15,9 @@
         },
         {
             "name": "PyPy",
+            "arch": "x64",
             "platform" : "linux",
             "versions": [
-                "3.7",
-                "3.8",
                 "3.9",
                 "3.10"
             ]
@@ -28,6 +26,7 @@
             "name": "node",
             "url" : "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
             "platform" : "linux",
+            "arch": "x64",
             "versions": [
                 "16.*",
                 "18.*",
@@ -37,38 +36,39 @@
         {
             "name": "go",
             "url" : "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
+            "arch": "x64",
             "platform" : "linux",
             "versions": [
                 "1.20.*",
                 "1.21.*",
                 "1.22.*"
             ],
-            "default": "1.21.*"
+            "default": "1.22.*"
         },
         {
             "name": "Ruby",
-            "platform_version": "22.04",
-            "versions": [
-                "3.1.*"
-            ]
+            "platform_version": "24.04",
+            "arch": "x64",
+            "versions": []
         },
         {
             "name": "CodeQL",
             "platform" : "linux",
+            "arch": "x64",
             "versions": [
                 "*"
             ]
         }
     ],
     "java": {
-        "default": "11",
+        "default": "17",
         "versions": [ "8", "11", "17", "21"],
         "maven": "3.8.8"
     },
     "android": {
-        "cmdline-tools": "commandlinetools-linux-9477386_latest.zip",
-        "platform_min_version": "31",
-        "build_tools_min_version": "31.0.0",
+        "cmdline-tools": "commandlinetools-linux-11076708_latest.zip",
+        "platform_min_version": "34",
+        "build_tools_min_version": "34.0.0",
         "extra_list": [
             "android;m2repository",
             "google;m2repository",
@@ -77,19 +77,15 @@
         "addon_list": [
         ],
         "additional_tools": [
-            "cmake;3.10.2.4988404",
-            "cmake;3.18.1",
-            "cmake;3.22.1"
         ],
         "ndk": {
-            "default": "25",
+            "default": "26",
             "versions": [
                 "24", "25", "26"
             ]
         }
     },
     "powershellModules": [
-        {"name": "MarkdownPS"},
         {"name": "Microsoft.Graph"},
         {"name": "Pester"},
         {"name": "PSScriptAnalyzer"}
@@ -98,7 +94,7 @@
         {
             "name": "az",
             "versions": [
-                "11.3.1"
+                "11.5.0"
             ]
         }
     ],
@@ -124,28 +120,9 @@
             "fakeroot",
             "fonts-noto-color-emoji",
             "gnupg2",
-            "imagemagick",
             "iproute2",
             "iputils-ping",
-            "lib32z1",
-            "libc++abi-dev",
-            "libc++-dev",
-            "libc6-dev",
-            "libcurl4",
-            "libgbm-dev",
-            "libgconf-2-4",
-            "libgsl-dev",
-            "libgtk-3-0",
-            "libmagic-dev",
-            "libmagickcore-dev",
-            "libmagickwand-dev",
-            "libsecret-1-dev",
-            "libsqlite3-dev",
-            "libyaml-dev",
             "libtool",
-            "libunwind8",
-            "libxkbfile-dev",
-            "libxss1",
             "libssl-dev",
             "locales",
             "mercurial",
@@ -158,7 +135,6 @@
             "tk",
             "tzdata",
             "upx",
-            "xorriso",
             "xvfb",
             "xz-utils",
             "zsync"
@@ -182,7 +158,6 @@
             "net-tools",
             "p7zip-full",
             "parallel",
-            "pass",
             "patchelf",
             "pigz",
             "pollinate",
@@ -192,7 +167,6 @@
             "sqlite3",
             "ssh",
             "sshpass",
-            "subversion",
             "sudo",
             "swig",
             "telnet",
@@ -204,20 +178,6 @@
     ],
     "docker": {
         "images": [
-            "alpine:3.16",
-            "alpine:3.17",
-            "alpine:3.18",
-            "debian:10",
-            "debian:11",
-            "moby/buildkit:latest",
-            "node:16",
-            "node:18",
-            "node:20",
-            "node:16-alpine",
-            "node:18-alpine",
-            "node:20-alpine",
-            "ubuntu:20.04",
-            "ubuntu:22.04"
         ],
         "components": [
             {
@@ -226,29 +186,23 @@
             },
             {
                 "package": "docker-ce-cli",
-                "version": "24.0.9"
+                "version": "26.1.0"
             },
             {
                 "package": "docker-ce",
-                "version": "24.0.9"
+                "version": "26.1.0"
             }
         ],
         "plugins": [
             {
                 "plugin": "buildx",
                 "version": "latest",
-                "asset": {
-                    "amd64": "linux-amd64",
-                    "arm64": "linux-arm64"
-                }
-            },            
+                "asset": "linux-amd64"
+            },
             {
                 "plugin": "compose",
-                "version": "2.23.3",
-                "asset": {
-                    "amd64": "linux-x86_64",
-                    "arm64": "linux-aarch64"
-                }
+                "version": "latest",
+                "asset": "linux-x86_64"
             }
         ]
     },
@@ -264,13 +218,9 @@
     ],
     "dotnet": {
         "aptPackages": [
-            "dotnet-sdk-6.0",
-            "dotnet-sdk-7.0",
             "dotnet-sdk-8.0"
         ],
         "versions": [
-            "6.0",
-            "7.0",
             "8.0"
         ],
         "tools": [
@@ -279,29 +229,29 @@
     },
     "clang": {
         "versions": [
-            "13",
-            "14",
-            "15"
+            "16",
+            "17",
+            "18"
         ],
-        "default_version": "14"
+        "default_version": "18"
     },
     "gcc": {
         "versions": [
-            "g++-9",
-            "g++-10",
-            "g++-12"
+            "g++-12",
+            "g++-13",
+            "g++-14"
         ]
     },
     "gfortran": {
         "versions": [
-            "gfortran-9",
-            "gfortran-10",
-            "gfortran-12"
+            "gfortran-12",
+            "gfortran-13",
+            "gfortran-14"
         ]
     },
     "php": {
         "versions": [
-            "8.1"
+            "8.3"
         ]
     },
     "rubygems": [
@@ -311,7 +261,7 @@
         "version": "4"
     },
     "node": {
-        "default": "18"
+        "default": "20"
     },
     "node_modules": [
         {
@@ -339,20 +289,12 @@
             "command": "newman"
         },
         {
-            "name": "vercel",
-            "command": "vercel"
-        },
-        {
             "name": "webpack",
             "command": "webpack"
         },
         {
             "name": "webpack-cli",
             "command": "webpack-cli"
-        },
-        {
-            "name": "netlify-cli",
-            "command": "netlify"
         },
         {
             "name": "lerna",
@@ -364,12 +306,12 @@
         }
     ],
     "mongodb": {
-        "version": "5.0"
+        "version": "7.0"
     },
     "postgresql": {
-        "version": "14"
+        "version": "16"
     },
     "pwsh": {
-        "version": "7.4.1"
+        "version": "7.4"
     }
 }
