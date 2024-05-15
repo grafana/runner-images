@@ -67,7 +67,9 @@ if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
 $packageManagement = $installedSoftware.AddHeader("Package Management")
 $packageManagement.AddToolVersion("cpan", $(Get-CpanVersion))
 $packageManagement.AddToolVersion("Helm", $(Get-HelmVersion))
-$packageManagement.AddToolVersion("Homebrew", $(Get-HomebrewVersion))
+if (Test-IsAmd64) {
+    $packageManagement.AddToolVersion("Homebrew", $(Get-HomebrewVersion))
+}
 $packageManagement.AddToolVersion("Miniconda", $(Get-MinicondaVersion))
 $packageManagement.AddToolVersion("Npm", $(Get-NpmVersion))
 if (-not $(Test-IsUbuntu24)) {
@@ -80,12 +82,14 @@ $packageManagement.AddToolVersion("RubyGems", $(Get-GemVersion))
 $packageManagement.AddToolVersion("Vcpkg", $(Get-VcpkgVersion))
 $packageManagement.AddToolVersion("Yarn", $(Get-YarnVersion))
 $packageManagement.AddHeader("Environment variables").AddTable($(Build-PackageManagementEnvironmentTable))
-$packageManagement.AddHeader("Homebrew note").AddNote(@'
+if (Test-IsAmd64) {
+    $packageManagement.AddHeader("Homebrew note").AddNote(@'
 Location: /home/linuxbrew
 Note: Homebrew is pre-installed on image but not added to PATH.
 run the eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" command
 to accomplish this.
 '@)
+}
 
 # Project Management
 $projectManagement = $installedSoftware.AddHeader("Project Management")
@@ -101,7 +105,8 @@ if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
 $tools = $installedSoftware.AddHeader("Tools")
 $tools.AddToolVersion("Ansible", $(Get-AnsibleVersion))
 if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
-    $tools.AddToolVersion("apt-fast", $(Get-AptFastVersion))
+    # TODO: Fix retrieval of apt-fast version on Software Report
+    # $tools.AddToolVersion("apt-fast", $(Get-AptFastVersion))
 }
 $tools.AddToolVersion("AzCopy", $(Get-AzCopyVersion))
 $tools.AddToolVersion("Bazel", $(Get-BazelVersion))
@@ -109,7 +114,9 @@ $tools.AddToolVersion("Bazelisk", $(Get-BazeliskVersion))
 $tools.AddToolVersion("Bicep", $(Get-BicepVersion))
 $tools.AddToolVersion("Buildah", $(Get-BuildahVersion))
 $tools.AddToolVersion("CMake", $(Get-CMakeVersion))
-$tools.AddToolVersion("CodeQL Action Bundle", $(Get-CodeQLBundleVersion))
+if (Test-IsAmd64) {
+    $tools.AddToolVersion("CodeQL Action Bundle", $(Get-CodeQLBundleVersion))
+}
 $tools.AddToolVersion("Docker Amazon ECR Credential Helper", $(Get-DockerAmazonECRCredHelperVersion))
 if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
     $tools.AddToolVersion("Docker Compose v1", $(Get-DockerComposeV1Version))
@@ -123,8 +130,10 @@ $tools.AddToolVersion("Git", $(Get-GitVersion))
 $tools.AddToolVersion("Git LFS", $(Get-GitLFSVersion))
 $tools.AddToolVersion("Git-ftp", $(Get-GitFTPVersion))
 $tools.AddToolVersion("Haveged", $(Get-HavegedVersion))
-if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
-    $tools.AddToolVersion("Heroku", $(Get-HerokuVersion))
+if (Test-IsAmd64) {
+    if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+        $tools.AddToolVersion("Heroku", $(Get-HerokuVersion))
+    }
 }
 if (Test-IsUbuntu20) {
     $tools.AddToolVersion("HHVM (HipHop VM)", $(Get-HHVMVersion))
@@ -154,8 +163,10 @@ if (Test-IsUbuntu20) {
 }
 $tools.AddToolVersion("Podman", $(Get-PodManVersion))
 $tools.AddToolVersion("Pulumi", $(Get-PulumiVersion))
-if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
-    $tools.AddToolVersion("R", $(Get-RVersion))
+if (Test-IsAmd64) {
+    if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+        $tools.AddToolVersion("R", $(Get-RVersion))
+    }
 }
 $tools.AddToolVersion("Skopeo", $(Get-SkopeoVersion))
 $tools.AddToolVersion("Sphinx Open Source Search Server", $(Get-SphinxVersion))
@@ -224,12 +235,14 @@ $rustToolsPackages.AddToolVersion("Rustfmt", $(Get-RustfmtVersion))
 
 # Browsers and Drivers
 $browsersTools = $installedSoftware.AddHeader("Browsers and Drivers")
-$browsersTools.AddToolVersion("Google Chrome", $(Get-ChromeVersion))
-$browsersTools.AddToolVersion("ChromeDriver", $(Get-ChromeDriverVersion))
-$browsersTools.AddToolVersion("Chromium", $(Get-ChromiumVersion))
-if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
-    $browsersTools.AddToolVersion("Microsoft Edge", $(Get-EdgeVersion))
-    $browsersTools.AddToolVersion("Microsoft Edge WebDriver", $(Get-EdgeDriverVersion))
+if (Test-IsAmd64) {
+    $browsersTools.AddToolVersion("Google Chrome", $(Get-ChromeVersion))
+    $browsersTools.AddToolVersion("ChromeDriver", $(Get-ChromeDriverVersion))
+    $browsersTools.AddToolVersion("Chromium", $(Get-ChromiumVersion))
+    if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+        $browsersTools.AddToolVersion("Microsoft Edge", $(Get-EdgeVersion))
+        $browsersTools.AddToolVersion("Microsoft Edge WebDriver", $(Get-EdgeDriverVersion))
+    }
 }
 $browsersTools.AddToolVersion("Selenium server", $(Get-SeleniumVersion))
 if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
@@ -259,12 +272,25 @@ if (-not $(Test-IsUbuntu24)) {
 
 # Cached Tools
 $cachedTools = $installedSoftware.AddHeader("Cached Tools")
-$cachedTools.AddToolVersionsList("Go", $(Get-ToolcacheGoVersions), "^\d+\.\d+")
-$cachedTools.AddToolVersionsList("Node.js", $(Get-ToolcacheNodeVersions), "^\d+")
-$cachedTools.AddToolVersionsList("Python", $(Get-ToolcachePythonVersions), "^\d+\.\d+")
-$cachedTools.AddToolVersionsList("PyPy", $(Get-ToolcachePyPyVersions), "^\d+\.\d+")
-if (-not $(Test-IsUbuntu24)) {
-    $cachedTools.AddToolVersionsList("Ruby", $(Get-ToolcacheRubyVersions), "^\d+\.\d+")
+$goVersions = Get-ToolcacheGoVersions
+if ($goVersions) {
+    $cachedTools.AddToolVersionsList("Go", $($goVersions), "^\d+\.\d+")
+}
+$nodeVersions = Get-ToolcacheNodeVersions
+if ($nodeVersions) {
+    $cachedTools.AddToolVersionsList("Node.js", $($nodeVersions), "^\d+")
+}
+$pythonVersions = Get-ToolcachePythonVersions
+if ($pythonVersions) {
+    $cachedTools.AddToolVersionsList("Python", $($pythonVersions), "^\d+\.\d+")
+}
+$pypyVersions = Get-ToolcachePyPyVersions
+if ($pypyVersions) {
+    $cachedTools.AddToolVersionsList("PyPy", $($pypyVersions), "^\d+\.\d+")
+}
+$rubyVersions = Get-ToolcacheRubyVersions
+if ($rubyVersions) {
+    $cachedTools.AddToolVersionsList("Ruby", $($rubyVersions), "^\d+\.\d+")
 }
 
 # PowerShell Tools
