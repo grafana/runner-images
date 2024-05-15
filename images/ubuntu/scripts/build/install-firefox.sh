@@ -7,6 +7,18 @@
 # Source the helpers for use with the script
 source $HELPER_SCRIPTS/install.sh
 source $HELPER_SCRIPTS/etc-environment.sh
+source $HELPER_SCRIPTS/os.sh
+
+arch=$(get_arch)
+suffix=""
+
+if [[ $arch == "amd64" ]]; then
+    suffix="64"
+fi
+
+if [[ $arch == "arm64" ]]; then
+    suffix="-aarch64"
+fi
 
 # Mozillateam PPA is added manually because sometimes
 # launchpad portal sends empty answer when trying to add it automatically
@@ -32,7 +44,7 @@ echo "mozillateam $REPO_URL" >> $HELPER_SCRIPTS/apt-sources.txt
 echo 'pref("intl.locale.requested","en_US");' >> "/usr/lib/firefox/browser/defaults/preferences/syspref.js"
 
 # Download and unpack latest release of geckodriver
-download_url=$(resolve_github_release_asset_url "mozilla/geckodriver" "test(\"linux64.tar.gz$\")" "latest")
+download_url=$(resolve_github_release_asset_url "mozilla/geckodriver" "test(\"linux$suffix.tar.gz$\")" "latest")
 driver_archive_path=$(download_with_retry "$download_url")
 
 GECKODRIVER_DIR="/usr/local/share/gecko_driver"
