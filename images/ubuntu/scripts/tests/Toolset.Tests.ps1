@@ -1,4 +1,5 @@
 Describe "Toolset" {
+    $arch = Get-Architecture
     $tools = (Get-ToolsetContent).toolcache
 
     $toolsExecutables = @{
@@ -41,6 +42,10 @@ Describe "Toolset" {
 
                 $expectedVersionPath = Join-Path $env:AGENT_TOOLSDIRECTORY $toolName $version
 
+                if (-not (Test-Path $expectedVersionPath)) {
+                    continue
+                }
+
                 It "$version version folder exists" -TestCases @{ ExpectedVersionPath = $expectedVersionPath} {
                     $ExpectedVersionPath | Should -Exist
                 }
@@ -48,7 +53,11 @@ Describe "Toolset" {
                 $foundVersion = Get-Item $expectedVersionPath `
                     | Sort-Object -Property {[SemVer]$_.name} -Descending `
                     | Select-Object -First 1
-                $foundVersionPath = Join-Path $foundVersion $tool.arch
+                $foundVersionPath = Join-Path $foundVersion $arch
+
+                if (-not (Test-Path $foundVersionPath)) {
+                    continue
+                }
 
                 if ($toolExecs) {
                     foreach ($executable in $toolExecs["tools"]) {

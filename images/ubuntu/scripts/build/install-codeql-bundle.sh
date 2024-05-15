@@ -6,6 +6,9 @@
 
 # Source the helpers for use with the script
 source $HELPER_SCRIPTS/install.sh
+source $HELPER_SCRIPTS/os.sh
+
+arch=$(get_arch)
 
 # Retrieve the CLI version of the latest CodeQL bundle.
 base_url="$(curl -fsSL https://raw.githubusercontent.com/github/codeql-action/v2/src/defaults.json)"
@@ -17,7 +20,7 @@ echo "Downloading CodeQL bundle $bundle_version..."
 # different operating systems within containers.
 codeql_archive=$(download_with_retry "https://github.com/github/codeql-action/releases/download/$bundle_tag_name/codeql-bundle.tar.gz")
 
-codeql_toolcache_path="$AGENT_TOOLSDIRECTORY/CodeQL/$bundle_version/x64"
+codeql_toolcache_path="$AGENT_TOOLSDIRECTORY/CodeQL/$bundle_version/$arch"
 mkdir -p "$codeql_toolcache_path"
 
 echo "Unpacking the downloaded CodeQL bundle archive..."
