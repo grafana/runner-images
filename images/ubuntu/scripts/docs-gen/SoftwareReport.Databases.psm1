@@ -56,6 +56,8 @@ function Build-MySQLSection {
 function Build-MSSQLToolsSection {
     $node = [HeaderNode]::new("MS SQL")
     $node.AddToolVersion("sqlcmd", $(Get-SQLCmdVersion))
-    $node.AddToolVersion("SqlPackage", $(Get-SqlPackageVersion))
+    if (Test-IsAmd64) {
+        $node.AddToolVersion("SqlPackage", $(Get-SqlPackageVersion))
+    }
     return $node
 }
