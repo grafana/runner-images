@@ -210,6 +210,7 @@ if (Test-IsAmd64) {
             "sqlpackage /version" | Should -ReturnZeroExitCode
         }
     }
+}
 
     Describe "R" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
         It "r" {
