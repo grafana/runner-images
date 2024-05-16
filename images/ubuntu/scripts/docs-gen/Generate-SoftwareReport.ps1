@@ -66,7 +66,8 @@ if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
 # Package Management
 $packageManagement = $installedSoftware.AddHeader("Package Management")
 $packageManagement.AddToolVersion("cpan", $(Get-CpanVersion))
-$packageManagement.AddToolVersion("Helm", $(Get-HelmVersion))
+# TODO: Fix helm version retrieval on Software Report
+# $packageManagement.AddToolVersion("Helm", $(Get-HelmVersion))
 if (Test-IsAmd64) {
     $packageManagement.AddToolVersion("Homebrew", $(Get-HomebrewVersion))
 }
@@ -118,7 +119,7 @@ if (Test-IsAmd64) {
     $tools.AddToolVersion("CodeQL Action Bundle", $(Get-CodeQLBundleVersion))
 }
 $tools.AddToolVersion("Docker Amazon ECR Credential Helper", $(Get-DockerAmazonECRCredHelperVersion))
-if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+if ((Test-IsAmd64) -and ((Test-IsUbuntu20) -or (Test-IsUbuntu22))) {
     $tools.AddToolVersion("Docker Compose v1", $(Get-DockerComposeV1Version))
 }
 $tools.AddToolVersion("Docker Compose v2", $(Get-DockerComposeV2Version))
