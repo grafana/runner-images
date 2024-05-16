@@ -13,7 +13,7 @@
 - Clang-tidy: 13.0.1, 14.0.0, 15.0.7
 - Dash 0.5.11+git20210903+057cd650a4ed-3build1
 - GNU C++: 10.5.0, 11.4.0, 12.3.0
-- GNU Fortran: 10.5.0, 11.4.0, 12.3.0
+- GNU Fortran: 10.5.0, 12.3.0
 - Julia 1.10.3
 - Kotlin 1.9.24-release-822
 - Mono 6.12.0.200
@@ -26,7 +26,6 @@
 
 ### Package Management
 - cpan 1.64
-- Homebrew 4.3.0
 - Miniconda 24.3.0
 - Npm 10.5.0
 - NuGet 6.6.1.2
@@ -43,14 +42,6 @@
 | CONDA                   | /usr/share/miniconda   |
 | VCPKG_INSTALLATION_ROOT | /usr/local/share/vcpkg |
 
-#### Homebrew note
-```
-Location: /home/linuxbrew
-Note: Homebrew is pre-installed on image but not added to PATH.
-run the eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" command
-to accomplish this.
-```
-
 ### Project Management
 - Ant 1.10.12
 - Gradle 8.7
@@ -66,19 +57,16 @@ to accomplish this.
 - Bicep 0.27.1
 - Buildah 1.23.1
 - CMake 3.29.3
-- CodeQL Action Bundle 2.17.2
 - Docker Amazon ECR Credential Helper 0.8.0
-- Docker Compose v1 1.29.2
 - Docker Compose v2 2.23.3
 - Docker-Buildx 0.14.0
 - Docker Client 24.0.9
 - Docker Server 24.0.9
 - Fastlane 2.220.0
 - Git 2.43.2
-- Git LFS 3.5.1
+- Git LFS 3.3.0
 - Git-ftp 1.6.0
 - Haveged 1.9.14
-- Heroku 8.11.5
 - jq 1.6
 - Kind 0.23.0
 - Kubectl 1.30.1
@@ -95,7 +83,6 @@ to accomplish this.
 - Parcel 2.12.0
 - Podman 3.4.4
 - Pulumi 3.116.1
-- R 4.4.0
 - Skopeo 1.4.1
 - Sphinx Open Source Search Server 2.2.11
 - SVN 1.14.1
@@ -121,10 +108,10 @@ to accomplish this.
 ### Java
 | Version             | Environment Variable |
 | ------------------- | -------------------- |
-| 8.0.412+8           | JAVA_HOME_8_X64      |
-| 11.0.23+9 (default) | JAVA_HOME_11_X64     |
-| 17.0.11+9           | JAVA_HOME_17_X64     |
-| 21.0.3+9            | JAVA_HOME_21_X64     |
+| 8.0.412+8           | JAVA_HOME_8_ARM64    |
+| 11.0.23+9 (default) | JAVA_HOME_11_ARM64   |
+| 17.0.11+9           | JAVA_HOME_17_ARM64   |
+| 21.0.3+9            | JAVA_HOME_21_ARM64   |
 
 ### PHP Tools
 - PHP: 8.1.2
@@ -155,25 +142,20 @@ Both Xdebug and PCOV extensions are installed, but only Xdebug is enabled.
 - Rustfmt 1.7.0
 
 ### Browsers and Drivers
-- Google Chrome 125.0.6422.60
-- ChromeDriver 125.0.6422.60
-- Chromium 125.0.6422.0
-- Microsoft Edge 124.0.2478.105
-- Microsoft Edge WebDriver 124.0.2478.105
 - Selenium server 4.20.0
-- Mozilla Firefox 126.0
+- Mozilla Firefox 125.0.3
 - Geckodriver 0.34.0
 
 #### Environment variables
-| Name              | Value                                 |
-| ----------------- | ------------------------------------- |
-| CHROMEWEBDRIVER   | /usr/local/share/chromedriver-linux64 |
-| EDGEWEBDRIVER     | /usr/local/share/edge_driver          |
-| GECKOWEBDRIVER    | /usr/local/share/gecko_driver         |
-| SELENIUM_JAR_PATH | /usr/share/java/selenium-server.jar   |
+| Name              | Value                               |
+| ----------------- | ----------------------------------- |
+| CHROMEWEBDRIVER   |                                     |
+| EDGEWEBDRIVER     |                                     |
+| GECKOWEBDRIVER    | /usr/local/share/gecko_driver       |
+| SELENIUM_JAR_PATH | /usr/share/java/selenium-server.jar |
 
 ### .NET Tools
-- .NET Core SDK: 6.0.422, 7.0.119, 7.0.203, 7.0.316, 7.0.409, 8.0.105, 8.0.205, 8.0.300
+- .NET Core SDK: 6.0.100-preview.3.21168.18, 6.0.422, 7.0.119, 7.0.203, 7.0.316, 7.0.409, 8.0.105, 8.0.205, 8.0.300
 - nbgv 3.6.133+2d32d93cb1
 
 ### Databases
@@ -197,28 +179,17 @@ Use the following command as a part of your job to start the service: 'sudo syst
 ```
 
 #### MS SQL
-- sqlcmd 17.10.0001.1
-- SqlPackage 162.2.111.2
+- sqlcmd version
 
 ### Cached Tools
 
 #### Go
-- 1.20.14
 - 1.21.10
 - 1.22.3
 
 #### Node.js
-- 16.20.2
 - 18.20.2
 - 20.13.1
-
-#### Python
-- 3.7.17
-- 3.8.18
-- 3.9.19
-- 3.10.14
-- 3.11.9
-- 3.12.3
 
 #### PyPy
 - 3.7.13 [PyPy 7.3.9]
@@ -252,7 +223,6 @@ Use the following command as a part of your job to start the service: 'sudo syst
 | Android SDK Build-tools    | 34.0.0<br>33.0.0 33.0.1 33.0.2 33.0.3<br>32.0.0<br>31.0.0                                                                                                                                         |
 | Android SDK Platforms      | android-34-ext8 (rev 1)<br>android-34-ext11 (rev 1)<br>android-34 (rev 3)<br>android-33-ext5 (rev 1)<br>android-33-ext4 (rev 1)<br>android-33 (rev 3)<br>android-32 (rev 1)<br>android-31 (rev 1) |
 | Android Support Repository | 47.0.0                                                                                                                                                                                            |
-| CMake                      | 3.10.2<br>3.18.1<br>3.22.1                                                                                                                                                                        |
 | Google Play services       | 49                                                                                                                                                                                                |
 | Google Repository          | 58                                                                                                                                                                                                |
 | NDK                        | 24.0.8215888<br>25.2.9519653 (default)<br>26.3.11579264                                                                                                                                           |
@@ -260,7 +230,7 @@ Use the following command as a part of your job to start the service: 'sudo syst
 #### Environment variables
 | Name                    | Value                                        |
 | ----------------------- | -------------------------------------------- |
-| ANDROID_ARCH            | amd64                                        |
+| ANDROID_ARCH            | arm64                                        |
 | ANDROID_HOME            | /usr/local/lib/android/sdk                   |
 | ANDROID_NDK             | /usr/local/lib/android/sdk/ndk/25.2.9519653  |
 | ANDROID_NDK_HOME        | /usr/local/lib/android/sdk/ndk/25.2.9519653  |
@@ -271,16 +241,16 @@ Use the following command as a part of your job to start the service: 'sudo syst
 ### Cached Docker images
 | Repository:Tag       | Digest                                                                   | Created    |
 | -------------------- | ------------------------------------------------------------------------ | ---------- |
-| alpine:3.16          | sha256:452e7292acee0ee16c332324d7de05fa2c99f9994ecc9f0779c602916a672ae4  | 2024-01-27 |
-| alpine:3.17          | sha256:53cf9478b76f4c8fae126acbdfb79bed6e69e628faff572ebe4a029d3d247d98  | 2024-01-27 |
-| alpine:3.18          | sha256:11e21d7b981a59554b3f822c49f6e9f57b6068bb74f49c4cd5cc4c663c7e5160  | 2024-01-27 |
+| alpine:3.16          | sha256:452e7292acee0ee16c332324d7de05fa2c99f9994ecc9f0779c602916a672ae4  | 2024-01-26 |
+| alpine:3.17          | sha256:53cf9478b76f4c8fae126acbdfb79bed6e69e628faff572ebe4a029d3d247d98  | 2024-01-26 |
+| alpine:3.18          | sha256:11e21d7b981a59554b3f822c49f6e9f57b6068bb74f49c4cd5cc4c663c7e5160  | 2024-01-26 |
 | debian:10            | sha256:6e7bd55a5705914837aad8db01b349f4617510c11e47ccae8e87f6f14e489626  | 2024-05-14 |
 | debian:11            | sha256:2c7a92a41cb814c00e7d455b2bc0c90ccdb9a4ced2ffdc10e562c7a84a186032  | 2024-05-14 |
 | moby/buildkit:latest | sha256:9194b5ec1be368f41c516df7f93f7f540630ea06136056b2ffebb62226ed4ad6  | 2024-04-25 |
 | node:16              | sha256:f77a1aef2da8d83e45ec990f45df50f1a286c5fe8bbfb8c6e4246c6389705c0b  | 2023-09-07 |
 | node:16-alpine       | sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787  | 2023-08-10 |
 | node:18              | sha256:5bac3a1edff13e76586b8eaef1d411fcd80e4f18cce5bc40ea6993245e0721ec  | 2024-05-14 |
-| node:18-alpine       | sha256:4837c2ac8998cf172f5892fb45f229c328e4824c43c8506f8ba9c7996d702430  | 2024-04-23 |
+| node:18-alpine       | sha256:4837c2ac8998cf172f5892fb45f229c328e4824c43c8506f8ba9c7996d702430  | 2024-04-24 |
 | node:20              | sha256:d6925dc84f8c0d1c1f8df4ea6a9a54e57d430241cb734b1b0c45ed6d26e8e9c0  | 2024-05-14 |
 | node:20-alpine       | sha256:291e84d956f1aff38454bbd3da38941461ad569a185c20aa289f71f37ea08e23  | 2024-05-09 |
 | ubuntu:20.04         | sha256:874aca52f79ae5f8258faff03e10ce99ae836f6e7d2df6ecd3da5c1cad3a912b  | 2024-04-27 |
@@ -317,7 +287,6 @@ Use the following command as a part of your job to start the service: 'sudo syst
 | iproute2               | 5.15.0-1ubuntu2                     |
 | iputils-ping           | 3:20211215-1                        |
 | jq                     | 1.6-2.1ubuntu3                      |
-| lib32z1                | 1:1.2.11.dfsg-2ubuntu9.2            |
 | libc++-dev             | 1:14.0-55\~exp2                     |
 | libc++abi-dev          | 1:14.0-55\~exp2                     |
 | libc6-dev              | 2.35-0ubuntu3.7                     |
