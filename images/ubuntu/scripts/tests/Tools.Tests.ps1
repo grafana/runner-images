@@ -106,7 +106,7 @@ Describe "Docker images" {
     }
 }
 
-Describe "Docker-compose v1" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
+Describe "Docker-compose v1" -Skip:((-not (Test-IsAmd64)) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
     It "docker-compose" {
         "docker-compose --version"| Should -ReturnZeroExitCode
     }
