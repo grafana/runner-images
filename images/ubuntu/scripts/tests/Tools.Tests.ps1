@@ -106,7 +106,7 @@ Describe "Docker images" {
     }
 }
 
-Describe "Docker-compose v1" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22))) {
+Describe "Docker-compose v1" -Skip:((-not (Test-IsAmd64)) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
     It "docker-compose" {
         "docker-compose --version"| Should -ReturnZeroExitCode
     }
@@ -193,6 +193,7 @@ Describe "SqlPackage" -Skip:((-not (Test-IsAmd64)) -or ((-not (Test-IsUbuntu20))
     It "sqlpackage" {
         "sqlpackage /version" | Should -ReturnZeroExitCode
     }
+}
 
 Describe "R" -Skip:((-not (Test-IsAmd64)) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
     It "r" {
@@ -263,11 +264,9 @@ Describe "HHVM" -Skip:(-not (Test-IsUbuntu20)) {
     }
 }
 
-if (Test-IsAmd64) {
-    Describe "Homebrew" {
-        It "homebrew" {
-            "/home/linuxbrew/.linuxbrew/bin/brew --version" | Should -ReturnZeroExitCode
-        }
+Describe "Homebrew" -Skip:(-not (Test-IsAmd64)) {
+    It "homebrew" {
+        "/home/linuxbrew/.linuxbrew/bin/brew --version" | Should -ReturnZeroExitCode
     }
 }
 

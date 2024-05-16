@@ -21,7 +21,8 @@ locals {
   installer_script_folder = "/imagegeneration/installers"
   imagedata_file          = "/imagegeneration/imagedata.json"
 
-  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${local.image_os}-${var.image_version}"
+  timestamp = formatdate("YYYYMMDDhhmmss", timestamp())
+  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${local.image_os}-${var.image_version}-${local.timestamp}"
   cloud_providers = {
     "aws" = "amazon-ebs",
     "azure"  = "azure-arm"
@@ -159,6 +160,11 @@ variable "aws_private_ami" {
   default = false
 }
 
+variable "aws_force_deregister" {
+  type    = bool
+  default = false
+}
+
 source "azure-arm" "build_image" {
   location = "${var.azure_location}"
 
@@ -220,8 +226,8 @@ source "amazon-ebs" "build_image" {
   ssh_username                              = "ubuntu"
   subnet_id                                 = "${var.aws_subnet_id}"
   associate_public_ip_address               = "true"
-  force_deregister                          = "true"
-  force_delete_snapshot                     = "true"
+  force_deregister                          = "${var.aws_force_deregister}"
+  force_delete_snapshot                     = "${var.aws_force_deregister}"
 
   ami_regions = [
     "us-east-1",
