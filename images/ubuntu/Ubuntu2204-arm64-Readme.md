@@ -26,6 +26,7 @@
 
 ### Package Management
 - cpan 1.64
+- Helm 3.14.4
 - Miniconda 24.3.0
 - Npm 10.5.0
 - NuGet 6.6.1.2
@@ -33,7 +34,7 @@
 - Pip3 22.0.2
 - Pipx 1.5.0
 - RubyGems 3.3.5
-- Vcpkg (build from commit 28c4ec867)
+- Vcpkg (build from commit 66a252f70)
 - Yarn 1.22.22
 
 #### Environment variables
@@ -63,7 +64,7 @@
 - Docker Client 24.0.9
 - Docker Server 24.0.9
 - Fastlane 2.220.0
-- Git 2.43.2
+- Git 2.45.1
 - Git LFS 3.3.0
 - Git-ftp 1.6.0
 - Haveged 1.9.14
@@ -97,7 +98,7 @@
 - AWS CLI Session Manager Plugin 1.2.553.0
 - AWS SAM CLI 1.116.0
 - Azure CLI 2.60.0
-- Azure CLI (azure-devops) 1.0.0
+- Azure CLI (azure-devops) 1.0.1
 - GitHub CLI 2.49.2
 - Google Cloud CLI 476.0.0
 - Netlify CLI 17.23.5
@@ -142,7 +143,7 @@ Both Xdebug and PCOV extensions are installed, but only Xdebug is enabled.
 - Rustfmt 1.7.0
 
 ### Browsers and Drivers
-- Selenium server 4.20.0
+- Selenium server 4.21.0
 - Mozilla Firefox 125.0.3
 - Geckodriver 0.34.0
 

@@ -66,8 +66,7 @@ if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
 # Package Management
 $packageManagement = $installedSoftware.AddHeader("Package Management")
 $packageManagement.AddToolVersion("cpan", $(Get-CpanVersion))
-# TODO: Fix helm version retrieval on Software Report
-# $packageManagement.AddToolVersion("Helm", $(Get-HelmVersion))
+$packageManagement.AddToolVersion("Helm", $(Get-HelmVersion))
 if (Test-IsAmd64) {
     $packageManagement.AddToolVersion("Homebrew", $(Get-HomebrewVersion))
 }
