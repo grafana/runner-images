@@ -259,7 +259,7 @@ source "amazon-ebs" "build_image" {
     volume_type = "${var.aws_volume_type}"
     volume_size = "${var.aws_volume_size}"
     delete_on_termination = "true"
-    iops = 4000
+    iops = 6000
     throughput = 1000
     encrypted = "false"
   }
