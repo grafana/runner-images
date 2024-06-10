@@ -1,0 +1,45 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    - cron: "0 0 1 * *" # This will run at 00:00 on the first day of every month
+  workflow_dispatch: # Allows you to run this workflow manually from GitHub Actions tab
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Necessary to fetch all history for branches and tags
+
+      - name: Create new branch from main
+        run: |
+          git checkout -b update-from-upstream-${{ github.run_number }}
+
+      - name: Configure Git
+        run: |
+          git config user.name 'github-actions'
+          git config user.email 'github-actions@github.com'
+
+      - name: Pull changes from upstream
+        run: |
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          git merge upstream/main --no-edit
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: update-from-upstream-${{ github.run_number }}
+
+      - name: Create Pull Request
+        uses: repo-sync/pull-request@v2
+        with:
+          source_branch: "update-from-upstream-${{ github.run_number }}"
+          destination_branch: "main"
+          pr_title: "Sync with upstream"
+          pr_body: "Update the repository with the latest changes from upstream"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
