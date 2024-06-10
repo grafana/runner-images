@@ -4,6 +4,9 @@ on:
   schedule:
     - cron: "0 0 1 * *" # This will run at 00:00 on the first day of every month
   workflow_dispatch: # Allows you to run this workflow manually from GitHub Actions tab
+  pull_request:
+    branches:
+      - main # This will trigger the workflow when a PR is opened or updated targeting the main branch
 
 jobs:
   sync:
