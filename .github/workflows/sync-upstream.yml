@@ -2,11 +2,11 @@ name: Sync with Upstream
 
 on:
   schedule:
-    - cron: "0 0 1 * *" # This will run at 00:00 on the first day of every month
-  workflow_dispatch: # Allows you to run this workflow manually from GitHub Actions tab
+    - cron: "0 0 1 * *" # Runs at 00:00 on the first day of every month
+  workflow_dispatch:
   pull_request:
     branches:
-      - main # This will trigger the workflow when a PR is opened or updated targeting the main branch
+      - main
 
 jobs:
   sync:
@@ -15,7 +15,7 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # Necessary to fetch all history for branches and tags
+          fetch-depth: 0
 
       - name: Create new branch from main
         run: |
@@ -30,7 +30,24 @@ jobs:
         run: |
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
-          git merge upstream/main --no-edit
+          git merge upstream/main || true  # Continue on merge conflict
+
+      - name: Check for merge conflicts
+        id: check_conflicts
+        run: |
+          if git ls-files -u | grep -q '.'; then
+            echo "Merge conflicts detected."
+            git status
+            echo "::set-output name=conflicts::true"
+          else
+            echo "No merge conflicts detected."
+            echo "::set-output name=conflicts::false"
+          fi
+
+      - name: Commit merge conflicts
+        if: steps.check_conflicts.outputs.conflicts == 'true'
+        run: |
+          git commit -am "Merge conflicts need resolution"
 
       - name: Push changes
         uses: ad-m/github-push-action@master
@@ -44,5 +61,5 @@ jobs:
           source_branch: "update-from-upstream-${{ github.run_number }}"
           destination_branch: "main"
           pr_title: "Sync with upstream"
-          pr_body: "Update the repository with the latest changes from upstream"
+          pr_body: "Update the repository with the latest changes from upstream. Merge conflicts may need manual resolution."
           github_token: ${{ secrets.GITHUB_TOKEN }}
