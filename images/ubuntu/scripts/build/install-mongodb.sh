@@ -21,7 +21,7 @@ echo "deb [ arch=$arch signed-by=$GPG_KEY ] $REPO_URL $(lsb_release -cs)/mongodb
 
 # Install Mongo DB
 sudo apt-get update
-sudo apt-get install -y mongodb-org
+sudo apt-get install mongodb-org
 
 # remove Mongo DB's apt repository
 rm $REPO_PATH
