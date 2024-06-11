@@ -46,10 +46,10 @@ jobs:
           if git ls-files -u | grep -q '.'; then
             echo "Merge conflicts detected."
             git status
-            echo "::set-output name=conflicts::true"
+            echo "conflicts=true" >> $GITHUB_ENV
           else
             echo "No merge conflicts detected."
-            echo "::set-output name=conflicts::false"
+            echo "conflicts=false" >> $GITHUB_ENV
           fi
 
       - name: Commit merge conflicts
