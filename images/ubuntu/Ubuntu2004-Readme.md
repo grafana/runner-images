@@ -2,12 +2,11 @@
 |-|
 | [Ubuntu 24.04 is now available](https://github.com/actions/runner-images/issues/9848) |
 | [[Ubuntu, Windows] Docker Compose v1 will be removed from images on July, 9](https://github.com/actions/runner-images/issues/9692) |
-| [[Ubuntu] ubuntu-toolchain-r/test repository will be removed from images on May 13](https://github.com/actions/runner-images/issues/9679) |
 ***
 # Ubuntu 20.04
 - OS Version: 20.04.6 LTS
 - Kernel Version: 5.15.0-1064-azure
-- Image Version: 20240514.2.0
+- Image Version: 20240603.1.0
 - Systemd version: 245.4-4ubuntu3.23
 
 ## Installed Software
@@ -23,10 +22,10 @@
 - GNU C++: 10.5.0
 - GNU Fortran: 10.5.0
 - Julia 1.10.3
-- Kotlin 1.9.24-release-822
+- Kotlin 2.0.0-release-341
 - Mono 6.12.0.200
 - MSBuild 16.10.1.31701 (Mono 6.12.0.200)
-- Node.js 18.20.2
+- Node.js 18.20.3
 - Perl 5.30.0
 - Python 3.8.10
 - Ruby 2.7.0p0
@@ -34,16 +33,16 @@
 
 ### Package Management
 - cpan 1.64
-- Helm 3.14.4
-- Homebrew 4.3.0
-- Miniconda 24.3.0
-- Npm 10.5.0
+- Helm 3.15.1
+- Homebrew 4.3.3
+- Miniconda 24.4.0
+- Npm 10.7.0
 - NuGet 6.6.1.2
 - Pip 20.0.2
 - Pip3 20.0.2
-- Pipx 1.5.0
+- Pipx 1.6.0
 - RubyGems 3.1.2
-- Vcpkg (build from commit bd2b54836)
+- Vcpkg (build from commit 67cc1677c)
 - Yarn 1.22.22
 
 #### Environment variables
@@ -62,7 +61,7 @@ to accomplish this.
 
 ### Project Management
 - Ant 1.10.7
-- Gradle 8.7
+- Gradle 8.8
 - Lerna 8.1.3
 - Maven 3.8.8
 - Sbt 1.10.0
@@ -70,21 +69,21 @@ to accomplish this.
 ### Tools
 - Ansible 2.13.13
 - apt-fast 1.10.0
-- AzCopy 10.24.0 - available by `azcopy` and `azcopy10` aliases
+- AzCopy 10.25.0 - available by `azcopy` and `azcopy10` aliases
 - Bazel 7.1.2
 - Bazelisk 1.19.0
 - Bicep 0.27.1
 - Buildah 1.22.3
-- CMake 3.29.3
-- CodeQL Action Bundle 2.17.2
+- CMake 3.29.4
+- CodeQL Action Bundle 2.17.3
 - Docker Amazon ECR Credential Helper 0.8.0
 - Docker Compose v1 1.29.2
 - Docker Compose v2 2.23.3
-- Docker-Buildx 0.14.0
+- Docker-Buildx 0.14.1
 - Docker Client 24.0.9
 - Docker Server 24.0.9
 - Fastlane 2.220.0
-- Git 2.43.2
+- Git 2.45.2
 - Git LFS 3.5.1
 - Git-ftp 1.6.0
 - Haveged 1.9.1
@@ -92,8 +91,8 @@ to accomplish this.
 - HHVM (HipHop VM) 4.172.1
 - jq 1.6
 - Kind 0.23.0
-- Kubectl 1.30.0
-- Kustomize 5.4.1
+- Kubectl 1.30.1
+- Kustomize 5.4.2
 - Leiningen 2.11.2
 - MediaInfo 19.09
 - Mercurial 5.3.1
@@ -102,33 +101,33 @@ to accomplish this.
 - Newman 6.1.2
 - nvm 0.39.7
 - OpenSSL 1.1.1f-1ubuntu2.22
-- Packer 1.10.3
+- Packer 1.11.0
 - Parcel 2.12.0
 - PhantomJS 2.1.1 2.1.1
 - Podman 3.4.2
-- Pulumi 3.116.0
+- Pulumi 3.118.0
 - R 4.4.0
 - Skopeo 1.5.0
 - Sphinx Open Source Search Server 2.2.11
 - SVN 1.13.0
-- Terraform 1.8.3
+- Terraform 1.8.4
 - yamllint 1.35.1
 - yq 4.44.1
 - zstd 1.5.6
 
 ### CLI Tools
 - Alibaba Cloud CLI 3.0.174
-- AWS CLI 2.15.50
-- AWS CLI Session Manager Plugin 1.2.553.0
-- AWS SAM CLI 1.116.0
-- Azure CLI 2.60.0
-- Azure CLI (azure-devops) 1.0.0
-- GitHub CLI 2.49.2
-- Google Cloud CLI 476.0.0
-- Netlify CLI 17.23.5
-- OpenShift CLI 4.15.12
-- ORAS CLI 1.1.0
-- Vercel CLI 34.1.14
+- AWS CLI 2.16.0
+- AWS CLI Session Manager Plugin 1.2.633.0
+- AWS SAM CLI 1.118.0
+- Azure CLI 2.61.0
+- Azure CLI (azure-devops) 1.0.1
+- GitHub CLI 2.50.0
+- Google Cloud CLI 478.0.0
+- Netlify CLI 17.25.0
+- OpenShift CLI 4.15.15
+- ORAS CLI 1.2.0
+- Vercel CLI 34.2.4
 
 ### Java
 | Version             | Environment Variable |
@@ -167,13 +166,13 @@ Both Xdebug and PCOV extensions are installed, but only Xdebug is enabled.
 - Rustfmt 1.7.0
 
 ### Browsers and Drivers
-- Google Chrome 124.0.6367.207
-- ChromeDriver 124.0.6367.207
-- Chromium 124.0.6367.0
-- Microsoft Edge 124.0.2478.105
-- Microsoft Edge WebDriver 124.0.2478.105
-- Selenium server 4.20.0
-- Mozilla Firefox 126.0
+- Google Chrome 125.0.6422.141
+- ChromeDriver 125.0.6422.141
+- Chromium 125.0.6422.0
+- Microsoft Edge 125.0.2535.79
+- Microsoft Edge WebDriver 125.0.2535.79
+- Selenium server 4.21.0
+- Mozilla Firefox 126.0.2
 - Geckodriver 0.34.0
 
 #### Environment variables
@@ -185,7 +184,7 @@ Both Xdebug and PCOV extensions are installed, but only Xdebug is enabled.
 | SELENIUM_JAR_PATH | /usr/share/java/selenium-server.jar   |
 
 ### .NET Tools
-- .NET Core SDK: 6.0.422, 7.0.409, 8.0.300
+- .NET Core SDK: 6.0.423, 7.0.410, 8.0.301
 - nbgv 3.6.133+2d32d93cb1
 
 ### Databases
@@ -222,8 +221,8 @@ Use the following command as a part of your job to start the service: 'sudo syst
 
 #### Node.js
 - 16.20.2
-- 18.20.2
-- 20.13.1
+- 18.20.3
+- 20.14.0
 
 #### Python
 - 3.7.17
@@ -243,10 +242,10 @@ Use the following command as a part of your job to start the service: 'sudo syst
 
 #### Ruby
 - 3.0.7
-- 3.1.5
+- 3.1.6
 
 ### PowerShell Tools
-- PowerShell 7.4.1
+- PowerShell 7.4.2
 
 #### PowerShell Modules
 - Az: 11.3.1
@@ -296,10 +295,10 @@ Use the following command as a part of your job to start the service: 'sudo syst
 | moby/buildkit:latest | sha256:9194b5ec1be368f41c516df7f93f7f540630ea06136056b2ffebb62226ed4ad6  | 2024-04-25 |
 | node:16              | sha256:f77a1aef2da8d83e45ec990f45df50f1a286c5fe8bbfb8c6e4246c6389705c0b  | 2023-09-07 |
 | node:16-alpine       | sha256:a1f9d027912b58a7c75be7716c97cfbc6d3099f3a97ed84aa490be9dee20e787  | 2023-08-10 |
-| node:18              | sha256:5bac3a1edff13e76586b8eaef1d411fcd80e4f18cce5bc40ea6993245e0721ec  | 2024-05-14 |
-| node:18-alpine       | sha256:4837c2ac8998cf172f5892fb45f229c328e4824c43c8506f8ba9c7996d702430  | 2024-04-23 |
-| node:20              | sha256:d6925dc84f8c0d1c1f8df4ea6a9a54e57d430241cb734b1b0c45ed6d26e8e9c0  | 2024-05-14 |
-| node:20-alpine       | sha256:291e84d956f1aff38454bbd3da38941461ad569a185c20aa289f71f37ea08e23  | 2024-05-09 |
+| node:18              | sha256:b08b1356559e2e9945f47ded630c9eb9d4e3ca04f111ab20d55652442cf14aee  | 2024-05-21 |
+| node:18-alpine       | sha256:5069da655539e2e986ce3fd1757f24a41b846958566c89ff4a48874434d73749  | 2024-05-22 |
+| node:20              | sha256:ab71b9da5ba19445dc5bb76bf99c218941db2c4d70ff4de4e0d9ec90920bfe3f  | 2024-05-28 |
+| node:20-alpine       | sha256:928b24aaadbd47c1a7722c563b471195ce54788bf8230ce807e1dd500aec0549  | 2024-05-28 |
 | ubuntu:20.04         | sha256:874aca52f79ae5f8258faff03e10ce99ae836f6e7d2df6ecd3da5c1cad3a912b  | 2024-04-27 |
 
 ### Installed apt packages
@@ -336,7 +335,7 @@ Use the following command as a part of your job to start the service: 'sudo syst
 | lib32z1                | 1:1.2.11.dfsg-2ubuntu1.5          |
 | libc++-dev             | 1:10.0-50\~exp1                   |
 | libc++abi-dev          | 1:10.0-50\~exp1                   |
-| libc6-dev              | 2.31-0ubuntu9.15                  |
+| libc6-dev              | 2.31-0ubuntu9.16                  |
 | libcurl4               | 7.68.0-1ubuntu2.22                |
 | libgbm-dev             | 21.2.6-0ubuntu0.1\~20.04.2        |
 | libgconf-2-4           | 3.2.6-6ubuntu1                    |
@@ -352,7 +351,7 @@ Use the following command as a part of your job to start the service: 'sudo syst
 | libxkbfile-dev         | 1:1.1.0-1                         |
 | libxss1                | 1:1.2.3-1                         |
 | libyaml-dev            | 0.2.2-1                           |
-| locales                | 2.31-0ubuntu9.15                  |
+| locales                | 2.31-0ubuntu9.16                  |
 | m4                     | 1.4.18-4                          |
 | make                   | 4.2.1-1.2                         |
 | mediainfo              | 19.09-1build1                     |
