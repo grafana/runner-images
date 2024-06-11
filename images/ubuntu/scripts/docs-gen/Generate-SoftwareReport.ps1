@@ -104,8 +104,14 @@ if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
 # Tools
 $tools = $installedSoftware.AddHeader("Tools")
 $tools.AddToolVersion("Ansible", $(Get-AnsibleVersion))
+<<<<<<< HEAD
 # TODO: Fix retrieval of apt-fast version on Software Report
 # $tools.AddToolVersion("apt-fast", $(Get-AptFastVersion))
+=======
+if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+    $tools.AddToolVersion("apt-fast", $(Get-AptFastVersion))
+}
+>>>>>>> upstream/main
 $tools.AddToolVersion("AzCopy", $(Get-AzCopyVersion))
 $tools.AddToolVersion("Bazel", $(Get-BazelVersion))
 $tools.AddToolVersion("Bazelisk", $(Get-BazeliskVersion))

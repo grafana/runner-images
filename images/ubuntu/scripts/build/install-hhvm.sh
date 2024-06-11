@@ -17,7 +17,7 @@ echo "deb [arch=$arch signed-by=$GPG_KEY] $REPO_URL $(lsb_release -cs) main" > $
 
 # install HHVM
 apt-get update
-apt-get -qq install -y hhvm
+apt-get install hhvm
 
 # remove HHVM's apt repository
 rm $REPO_PATH
