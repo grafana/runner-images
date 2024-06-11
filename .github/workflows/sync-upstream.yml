@@ -12,18 +12,18 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
         with:
-          app_id: ${{ secrets.GH_APP_ID }}
-          private_key: ${{ secrets.GH_APP_KEY }}
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_KEY }}
 
       - name: Checkout the repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ steps.generate_token.outputs.token }}
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Create new branch from main
         run: |
@@ -41,33 +41,27 @@ jobs:
           git merge upstream/main || true  # Continue on merge conflict
 
       - name: Check for merge conflicts
-        id: check_conflicts
+        id: check-conflicts
         run: |
           if git ls-files -u | grep -q '.'; then
-            echo "Merge conflicts detected."
+            echo "conflicts=true" >> $GITHUB_OUTPUT
             git status
-            echo "conflicts=true" >> $GITHUB_ENV
           else
-            echo "No merge conflicts detected."
-            echo "conflicts=false" >> $GITHUB_ENV
+            echo "conflicts=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Commit merge conflicts
-        if: steps.check_conflicts.outputs.conflicts == 'true'
+        if: steps.check-conflicts.outputs.conflicts == 'true'
         run: |
           git commit -am "Merge conflicts need resolution"
 
       - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ steps.generate_token.outputs.token }}
-          branch: update-from-upstream-${{ github.run_number }}
+        run: |
+          git push origin update-from-upstream-${{ github.run_number }}
 
       - name: Create Pull Request
-        uses: repo-sync/pull-request@v2
-        with:
-          source_branch: "update-from-upstream-${{ github.run_number }}"
-          destination_branch: "main"
-          pr_title: "Sync with upstream"
-          pr_body: "Update the repository with the latest changes from upstream. Merge conflicts may need manual resolution."
-          github_token: ${{ steps.generate_token.outputs.token  }}
+        run: |
+          gh pr create --base main --head update-from-upstream-${{ github.run_number }} \
+                       --title "Sync with upstream" \
+                       --body "Update the repository with the latest changes from upstream. Merge conflicts may need manual resolution." \
+                       --repo ${{ github.repository }}
