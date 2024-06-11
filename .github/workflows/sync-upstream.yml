@@ -49,10 +49,17 @@ jobs:
         run: |
           git commit -am "Merge conflicts need resolution"
 
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.GH_APP_ID }}
+          private_key: ${{ secrets.GH_APP_KEY }}
+
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.generate_token.outputs.token }}
           branch: update-from-upstream-${{ github.run_number }}
 
       - name: Create Pull Request
@@ -62,4 +69,4 @@ jobs:
           destination_branch: "main"
           pr_title: "Sync with upstream"
           pr_body: "Update the repository with the latest changes from upstream. Merge conflicts may need manual resolution."
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ steps.generate_token.outputs.token  }}
