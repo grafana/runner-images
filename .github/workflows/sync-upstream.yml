@@ -12,6 +12,23 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Check source branch
+        id: check_branch
+        run: |
+          SOURCE_BRANCH="${{ github.event.pull_request.head.ref }}"
+          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          echo "Source branch is $SOURCE_BRANCH targeting $TARGET_BRANCH"
+          if [[ "$SOURCE_BRANCH" == "gc/sync-upstream" ]]; then
+            echo "Proceeding with workflow execution."
+          else
+            echo "Stopping workflow, source branch is not gc/sync-upstream."
+            exit 78  # This exits the workflow with a neutral status, which must be handled in a custom way on GitHub Actions
+
+      - name: Subsequent Steps
+        if: success()
+        run: |
+          echo "Running the rest of the workflow steps."
+
       - name: Generate GitHub App token
         id: generate-token
         uses: actions/create-github-app-token@v1
