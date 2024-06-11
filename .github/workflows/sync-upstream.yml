@@ -12,10 +12,18 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.GH_APP_ID }}
+          private_key: ${{ secrets.GH_APP_KEY }}
+
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
 
       - name: Create new branch from main
         run: |
@@ -48,13 +56,6 @@ jobs:
         if: steps.check_conflicts.outputs.conflicts == 'true'
         run: |
           git commit -am "Merge conflicts need resolution"
-
-      - name: Generate token
-        id: generate_token
-        uses: tibdex/github-app-token@v1
-        with:
-          app_id: ${{ secrets.GH_APP_ID }}
-          private_key: ${{ secrets.GH_APP_KEY }}
 
       - name: Push changes
         uses: ad-m/github-push-action@master
