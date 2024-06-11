@@ -271,6 +271,11 @@ build {
     inline          = ["mkdir ${local.image_folder}", "chmod 777 ${local.image_folder}"]
   }
 
+  provisioner "file" {
+    destination = "${local.helper_script_folder}"
+    source      = "${path.root}/../scripts/helpers"
+  }
+
   // Add apt wrapper to implement retries
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
@@ -279,7 +284,7 @@ build {
 
   // Install MS package repos, Configure apt
   provisioner "shell" {
-    environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}","DEBIAN_FRONTEND=noninteractive"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     scripts          = [
       "${path.root}/../scripts/build/install-ms-repos.sh",
@@ -291,11 +296,6 @@ build {
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     script          = "${path.root}/../scripts/build/configure-limits.sh"
-  }
-
-  provisioner "file" {
-    destination = "${local.helper_script_folder}"
-    source      = "${path.root}/../scripts/helpers"
   }
 
   provisioner "file" {
