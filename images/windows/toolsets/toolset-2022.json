@@ -121,7 +121,7 @@
                 "11.3.1"
             ],
             "zip_versions": [
-    
+
             ]
         }
     ],
@@ -212,6 +212,7 @@
             "Microsoft.VisualStudio.Component.VC.Tools.ARM",
             "Microsoft.VisualStudio.Component.VC.Tools.ARM64",
             "Microsoft.VisualStudio.Component.VC.Tools.ARM64EC",
+            "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
             "Microsoft.VisualStudio.Component.VC.Modules.x86.x64",
             "Microsoft.VisualStudio.Component.VC.Redist.MSM",
             "Microsoft.VisualStudio.Component.VC.Runtimes.ARM.Spectre",
@@ -224,6 +225,7 @@
             "Microsoft.VisualStudio.Component.VC.MFC.ARM64.Spectre",
             "Microsoft.VisualStudio.Component.VC.ATLMFC",
             "Microsoft.VisualStudio.Component.VC.ATLMFC.Spectre",
+            "Microsoft.VisualStudio.Component.VC.ATL",
             "Microsoft.VisualStudio.Component.VC.ATL.Spectre",
             "Microsoft.VisualStudio.Component.VC.ATL.ARM",
             "Microsoft.VisualStudio.Component.VC.ATL.ARM.Spectre",
@@ -276,8 +278,8 @@
             "mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022"
         ],
         "components": {
-            "docker": "24.0.7",
-            "compose": "2.23.3"
+            "docker": "26.1.3",
+            "compose": "2.27.1"
         }
     },
     "pipx": [
@@ -333,7 +335,6 @@
                 "args": [ "--version", "5.32.1.1" ]
             },
             { "name": "pulumi" },
-            { "name": "tortoisesvn" },
             { "name": "swig" },
             { "name": "vswhere" },
             {
@@ -365,13 +366,13 @@
         "version": "3.10"
     },
     "llvm": {
-        "version": "16"
+        "version": "18"
     },
     "php": {
         "version": "8.3"
     },
     "postgresql": {
-        "version": "14",
+        "version": "14.12.1",
         "signature": "698BA51AA27CC31282AACA5055E4B9190BC6C0E9"
     },
     "kotlin": {
