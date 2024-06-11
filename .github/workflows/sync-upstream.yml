@@ -60,6 +60,8 @@ jobs:
           git push origin update-from-upstream-${{ github.run_number }}
 
       - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           gh pr create --base main --head update-from-upstream-${{ github.run_number }} \
                        --title "Sync with upstream" \
