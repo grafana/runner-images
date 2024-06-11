@@ -1,0 +1,69 @@
+name: Sync with Upstream
+
+on:
+  schedule:
+    - cron: "0 0 1 * *" # Runs at 00:00 on the first day of every month
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_KEY }}
+
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Create new branch from main
+        run: |
+          git checkout -b update-from-upstream-${{ github.run_number }}
+
+      # - name: Configure Git
+      #   run: |
+      #     git config user.name 'github-actions'
+      #     git config user.email 'github-actions@github.com'
+
+      - name: Pull changes from upstream
+        run: |
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          git merge upstream/main || true  # Continue on merge conflict
+
+      - name: Check for merge conflicts
+        id: check-conflicts
+        run: |
+          if git ls-files -u | grep -q '.'; then
+            echo "conflicts=true" >> $GITHUB_OUTPUT
+            git status
+          else
+            echo "conflicts=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit merge conflicts
+        if: steps.check-conflicts.outputs.conflicts == 'true'
+        run: |
+          git commit -am "Merge conflicts need resolution"
+
+      - name: Push changes
+        run: |
+          git push origin update-from-upstream-${{ github.run_number }}
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          gh pr create --base main --head update-from-upstream-${{ github.run_number }} \
+                       --title "Sync with upstream" \
+                       --body "Update the repository with the latest changes from upstream. Merge conflicts may need manual resolution." \
+                       --repo ${{ github.repository }}
