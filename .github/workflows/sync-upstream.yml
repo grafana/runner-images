@@ -31,8 +31,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config user.name 'gha-runner-images-updater[bot]'
-          git config user.email '172421971+gha-runner-images-updater[bot]@users.noreply.github.com@github.com'
+          git config user.name 'gha-runner-images-updater-test[bot]'
+          git config user.email '172421971+gha-runner-images-updater-test[bot]@users.noreply.github.com@github.com'
 
       - name: Pull changes from upstream
         run: |
