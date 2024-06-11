@@ -23,6 +23,7 @@ jobs:
           else
             echo "Stopping workflow, source branch is not gc/sync-upstream."
             exit 78  # This exits the workflow with a neutral status, which must be handled in a custom way on GitHub Actions
+          fi
 
       - name: Subsequent Steps
         if: success()
