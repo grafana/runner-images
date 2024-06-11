@@ -1,56 +1,56 @@
 # macOS 14
-- OS Version: macOS 14.4.1 (23E224)
-- Kernel Version: Darwin 23.4.0
-- Image Version: 20240514.3
+- OS Version: macOS 14.5 (23F79)
+- Kernel Version: Darwin 23.5.0
+- Image Version: 20240603.1
 
 ## Installed Software
 
 ### Language and Runtime
-- .NET Core SDK: 7.0.102, 7.0.202, 7.0.306, 7.0.409, 8.0.101, 8.0.204, 8.0.300
+- .NET Core SDK: 7.0.102, 7.0.202, 7.0.306, 7.0.410, 8.0.101, 8.0.204, 8.0.301
 - Bash 3.2.57(1)-release
 - Clang/LLVM 14.0.3
 - Clang/LLVM (Homebrew) 15.0.7 - available on `$(brew --prefix llvm@15)/bin/clang`
 - GCC 11 (Homebrew GCC 11.4.0) - available by `gcc-11` alias
 - GCC 12 (Homebrew GCC 12.3.0) - available by `gcc-12` alias
-- GCC 13 (Homebrew GCC 13.2.0) - available by `gcc-13` alias
+- GCC 13 (Homebrew GCC 13.3.0) - available by `gcc-13` alias
 - GNU Fortran 11 (Homebrew GCC 11.4.0) - available by `gfortran-11` alias
 - GNU Fortran 12 (Homebrew GCC 12.3.0) - available by `gfortran-12` alias
-- GNU Fortran 13 (Homebrew GCC 13.2.0) - available by `gfortran-13` alias
-- Kotlin 1.9.24-release-822
+- GNU Fortran 13 (Homebrew GCC 13.3.0) - available by `gfortran-13` alias
+- Kotlin 2.0.0-release-341
 - Mono 6.12.0.188
-- Node.js 20.13.1
+- Node.js 20.14.0
 - Perl 5.38.2
 - Python3 3.12.3
 - Ruby 3.0.7p220
 
 ### Package Management
-- Bundler 2.5.10
+- Bundler 2.5.11
 - Carthage 0.39.1
 - CocoaPods 1.15.2
-- Homebrew 4.3.0
-- NPM 10.5.2
+- Homebrew 4.3.2
+- NPM 10.7.0
 - NuGet 6.3.1.1
 - Pip3 24.0 (python 3.12)
-- Pipx 1.5.0
-- RubyGems 3.5.10
-- Yarn 1.22.19
+- Pipx 1.6.0
+- RubyGems 3.5.11
+- Yarn 1.22.22
 
 ### Project Management
 - Apache Ant 1.10.14
-- Apache Maven 3.9.6
-- Gradle 8.7
+- Apache Maven 3.9.7
+- Gradle 8.8
 
 ### Utilities
 - 7-Zip 17.05
 - aria2 1.37.0
-- azcopy 10.24.0
+- azcopy 10.25.0
 - bazel 7.1.2
 - bazelisk 1.20.0
 - bsdtar 3.5.3 - available by 'tar' alias
-- Curl 8.4.0
-- Git 2.45.1
+- Curl 8.6.0
+- Git 2.45.2
 - Git LFS 3.5.1
-- GitHub CLI 2.49.2
+- GitHub CLI 2.50.0
 - GNU Tar 1.35 - available by 'gtar' alias
 - GNU Wget 1.24.5
 - gpg (GnuPG) 2.4.5
@@ -62,16 +62,16 @@
 - zstd 1.5.6
 
 ### Tools
-- AWS CLI 2.15.50
-- AWS SAM CLI 1.116.0
-- AWS Session Manager CLI 1.2.553.0
-- Azure CLI 2.60.0
-- Azure CLI (azure-devops) 1.0.0
+- AWS CLI 2.15.62
+- AWS SAM CLI 1.118.0
+- AWS Session Manager CLI 1.2.633.0
+- Azure CLI 2.61.0
+- Azure CLI (azure-devops) 1.0.1
 - Bicep CLI 0.27.1
 - Cmake 3.29.3
-- CodeQL Action Bundle 2.17.2
+- CodeQL Action Bundle 2.17.3
 - Fastlane 2.220.0
-- SwiftFormat 0.53.9
+- SwiftFormat 0.53.10
 - Xcbeautify 2.3.1
 - Xcode Command Line Tools 15.3.0.0.1.1708646388
 - Xcodes 1.4.1
@@ -79,12 +79,12 @@
 ### Linters
 
 ### Browsers
-- Safari 17.4.1 (19618.1.15.11.14)
-- SafariDriver 17.4.1 (19618.1.15.11.14)
-- Google Chrome 124.0.6367.208
-- Google Chrome for Testing 124.0.6367.207
-- ChromeDriver 124.0.6367.207
-- Selenium server 4.20.0
+- Safari 17.5 (19618.2.12.11.6)
+- SafariDriver 17.5 (19618.2.12.11.6)
+- Google Chrome 125.0.6422.142
+- Google Chrome for Testing 125.0.6422.141
+- ChromeDriver 125.0.6422.141
+- Selenium server 4.21.0
 
 #### Environment variables
 | Name            | Value                                   |
@@ -109,8 +109,8 @@
 - 3.12.3
 
 #### Node.js
-- 18.20.2
-- 20.13.1
+- 18.20.3
+- 20.14.0
 
 #### Go
 - 1.20.14
@@ -131,14 +131,14 @@
 - PowerShell 7.4.2
 
 #### PowerShell Modules
-- Az: 11.6.0
+- Az: 12.0.0
 - Pester: 5.5.0
 - PSScriptAnalyzer: 1.22.0
 
 ### Xcode
 | Version          | Build   | Path                           |
 | ---------------- | ------- | ------------------------------ |
-| 15.4             | 15F31c  | /Applications/Xcode_15.4.app   |
+| 15.4             | 15F31d  | /Applications/Xcode_15.4.app   |
 | 15.3             | 15E204a | /Applications/Xcode_15.3.app   |
 | 15.2             | 15C500b | /Applications/Xcode_15.2.app   |
 | 15.1             | 15C65   | /Applications/Xcode_15.1.app   |
@@ -183,15 +183,15 @@
 | Simulator - watchOS 10.2                                | watchsimulator10.2                            | 15.1, 15.2    |
 | Simulator - watchOS 10.4                                | watchsimulator10.4                            | 15.3          |
 | Simulator - watchOS 10.5                                | watchsimulator10.5                            | 15.4          |
-| visionOS 1.0                                            | xros1.0                                       | 15.2          |
 | Simulator - visionOS 1.0                                | xrsimulator1.0                                | 15.2          |
+| visionOS 1.0                                            | xros1.0                                       | 15.2          |
 | visionOS 1.1                                            | xros1.1                                       | 15.3          |
 | Simulator - visionOS 1.1                                | xrsimulator1.1                                | 15.3          |
-| Simulator - visionOS 1.2                                | xrsimulator1.2                                | 15.4          |
 | visionOS 1.2                                            | xros1.2                                       | 15.4          |
+| Simulator - visionOS 1.2                                | xrsimulator1.2                                | 15.4          |
 | Asset Runtime SDK for macOS hosts targeting watchOS 9.4 | assetruntime.host.macosx.target.watchos9.4    | 14.3.1        |
-| Asset Runtime SDK for macOS hosts targeting iOS 16.4    | assetruntime.host.macosx.target.iphoneos16.4  | 14.3.1        |
 | Asset Runtime SDK for macOS hosts targeting tvOS 16.4   | assetruntime.host.macosx.target.appletvos16.4 | 14.3.1        |
+| Asset Runtime SDK for macOS hosts targeting iOS 16.4    | assetruntime.host.macosx.target.iphoneos16.4  | 14.3.1        |
 | DriverKit 22.4                                          | driverkit22.4                                 | 14.3.1        |
 | DriverKit 23.0                                          | driverkit23.0                                 | 15.0.1        |
 | DriverKit 23.2                                          | driverkit23.2                                 | 15.1, 15.2    |
@@ -224,7 +224,7 @@
 | Package Name               | Version                                                                                                                                               |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Android Command Line Tools | 11.0                                                                                                                                                  |
-| Android Emulator           | 34.2.13                                                                                                                                               |
+| Android Emulator           | 34.2.15                                                                                                                                               |
 | Android SDK Build-tools    | 34.0.0<br>33.0.2 33.0.3                                                                                                                               |
 | Android SDK Platforms      | android-34-ext8 (rev 1)<br>android-34-ext11 (rev 1)<br>android-34 (rev 3)<br>android-33-ext5 (rev 1)<br>android-33-ext4 (rev 1)<br>android-33 (rev 3) |
 | Android SDK Platform-Tools | 35.0.1                                                                                                                                                |
