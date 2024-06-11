@@ -19,7 +19,7 @@ if [[ $arch == "arm64" ]]; then
 fi
 
 # Install required dependencies
-apt-get install -y chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
+apt-get install chrpath libssl-dev libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
 
 # Define the version and hash of PhantomJS to be installed
 DIR_NAME=phantomjs-2.1.1-linux-$arch
