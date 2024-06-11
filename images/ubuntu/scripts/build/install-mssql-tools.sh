@@ -7,6 +7,7 @@
 export ACCEPT_EULA=Y
 
 apt-get update
+<<<<<<< HEAD
 
 source $HELPER_SCRIPTS/install.sh
 source $HELPER_SCRIPTS/os.sh
@@ -26,5 +27,10 @@ if [[ $arch == "arm64" ]]; then
   mv sqlcmd /usr/local/bin/sqlcmd
   mv sqlcmd_debug /usr/local/bin/sqlcmd_debug
 fi
+=======
+apt-get install mssql-tools unixodbc-dev
+apt-get -f install
+ln -s /opt/mssql-tools/bin/* /usr/local/bin/
+>>>>>>> upstream/main
 
 invoke_tests "Tools" "MSSQLCommandLineTools"
