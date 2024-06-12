@@ -62,7 +62,8 @@ jobs:
           # Once all conflicts are resolved and the rebase is complete:
           git push origin main --force
           ```
-          Please follow these steps to update your fork.' \
+          Please follow these steps to update your fork.
+          Close this issue once the update is complete.' \
           --repo ${{ github.repository }}
           git rebase --abort
 
