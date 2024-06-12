@@ -45,18 +45,25 @@ jobs:
         run: |
           echo "Rebase conflict detected. Creating an issue for manual resolution."
           gh issue create --title "Manual intervention required for upstream rebase" \
-                           --body "Rebase conflicts detected. Here are the steps to manually resolve the conflicts:\n```\n# Check out your main branch\n\
-                           git checkout main\n\
-                           # Fetch the latest changes from the upstream\n\
-                           git fetch upstream\n\
-                           # Start the rebase\n\
-                           git rebase upstream/main\n\
-                           # If conflicts, resolve them, and then run:\n\
-                           git rebase --continue\n\
-                           # Once all conflicts are resolved and the rebase is complete:\n\
-                           git push origin main --force\n```\n\
-                           Please follow these steps to update your fork." \
-                           --repo ${{ github.repository }}
+          --body 'Rebase conflicts detected. Here are the steps to manually resolve the conflicts:
+          ```
+          # Check out your main branch
+          git checkout main
+          # Fetch the latest changes from main
+          git fetch origin main
+          # Add the upstream as a remote
+          git remote add upstream https://github.com/actions/runner-images.git
+          # Fetch the latest changes from the upstream
+          git fetch upstream
+          # Start the rebase
+          git rebase upstream/main
+          # If conflicts, resolve them, and then run:
+          git rebase --continue
+          # Once all conflicts are resolved and the rebase is complete:
+          git push origin main --force
+          ```
+          Please follow these steps to update your fork.' \
+          --repo ${{ github.repository }}
           git rebase --abort
 
       - name: Force push changes to main
