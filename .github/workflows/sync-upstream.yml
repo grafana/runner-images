@@ -4,7 +4,6 @@ on:
   schedule:
     - cron: "0 0 1 * *" # Runs at 00:00 on the first day of every month
   workflow_dispatch:
-
   # TODO: Remove this trigger once the workflow is ready
   pull_request:
     branches:
@@ -15,24 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # TODO: Remove this step once the workflow is ready
-      - name: Check source branch
-        id: check_branch
-        run: |
-          SOURCE_BRANCH="${{ github.event.pull_request.head.ref }}"
-          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
-          echo "Source branch is $SOURCE_BRANCH targeting $TARGET_BRANCH"
-          if [[ "$SOURCE_BRANCH" == "gc/sync-upstream" ]]; then
-            echo "Proceeding with workflow execution."
-          else
-            echo "Stopping workflow, source branch is not gc/sync-upstream."
-            exit 78  # This exits the workflow with a neutral status, which must be handled in a custom way on GitHub Actions
-          fi
-
-      # TODO: Remove this step once the workflow is ready
-      - name: Subsequent Steps
-        if: success()
-        run: |
-          echo "Running the rest of the workflow steps."
+      - name: Check source branch with script
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const sourceBranch = context.payload.pull_request.head.ref;
+            if (sourceBranch !== 'gc/sync-upstream') {
+              core.setFailed("This workflow only runs for changes to the 'gc/sync-upstream' branch.");
+            }
 
       - name: Generate GitHub App token
         id: generate-token
@@ -56,36 +45,33 @@ jobs:
           git config user.name 'gha-runner-images-updater-test[bot]'
           git config user.email '172421971+gha-runner-images-updater-test[bot]@users.noreply.github.com@github.com'
 
-      - name: Pull changes from upstream
+      - name: Pull changes from upstream and rebase
+        id: rebase
         run: |
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
-          git merge upstream/main || true  # Continue on merge conflict
+          git rebase upstream/main || echo "conflict=true" >> $GITHUB_OUTPUT
 
-      - name: Check for merge conflicts
-        id: check-conflicts
+      - name: Create issue for conflict resolution
+        if: ${{ steps.rebase.outputs.conflict == 'true' }}
         run: |
-          if git ls-files -u | grep -q '.'; then
-            echo "conflicts=true" >> $GITHUB_OUTPUT
-            git status
-          else
-            echo "conflicts=false" >> $GITHUB_OUTPUT
-          fi
+          echo "Rebase conflict detected. Creating an issue for manual resolution."
+          gh issue create --title "Manual intervention required for upstream rebase" \
+                           --body "Rebase conflicts detected. Here are the steps to manually resolve the conflicts:\n```\n# Check out your main branch\n\
+                           git checkout main\n\
+                           # Fetch the latest changes from the upstream\n\
+                           git fetch upstream\n\
+                           # Start the rebase\n\
+                           git rebase upstream/main\n\
+                           # If conflicts, resolve them, and then run:\n\
+                           git rebase --continue\n\
+                           # Once all conflicts are resolved and the rebase is complete:\n\
+                           git push origin main --force\n```\n\
+                           Please follow these steps to update your fork." \
+                           --repo ${{ github.repository }}
+          git rebase --abort
 
-      - name: Commit merge conflicts
-        if: steps.check-conflicts.outputs.conflicts == 'true'
+      - name: Force push changes to main
+        if: ${{ steps.rebase.outputs.conflict != 'true' }}
         run: |
-          git commit -am "Merge conflicts need resolution"
-
-      - name: Push changes
-        run: |
-          git push origin update-from-upstream-${{ github.run_number }}
-
-      - name: Create Pull Request
-        env:
-          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
-        run: |
-          gh pr create --base main --head update-from-upstream-${{ github.run_number }} \
-                       --title "Sync with upstream" \
-                       --body "Update the repository with the latest changes from upstream. Merge conflicts may need manual resolution." \
-                       --repo ${{ github.repository }}
+          git push origin main --force
