@@ -13,14 +13,8 @@ Describe "Chrome" -Skip:(-not (Test-IsAmd64)) {
         "google-chrome --version" | Should -ReturnZeroExitCode
     }
 
-    Describe "Edge" {
-        It "Edge" {
-            "microsoft-edge --version" | Should -ReturnZeroExitCode
-        }
-
-        It "Edge Driver" {
-            "msedgedriver --version" | Should -ReturnZeroExitCode
-        }
+    It "Chrome Driver" {
+        "chromedriver --version" | Should -ReturnZeroExitCode
     }
 
     It "Chrome and Chrome Driver major versions are the same" {

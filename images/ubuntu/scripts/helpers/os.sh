@@ -19,7 +19,3 @@ is_ubuntu24() {
 get_arch() {
     dpkg --print-architecture
 }
-
-get_arch() {
-    dpkg --print-architecture
-}
