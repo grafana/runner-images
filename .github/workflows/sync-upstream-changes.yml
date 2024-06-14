@@ -1,0 +1,44 @@
+name: Sync with Upstream (change)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.review.state != 'approved' && github.event.pull_request.user.login == 'gha-runner-images-updater-test[bot]'
+    steps:
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_KEY }}
+
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate-token.outputs.token }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Reset branch to main
+        run: |
+          git reset --hard origin/mybranch
+
+      - name: Configure Git
+        run: |
+          git config user.name 'gha-runner-images-updater-test[bot]'
+          git config user.email '172421971+gha-runner-images-updater-test[bot]@users.noreply.github.com@github.com'
+
+      - name: Pull changes from upstream and rebase
+        id: rebase
+        run: |
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          git rebase upstream/main || echo "conflict=true" >> $GITHUB_OUTPUT
+
+      - name: Push changes to branch
+        run: |
+          git push -f origin ${{ github.event.pull_request.head.ref }}
