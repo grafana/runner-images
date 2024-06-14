@@ -101,9 +101,9 @@ jobs:
 
           ### :white_check_mark: NO CONFLICTS DURING REBASE."
           if [ "$conflicts" == "true" ]; then
-            echo "::set-output name=body::$PR_BODY_CONFLICTS"
+            echo "body=$PR_BODY_CONFLICTS" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=body::$PR_BODY_NO_CONFLICTS"
+            echo "body=$PR_BODY_NO_CONFLICTS" >> $GITHUB_OUTPUT
           fi
 
       - name: Create pull request
