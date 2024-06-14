@@ -65,4 +65,4 @@ jobs:
 
           To see the changes in this PR use "'`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}`'"." \
           --base main --head update-from-upstream-${{ github.run_number }} \
-          --repo ${{ github.repository }}
+          --repo ${{ github.repository }} || gh pr view update-from-upstream-${{ github.run_number }} --repo ${{ github.repository }}
