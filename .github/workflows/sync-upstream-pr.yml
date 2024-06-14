@@ -69,10 +69,10 @@ jobs:
 
           This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
 
-          To see the changes in this PR use \`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}\`.
+          To see the changes in this PR use \\`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}\\`.
 
           This PR contains an empty commit due to conflicts during rebase. To rebase the changes manually, use the following commands:
-          \`\`\`
+          \\`\\`\\`
           # Checkout the branch
           git checkout ${{ github.event.pull_request.head.ref }}
           # Reset the branch to main
@@ -88,7 +88,7 @@ jobs:
 
           # Push the changes to the branch
           git push -f origin ${{ github.event.pull_request.head.ref }}
-          \`\`\`
+          \\`\\`\\`
 
           ### :x: CONFLICTS DURING REBASE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY."
           PR_BODY_NO_CONFLICTS="# :warning: PR WITH REBASE CHANGES. DO NOT MERGE MANUALLY.
@@ -97,7 +97,7 @@ jobs:
 
           This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
 
-          To see the changes in this PR use \`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}\`.
+          To see the changes in this PR use \\`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}\\`.
 
           ### :white_check_mark: NO CONFLICTS DURING REBASE."
           echo 'body<<EOF' >> $GITHUB_OUTPUT
