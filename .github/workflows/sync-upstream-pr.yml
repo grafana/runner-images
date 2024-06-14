@@ -100,11 +100,13 @@ jobs:
           To see the changes in this PR use \`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}\`.
 
           ### :white_check_mark: NO CONFLICTS DURING REBASE."
+          echo 'body<<EOF' >> $GITHUB_OUTPUT
           if [ "$conflicts" == "true" ]; then
-            echo "body=$PR_BODY_CONFLICTS" >> $GITHUB_OUTPUT
+            echo "$PR_BODY_CONFLICTS" >> $GITHUB_OUTPUT
           else
-            echo "body=$PR_BODY_NO_CONFLICTS" >> $GITHUB_OUTPUT
+            echo "$PR_BODY_NO_CONFLICTS" >> $GITHUB_OUTPUT
           fi
+          echo EOF >> $GITHUB_OUTPUT
 
       - name: Create pull request
         env:
