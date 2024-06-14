@@ -1,0 +1,120 @@
+name: Sync with Upstream (create)
+
+on:
+  schedule:
+    - cron: "0 0 1 * *" # Runs at 00:00 on the first day of every month
+  workflow_dispatch:
+  # TODO: Remove this trigger once the workflow is ready
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login != 'gha-runner-images-updater-test[bot]'
+    steps:
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_KEY }}
+
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate-token.outputs.token }}
+          ref: main
+
+      - name: Create new branch from main
+        run: |
+          git checkout -b update-from-upstream-${{ github.run_number }}
+
+      - name: Configure Git
+        run: |
+          git config user.name 'gha-runner-images-updater-test[bot]'
+          git config user.email '172421971+gha-runner-images-updater-test[bot]@users.noreply.github.com@github.com'
+
+      #TODO: Remove this step once the workflow is ready
+      - name: Merge the feature branch for the workflow
+        run: |
+          git merge --squash origin/gc/sync-upstream
+          git commit -m "Add sync-upstream.yml workflow (#7)"
+
+      - name: Pull changes from upstream and rebase
+        id: rebase
+        run: |
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          git rebase upstream/main || echo "conflicts=true" >> $GITHUB_OUTPUT
+
+      - name: Handle conflicts with empty commit
+        if: steps.rebase.outputs.conflicts == 'true'
+        run: |
+          git rebase --abort
+          git commit --allow-empty -m "Empty commit due to rebase conflicts"
+
+      - name: Push changes to new branch
+        run: |
+          git push -f origin update-from-upstream-${{ github.run_number }}
+
+      - name: Set PR body
+        id: pr-body
+        run: |
+          PR_BODY_CONFLICTS="# :warning: PR WITH REBASE CHANGES. DO NOT MERGE MANUALLY.
+
+          This is an automated PR to rebase updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
+
+          This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
+
+          To see the changes in this PR use \`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}\`.
+
+          This PR contains an empty commit due to conflicts during rebase. To rebase the changes manually, use the following commands:
+          \`\`\`
+          # Checkout the branch
+          git checkout ${{ github.event.pull_request.head.ref }}
+          # Reset the branch to main
+          git reset --hard origin/main
+          # Pull changes from upstream
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          # Rebase the changes
+          git rebase upstream/main
+
+          # Solve the conflcits and continue the rebase
+          git rebase --continue
+
+          # Push the changes to the branch
+          git push -f origin ${{ github.event.pull_request.head.ref }}
+          \`\`\`
+
+          ### :x: CONFLICTS DURING REBASE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY."
+          PR_BODY_NO_CONFLICTS="# :warning: PR WITH REBASE CHANGES. DO NOT MERGE MANUALLY.
+
+          This is an automated PR to rebase updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
+
+          This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
+
+          To see the changes in this PR use \`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}\`.
+
+          ### :white_check_mark: NO CONFLICTS DURING REBASE."
+          if [ "$conflicts" == "true" ]; then
+            echo "::set-output name=body::$PR_BODY_CONFLICTS"
+          else
+            echo "::set-output name=body::$PR_BODY_NO_CONFLICTS"
+          fi
+
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          gh pr create --title "Update from upstream" \
+          --body "${{ steps.pr-body.outputs.body }}" \
+          --base main --head update-from-upstream-${{ github.run_number }} \
+          --repo ${{ github.repository }} \
+          || \
+          gh pr edit update-from-upstream-${{ github.run_number }} \
+          --repo ${{ github.repository }} \
+          --body "${{ steps.pr-body.outputs.body }}"
