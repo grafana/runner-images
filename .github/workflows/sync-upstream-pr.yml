@@ -112,11 +112,11 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          gh pr create --title "Update from upstream" \
-          --body "${{ steps.pr-body.outputs.body }}" \
+          gh pr create --title 'Update from upstream' \
+          --body '${{ steps.pr-body.outputs.body }}' \
           --base main --head update-from-upstream-${{ github.run_number }} \
           --repo ${{ github.repository }} \
           || \
           gh pr edit update-from-upstream-${{ github.run_number }} \
           --repo ${{ github.repository }} \
-          --body "${{ steps.pr-body.outputs.body }}"
+          --body '${{ steps.pr-body.outputs.body }}'
