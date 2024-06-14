@@ -1,0 +1,50 @@
+name: Sync with Upstream (push)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved' && github.event.pull_request.user.login == 'gha-runner-images-updater-test[bot]'
+    steps:
+      - name: Generate GitHub App token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_APP_KEY }}
+
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate-token.outputs.token }}
+
+      - name: Configure Git
+        run: |
+          git config user.name 'gha-runner-images-updater-test[bot]'
+          git config user.email '172421971+gha-runner-images-updater-test[bot]@users.noreply.github.com@github.com'
+
+      - name: Check if changes will be removed from main
+        id: check-changes
+        run: |
+          git fetch origin
+          git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<' && echo "changes-removed=true" >> $GITHUB_OUTPUT || echo "changes-removed=false" >> $GITHUB_OUTPUT
+
+      - name: Fail if changes will be removed from main
+        if: steps.check-changes.outputs.changes-removed == 'true'
+        run: echo "Changes will be removed from main. Please request changes." && exit 1
+
+      - name: Push changes to main
+        run: |
+          git push -f origin main
+
+      - name: Close pull request
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+        run: |
+          gh pr close ${{ github.event.pull_request.number }}\
+          --repo ${{ github.repository }}\
+          --comment "This PR was automatically closed by the bot after pushing the changes to main."
