@@ -101,10 +101,10 @@ jobs:
 
           ### :white_check_mark: NO CONFLICTS DURING REBASE.'
           echo 'body<<EOF' >> $GITHUB_OUTPUT
-          if [ '$conflicts' == 'true' ]; then
-            echo '$PR_BODY_CONFLICTS' >> $GITHUB_OUTPUT
+          if [ "$conflicts" == "true" ]; then
+            echo "$PR_BODY_CONFLICTS" >> $GITHUB_OUTPUT
           else
-            echo '$PR_BODY_NO_CONFLICTS' >> $GITHUB_OUTPUT
+            echo "$PR_BODY_NO_CONFLICTS" >> $GITHUB_OUTPUT
           fi
           echo EOF >> $GITHUB_OUTPUT
 
