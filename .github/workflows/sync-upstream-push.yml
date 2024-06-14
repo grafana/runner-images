@@ -31,7 +31,7 @@ jobs:
         id: check-changes
         run: |
           git fetch origin
-          git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<' && echo "changes-removed=true" >> $GITHUB_OUTPUT
+          git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<' && echo "changes-removed=true" >> $GITHUB_OUTPUT || echo "changes-removed=false" >> $GITHUB_OUTPUT
 
       - name: Fail if changes will be removed from main
         if: steps.check-changes.outputs.changes-removed == 'true'
