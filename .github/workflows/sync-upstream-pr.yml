@@ -12,6 +12,7 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login != 'gha-runner-images-updater-test[bot]'
     steps:
       - name: Generate GitHub App token
         id: generate-token
