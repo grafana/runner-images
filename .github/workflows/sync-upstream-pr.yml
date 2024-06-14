@@ -52,7 +52,7 @@ jobs:
 
       - name: Push changes to new branch
         run: |
-          git push origin update-from-upstream-${{ github.run_number }}
+          git push -f origin update-from-upstream-${{ github.run_number }}
 
       - name: Create pull request
         env:
