@@ -48,12 +48,12 @@ jobs:
         run: |
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
-          git rebase upstream/main || echo "conflicts=true" >> $GITHUB_OUTPUT
+          echo "conflicts=true" >> $GITHUB_OUTPUT
 
       - name: Handle conflicts with empty commit
         if: steps.rebase.outputs.conflicts == 'true'
         run: |
-          git rebase --abort
+          git rebase --abort || true
           git commit --allow-empty -m "Empty commit due to rebase conflicts"
 
       - name: Push changes to new branch
