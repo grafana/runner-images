@@ -31,11 +31,14 @@ jobs:
         id: check-changes
         run: |
           git fetch origin
-          git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<' && echo "changes-removed=true" >> $GITHUB_OUTPUT || echo "changes-removed=false" >> $GITHUB_OUTPUT
-
-      - name: Fail if changes will be removed from main
-        if: steps.check-changes.outputs.changes-removed == 'true'
-        run: echo "Changes will be removed from main. Please request changes." && exit 1
+          changest_removed=$(git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<')
+          if [ -n "$changes_removed" ]; then
+            echo "Commits will be removed from main, this shouldn't happen. Please request changes on the pull request."
+            exit 1
+          else
+            echo "Commits will not be removed from main."
+            exit 0
+          fi
 
       - name: Push changes to main
         run: |
