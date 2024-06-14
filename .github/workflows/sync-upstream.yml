@@ -52,10 +52,10 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           gh pr create --title "Update from upstream" \
-          --body "# :warning: PR WITH REBASE CHANGES. DO NOT MERGE MANUALLY.
+          --body '# :warning: PR WITH REBASE CHANGES. DO NOT MERGE MANUALLY.
 
-          You shouldn't be able to manually merge this PR. This is an automated PR to rebase updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
+          You shouldn\'t be able to manually merge this PR. This is an automated PR to rebase updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
 
-          To see the changes in this PR use `git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}`." \
+          To see the changes in this PR use `git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}`.' \
           --base main --head update-from-upstream-${{ github.run_number }} \
           --repo ${{ github.repository }}
