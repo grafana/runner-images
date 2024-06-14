@@ -27,6 +27,10 @@ jobs:
           token: ${{ steps.generate-token.outputs.token }}
           ref: main
 
+      - name: Create new branch from main
+        run: |
+          git checkout -b update-from-upstream-${{ github.run_number }}
+
       - name: Configure Git
         run: |
           git config user.name 'gha-runner-images-updater-test[bot]'
@@ -39,36 +43,15 @@ jobs:
           git fetch upstream
           git rebase upstream/main || echo "conflict=true" >> $GITHUB_OUTPUT
 
-      - name: Create issue for conflict resolution
-        if: ${{ steps.rebase.outputs.conflict == 'true' }}
+      - name: Push changes to new branch
+        run: |
+          git push origin update-from-upstream-${{ github.run_number }}
+
+      - name: Create pull request
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          echo "Rebase conflict detected. Creating an issue for manual resolution."
-          gh issue create --title "Manual intervention required for upstream rebase" \
-          --body 'Rebase conflicts detected. Here are the steps to manually resolve the conflicts:
-          ```
-          # Check out your main branch
-          git checkout main
-          # Fetch the latest changes from main
-          git fetch origin main
-          # Add the upstream as a remote
-          git remote add upstream https://github.com/actions/runner-images.git
-          # Fetch the latest changes from the upstream
-          git fetch upstream
-          # Start the rebase
-          git rebase upstream/main
-          # If conflicts, resolve them, and then run:
-          git rebase --continue
-          # Once all conflicts are resolved and the rebase is complete:
-          git push origin main --force
-          ```
-          Please follow these steps to update your fork.
-          Close this issue once the update is complete.' \
+          gh pr create --title "Update from upstream" \
+          --body "Automated PR to merge updates from upstream. Please review the changes and merge." \
+          --base main --head update-from-upstream-${{ github.run_number }} \
           --repo ${{ github.repository }}
-          git rebase --abort
-
-      - name: Force push changes to main
-        if: ${{ steps.rebase.outputs.conflict != 'true' }}
-        run: |
-          git push origin main --force
