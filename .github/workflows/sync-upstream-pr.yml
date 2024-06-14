@@ -63,6 +63,8 @@ jobs:
 
           You shouldn't be able to manually merge this PR. This is an automated PR to rebase updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
 
+          This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
+
           To see the changes in this PR use "'`git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}`'"." \
           --base main --head update-from-upstream-${{ github.run_number }} \
           --repo ${{ github.repository }} || gh pr view update-from-upstream-${{ github.run_number }} --repo ${{ github.repository }}
