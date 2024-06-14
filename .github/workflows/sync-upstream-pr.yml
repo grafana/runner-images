@@ -1,4 +1,4 @@
-name: Sync with Upstream (pull request)
+name: Sync with Upstream (create)
 
 on:
   schedule:
