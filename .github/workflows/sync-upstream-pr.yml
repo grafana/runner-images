@@ -44,6 +44,7 @@ jobs:
         run: |
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
+          echo "upstream-sha=$(git rev-parse upstream/main)" >> $GITHUB_OUTPUT
           git rebase upstream/main || echo "conflicts=true" >> $GITHUB_OUTPUT
 
       - name: Handle conflicts with empty commit
@@ -79,7 +80,7 @@ jobs:
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
           # Rebase the changes
-          git rebase upstream/main
+          git rebase --onto ${{ steps.rebase.outputs.upstream-sha }} upstream/main
 
           # Solve the conflcits and continue the rebase
           git rebase --continue
