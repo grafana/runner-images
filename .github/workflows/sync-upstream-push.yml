@@ -39,8 +39,7 @@ jobs:
 
       - name: Push changes to main
         run: |
-          git fetch origin gc/test
-          git push -f origin gc/test
+          git push -f origin ${{ github.event.pull_request.head.ref }}:gc/test
 
       - name: Close pull request
         env:
