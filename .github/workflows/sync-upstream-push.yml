@@ -4,28 +4,24 @@ on:
   pull_request_review:
     types: [submitted]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     if: github.event.review.state == 'approved' && github.event.pull_request.user.login == 'gha-runner-images-updater-test[bot]'
     steps:
-      - name: Generate GitHub App token
-        id: generate-token
-        uses: actions/create-github-app-token@c8f55efbd427e7465d6da1106e7979bc8aaee856 # v1.10.1
-        with:
-          app-id: ${{ secrets.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_KEY }}
-
       - name: Checkout the repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
-          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Configure Git
         run: |
-          git config user.name 'gha-runner-images-updater-test[bot]'
-          git config user.email '172421971+gha-runner-images-updater-test[bot]@users.noreply.github.com@github.com'
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
       - name: Check if changes will be removed from main
         id: check-changes
@@ -42,11 +38,11 @@ jobs:
 
       - name: Push changes to main
         run: |
-          git push -f origin main
+          git push -f origin gc/test
 
       - name: Close pull request
         env:
-          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr close ${{ github.event.pull_request.number }}\
           --repo ${{ github.repository }}\

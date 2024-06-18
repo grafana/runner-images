@@ -128,7 +128,7 @@ jobs:
         run: |
           gh pr create --title 'Update from upstream' \
           --body '${{ steps.pr-body.outputs.body }}' \
-          --base main --head update-from-upstream-${{ github.run_number }} \
+          --base gc/test --head update-from-upstream-${{ github.run_number }} \
           --repo ${{ github.repository }} \
           || \
           gh pr edit update-from-upstream-${{ github.run_number }} \
