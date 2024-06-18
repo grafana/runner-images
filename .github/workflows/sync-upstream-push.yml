@@ -39,7 +39,8 @@ jobs:
 
       - name: Tag and push changes to main
         run: |
-          tag=$(date +'%Y%m%d').$((1 + $(git tag -l --format='%(refname:short)' | grep -qc $(date +'%Y%m%d') || echo 0)))
+          remote_tags=$(git ls-remote --tags upstream | awk '{print $2}' | sed 's|refs/tags/||')
+          tag=$(date +'%Y%m%d').$((1 + $(echo $remote_tags | grep -c $(date +'%Y%m%d') || echo 0)))
           git tag $tag origin/gc/test
           git push origin $tag
           git push -f origin ${{ github.event.pull_request.head.ref }}:gc/test
