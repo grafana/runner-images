@@ -1,0 +1,35 @@
+name: Sync with Upstream (change)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.review.state != 'approved' && github.event.pull_request.user.login == 'github-actions[bot]'
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+
+      - name: Reset branch to main
+        run: |
+          git reset --hard origin/main
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Pull changes from upstream and rebase
+        id: rebase
+        run: |
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          git rebase upstream/main || echo "conflict=true" >> $GITHUB_OUTPUT
+
+      - name: Push changes to branch
+        run: |
+          git push -f origin ${{ github.event.pull_request.head.ref }}
