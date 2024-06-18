@@ -27,7 +27,8 @@ jobs:
       - name: Check if changes will be removed from main
         id: check-changes
         run: |
-          removed_commits=$(git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<')
+          git fetch origin
+          removed_commits=$(git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<' || true)
           if [ -n "$removed_commits" ]; then
             echo "Commits will be removed from main, this shouldn't happen. Please request changes on the pull request."
             exit 79
