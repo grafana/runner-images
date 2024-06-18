@@ -9,23 +9,19 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     if: github.event.pull_request.user.login != 'gha-runner-images-updater-test[bot]'
     steps:
-      - name: Generate GitHub App token
-        id: generate-token
-        uses: actions/create-github-app-token@c8f55efbd427e7465d6da1106e7979bc8aaee856 # v1.10.1
-        with:
-          app-id: ${{ secrets.GH_APP_ID }}
-          private-key: ${{ secrets.GH_APP_KEY }}
-
       - name: Checkout the repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
-          token: ${{ steps.generate-token.outputs.token }}
           ref: main
 
       - name: Create new branch from main
@@ -34,8 +30,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config user.name 'gha-runner-images-updater-test[bot]'
-          git config user.email '172421971+gha-runner-images-updater-test[bot]@users.noreply.github.com@github.com'
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
       #TODO: Remove this step once the workflow is ready
       - name: Merge the feature branch for the workflow
@@ -127,7 +123,7 @@ jobs:
 
       - name: Create pull request
         env:
-          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create --title 'Update from upstream' \
           --body '${{ steps.pr-body.outputs.body }}' \
