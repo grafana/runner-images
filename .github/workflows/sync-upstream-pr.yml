@@ -16,7 +16,7 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.user.login != 'gha-runner-images-updater-test[bot]'
+    if: github.event.pull_request.user.login != 'github-actions[bot]'
     steps:
       - name: Checkout the repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
