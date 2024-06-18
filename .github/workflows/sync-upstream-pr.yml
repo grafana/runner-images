@@ -110,7 +110,7 @@ jobs:
           ### :white_check_mark: NO CONFLICTS DURING REBASE.'
 
           if [ $((${#PR_DETAILS} + ${#PR_BODY_NO_CONFLICTS})) -lt 65535 ]; then
-            PR_BODY_NO_CONFLICTS=$(echo "$PR_BODY_NO_CONFLICTS" | sed 's/<!-- DETAILS -->'"/$PR_DETAILS/")
+            PR_BODY_NO_CONFLICTS=$(echo "$PR_BODY_NO_CONFLICTS" | sed "s|<!-- DETAILS -->|$PR_DETAILS|")
           fi
 
           echo 'body<<EOF' >> $GITHUB_OUTPUT
