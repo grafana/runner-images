@@ -63,13 +63,8 @@ jobs:
       - name: Set PR body
         id: pr-body
         run: |
-          PR_DETAILS='<details><summary>Output</summary>
-
-          ```
-          '"$(git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }})"'
-          ```
-
-          </details>'
+          PR_DETAILS_TOO_LARGE='Output too large to be displayed. Please check the changes locally.'
+          PR_DETAILS="$(git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }})"
           PR_BODY_CONFLICTS='# :warning: PR WITH REBASE CHANGES. DO NOT MERGE MANUALLY.
 
           This is an automated PR to rebase updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
@@ -105,12 +100,21 @@ jobs:
           This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
 
           To see the changes in this PR use `git range-diff origin/main...origin/update-from-upstream-${{ github.run_number }}`.
+
+          <details><summary>Output</summary>
+
+          ```
           <!-- DETAILS -->
+          ```
+
+          </details>
 
           ### :white_check_mark: NO CONFLICTS DURING REBASE.'
 
           if [ $((${#PR_DETAILS} + ${#PR_BODY_NO_CONFLICTS})) -lt 65535 ]; then
-           PR_BODY_NO_CONFLICTS=$(echo "$PR_BODY_NO_CONFLICTS" | awk -v details="$PR_DETAILS" '{gsub(/<!-- DETAILS -->/, details)}1')
+            PR_BODY_NO_CONFLICTS=$(echo "$PR_BODY_NO_CONFLICTS" | awk -v details="$PR_DETAILS" '{gsub(/<!-- DETAILS -->/, details)}1')
+          else
+            PR_BODY_NO_CONFLICTS=$(echo "$PR_BODY_NO_CONFLICTS" | awk -v details="$PR_DETAILS_TOO_LARGE" '{gsub(/<!-- DETAILS -->/, details)}1')
           fi
 
           echo 'body<<EOF' >> $GITHUB_OUTPUT
