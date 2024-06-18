@@ -11,13 +11,13 @@ jobs:
     steps:
       - name: Generate GitHub App token
         id: generate-token
-        uses: actions/create-github-app-token@v1
+        uses: actions/create-github-app-token@c8f55efbd427e7465d6da1106e7979bc8aaee856 # v1.10.1
         with:
           app-id: ${{ secrets.GH_APP_ID }}
           private-key: ${{ secrets.GH_APP_KEY }}
 
       - name: Checkout the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
           token: ${{ steps.generate-token.outputs.token }}
