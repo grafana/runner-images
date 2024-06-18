@@ -1,0 +1,42 @@
+name: Sync with Upstream (push)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved' && github.event.pull_request.user.login == 'github-actions[bot]'
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Check if changes will be removed from main
+        id: check-changes
+        run: |
+          git fetch origin
+          removed_commits=$(git range-diff origin/main...origin/${{ github.event.pull_request.head.ref }} | grep -q '<' || true)
+          if [ -n "$removed_commits" ]; then
+            echo "Commits will be removed from main, this shouldn't happen. Please request changes on the pull request."
+            exit 1
+          else
+            echo "Commits will not be removed from main."
+            exit 0
+          fi
+
+      - name: Push changes to main
+        run: |
+          git push -f origin ${{ github.event.pull_request.head.ref }}:gc/test
