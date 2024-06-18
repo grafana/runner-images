@@ -40,11 +40,3 @@ jobs:
       - name: Push changes to main
         run: |
           git push -f origin ${{ github.event.pull_request.head.ref }}:gc/test
-
-      - name: Close pull request
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh pr close ${{ github.event.pull_request.number }}\
-          --repo ${{ github.repository }}\
-          --comment "This PR was automatically closed by the bot after pushing the changes to main."
