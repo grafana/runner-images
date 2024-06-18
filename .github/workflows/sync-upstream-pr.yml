@@ -111,7 +111,7 @@ jobs:
 
           ### :white_check_mark: NO CONFLICTS DURING REBASE.'
 
-          if [ $((${#PR_DETAILS} + ${#PR_BODY_NO_CONFLICTS})) -lt 65535 ]; then
+          if [ $((${#PR_DETAILS} + ${#PR_BODY_NO_CONFLICTS})) -lt 1 ]; then
             PR_BODY_NO_CONFLICTS=$(echo "$PR_BODY_NO_CONFLICTS" | awk -v details="$PR_DETAILS" '{gsub(/<!-- DETAILS -->/, details)}1')
           else
             PR_BODY_NO_CONFLICTS=$(echo "$PR_BODY_NO_CONFLICTS" | awk -v details="$PR_DETAILS_TOO_LARGE" '{gsub(/<!-- DETAILS -->/, details)}1')
