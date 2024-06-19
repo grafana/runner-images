@@ -42,7 +42,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           remote_tags=$(git ls-remote --tags origin | awk '{print $2}' | sed 's|refs/tags/||')
+          echo $remote_tags
           tag=$(date +'%Y%m%d').$(expr 1 + $(echo $remote_tags | grep -c $(date +'%Y%m%d') || true))
+          echo $tag
           git tag $tag origin/gc/test
           git push origin $tag
           gh pr merge ${{ github.event.pull_request.number }} --delete-branch --merge
