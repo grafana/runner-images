@@ -63,7 +63,7 @@ jobs:
         run: |
           PR_BODY_CONFLICTS='# :warning: PR WITH REBASE CHANGES. DO NOT MERGE MANUALLY.
 
-          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
+          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for merging the changes to main and closing the PR.
 
           This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
 
