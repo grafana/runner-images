@@ -1,0 +1,32 @@
+name: Sync with Upstream (push)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'approved' && startsWith(github.event.pull_request.head.ref, 'sync-upstream-')
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Push changes to main and delete branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git push origin ${{ github.event.pull_request.head.ref }}:gc/test
+          git push -d origin ${{ github.event.pull_request.head.ref }}
