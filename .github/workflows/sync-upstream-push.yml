@@ -1,4 +1,4 @@
-name: Sync with Upstream (merge)
+name: Sync with Upstream (push)
 
 on:
   pull_request_review:
@@ -37,7 +37,7 @@ jobs:
             exit 0
           fi
 
-      - name: Tag and merge changes to main
+      - name: Tag and push changes to main
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -45,4 +45,5 @@ jobs:
           tag=$(date +'%Y%m%d').$(expr 1 + $(echo "$remote_tags" | grep -c $(date +'%Y%m%d') || true))
           git tag $tag origin/gc/test
           git push origin $tag
-          gh pr merge ${{ github.event.pull_request.number }} --delete-branch --merge
+          git push origin ${{ github.event.pull_request.head.ref }}:gc/test
+          git push -d origin ${{ github.event.pull_request.head.ref }}
