@@ -40,7 +40,7 @@ jobs:
       - name: Set PR body
         id: pr-body
         run: |
-          PR_BODY_CONFLICTS='# :warning: PR WITH UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
+          PR_BODY_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
 
           This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for merging the changes to main and closing the PR.
 
@@ -67,7 +67,7 @@ jobs:
 
           ### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.'
 
-          PR_BODY_NO_CONFLICTS='# :warning: PR WITH UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
+          PR_BODY_NO_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
 
           This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
 
