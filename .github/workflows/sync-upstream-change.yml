@@ -1,0 +1,92 @@
+name: Sync with Upstream (change)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: github.event.review.state == 'changes_requested' && startsWith(github.event.pull_request.head.ref, 'sync-upstream-')
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Reset branch to main
+        run: |
+          git reset --hard origin/main
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Pull changes from upstream and merge
+        id: merge
+        run: |
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          SHA=$(git rev-parse upstream/main)
+          echo "upstream-sha=$SHA" >> $GITHUB_OUTPUT
+          git merge $SHA || echo "conflicts=true" >> $GITHUB_OUTPUT
+
+      - name: Push changes to branch
+        run: |
+          git push -f origin ${{ github.event.pull_request.head.ref }}
+
+      - name: Set PR body
+        id: pr-body
+        run: |
+          PR_BODY_CONFLICTS='# :warning: PR WITH UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
+
+          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for merging the changes to main and closing the PR.
+
+          This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
+
+          This PR contains an empty commit due to conflicts during merge. To merge the changes manually, use the following commands:
+          ```
+          # Checkout the branch
+          git checkout sync-upstream-${{ github.run_number }}
+          # Reset the branch to main
+          git reset --hard origin/main
+          # Pull changes from upstream
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          # Merge the changes
+          git merge -m "Merge commit '$SHA' from actions/runner-images" ${{ steps.merge.outputs.upstream-sha }}
+
+          # Solve the conflicts and continue the merge
+          git merge --continue
+
+          # Push the changes to the branch
+          git push -f origin sync-upstream-${{ github.run_number }}
+          ```
+
+          ### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.'
+
+          PR_BODY_NO_CONFLICTS='# :warning: PR WITH UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
+
+          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
+
+          This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
+
+          ### :white_check_mark: NO CONFLICTS DURING MERGE.'
+
+          echo 'body<<EOF' >> $GITHUB_OUTPUT
+          if [ "${{ steps.merge.outputs.conflicts }}" == "true" ]; then
+            echo "$PR_BODY_CONFLICTS" >> $GITHUB_OUTPUT
+          else
+            echo "$PR_BODY_NO_CONFLICTS" >> $GITHUB_OUTPUT
+          fi
+          echo EOF >> $GITHUB_OUTPUT
+
+      - name: Edit pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit sync-upstream-${{ github.run_number }} \
+          --repo ${{ github.repository }} \
+          --body '${{ steps.pr-body.outputs.body }}'
