@@ -65,6 +65,8 @@ jobs:
           git push -f origin sync-upstream-${{ github.run_number }}
           ```
 
+          Once you have merged the changes successfully, please review and approve this pull request.
+
           ### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.'
 
           PR_BODY_NO_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.

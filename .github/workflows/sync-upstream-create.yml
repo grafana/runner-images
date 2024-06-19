@@ -64,7 +64,7 @@ jobs:
         run: |
           PR_BODY_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
 
-          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for merging the changes to main and closing the PR.
+          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main.
 
           This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
 
@@ -87,11 +87,13 @@ jobs:
           git push -f origin sync-upstream-${{ github.run_number }}
           ```
 
+          Once you have merged the changes successfully, please review and approve this pull request.
+
           ### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.'
 
           PR_BODY_NO_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
 
-          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main and closing the PR.
+          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main.
 
           This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
 
