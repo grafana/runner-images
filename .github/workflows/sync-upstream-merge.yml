@@ -38,6 +38,8 @@ jobs:
           fi
 
       - name: Tag and merge changes to main
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           remote_tags=$(git ls-remote --tags origin | awk '{print $2}' | sed 's|refs/tags/||')
           tag=$(date +'%Y%m%d').$(expr 1 + $(echo $remote_tags | grep -c $(date +'%Y%m%d') || true))
