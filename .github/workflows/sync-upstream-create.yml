@@ -46,12 +46,12 @@ jobs:
           git fetch upstream
           SHA=$(git rev-parse upstream/main)
           echo "upstream-sha=$SHA" >> $GITHUB_OUTPUT
-          git merge -m "Merge commit '$SHA' from actions/runner-images" $SHA || echo "conflicts=true" >> $GITHUB_OUTPUT
+          git merge -m "Merge commit '$SHA' from actions/runner-images" $SHA && echo "conflicts=true" >> $GITHUB_OUTPUT
 
       - name: Handle conflicts with empty commit
         if: steps.merge.outputs.conflicts == 'true'
         run: |
-          git merge --abort
+          # git merge --abort
           git commit --allow-empty -m "Empty commit due to merge conflicts"
 
       - name: Push changes to new branch
