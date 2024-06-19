@@ -46,7 +46,7 @@ jobs:
           git fetch upstream
           SHA=$(git rev-parse upstream/main)
           echo "upstream-sha=$SHA" >> $GITHUB_OUTPUT
-          git merge -m "Merge commit '$SHA' from actions/runner-images' || echo "conflicts=true" >> $GITHUB_OUTPUT
+          git merge -m "Merge commit '$SHA' from actions/runner-images" || echo "conflicts=true" >> $GITHUB_OUTPUT
 
       - name: Handle conflicts with empty commit
         if: steps.merge.outputs.conflicts == 'true'
@@ -77,7 +77,7 @@ jobs:
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
           # Merge the changes
-          git merge -m "Merge commit '$SHA' from actions/runner-images' ${{ steps.merge.outputs.upstream-sha }}
+          git merge -m "Merge commit '$SHA' from actions/runner-images" ${{ steps.merge.outputs.upstream-sha }}
 
           # Solve the conflicts and continue the merge
           git merge --continue

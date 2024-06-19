@@ -56,7 +56,7 @@ jobs:
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
           # Merge the changes
-          git merge -m "Merge commit '$SHA' from actions/runner-images' ${{ steps.merge.outputs.upstream-sha }}
+          git merge -m "Merge commit '$SHA' from actions/runner-images" ${{ steps.merge.outputs.upstream-sha }}
 
           # Solve the conflicts and continue the merge
           git merge --continue
