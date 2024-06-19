@@ -16,6 +16,7 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    # TODO: Remove this condition once the workflow is ready
     if: github.event.pull_request.user.login != 'github-actions[bot]'
     steps:
       - name: Checkout the repository
@@ -106,6 +107,7 @@ jobs:
           fi
           echo EOF >> $GITHUB_OUTPUT
 
+      # TODO: Change base branch once the workflow is ready
       - name: Create pull request
         env:
           GH_TOKEN: ${{ github.token }}
