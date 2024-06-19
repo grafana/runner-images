@@ -37,10 +37,10 @@ jobs:
             exit 0
           fi
 
-      - name: Tag and push changes to main
+      - name: Tag and merge changes to main
         run: |
           remote_tags=$(git ls-remote --tags origin | awk '{print $2}' | sed 's|refs/tags/||')
           tag=$(date +'%Y%m%d').$(expr 1 + $(echo $remote_tags | grep -c $(date +'%Y%m%d') || true))
           git tag $tag origin/gc/test
           git push origin $tag
-          git push -f origin ${{ github.event.pull_request.head.ref }}:gc/test
+          gh pr merge ${{ github.event.pull_request.number }} --delete-branch --merge
