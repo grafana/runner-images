@@ -45,6 +45,7 @@ jobs:
           echo $remote_tags
           tag=$(date +'%Y%m%d').$(expr 1 + $(echo $remote_tags | grep -c $(date +'%Y%m%d') || true))
           echo $tag
+          echo $remote_tags | grep -c $(date +'%Y%m%d')
           git tag $tag origin/gc/test
           git push origin $tag
           gh pr merge ${{ github.event.pull_request.number }} --delete-branch --merge
