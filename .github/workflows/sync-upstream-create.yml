@@ -45,9 +45,11 @@ jobs:
         run: |
           git remote add upstream https://github.com/actions/runner-images.git
           git fetch upstream
-          SHA=$(git rev-parse upstream/main)
+          SHA="$(git rev-parse upstream/main)"
           echo "upstream-sha=$SHA" >> $GITHUB_OUTPUT
-          git merge -m "Merge commit '$SHA' from actions/runner-images" $SHA || echo "conflicts=true" >> $GITHUB_OUTPUT
+          if !git merge -m "Merge commit '$SHA' from actions/runner-images" "${SHA}"; then
+            echo "conflicts=true" >> $GITHUB_OUTPUT
+          fi
 
       - name: Handle conflicts with empty commit
         if: steps.merge.outputs.conflicts == 'true'
@@ -57,18 +59,18 @@ jobs:
 
       - name: Push changes to new branch
         run: |
-          git push -f origin sync-upstream-${{ github.run_number }}
+          git push --force-with-lease origin sync-upstream-${{ github.run_number }}
 
       - name: Set PR body
         id: pr-body
         run: |
           PR_BODY_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
 
-          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main.
+          This automated pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
 
-          This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
+          There are updates from upstream to be merged, but our local changes conflict with the upstream changes so we need to resolve the merge manually.
 
-          This PR contains an empty commit due to conflicts during merge. To merge the changes manually, use the following commands:
+          To merge the changes manually, use the following commands:
           ```
           # Checkout the branch
           git checkout sync-upstream-${{ github.run_number }}
@@ -84,10 +86,10 @@ jobs:
           git merge --continue
 
           # Push the changes to the branch
-          git push -f origin sync-upstream-${{ github.run_number }}
+          git push --force-with-lease origin sync-upstream-${{ github.run_number }}
           ```
 
-          Once you have merged the changes successfully, please review and approve this pull request.
+          Once you have merged the changes successfully, please get somebody else to review and approve this pull request. The bot will then handle merging the changes to `main`. Do not merge manually.
 
           ### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.'
 

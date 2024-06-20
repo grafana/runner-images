@@ -29,5 +29,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git push origin ${{ github.event.pull_request.head.ref }}:gc/test
+          git push origin HEAD:gc/test
           git push -d origin ${{ github.event.pull_request.head.ref }}
