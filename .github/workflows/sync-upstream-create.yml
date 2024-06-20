@@ -47,7 +47,7 @@ jobs:
           git fetch upstream
           SHA="$(git rev-parse upstream/main)"
           echo "upstream-sha=$SHA" >> $GITHUB_OUTPUT
-          if !git merge -m "Merge commit '$SHA' from actions/runner-images" "${SHA}"; then
+          if ! git merge -m "Merge commit '$SHA' from actions/runner-images" "${SHA}"; then
             echo "conflicts=true" >> $GITHUB_OUTPUT
           fi
 
