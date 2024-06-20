@@ -1,4 +1,4 @@
-name: Sync with Upstream (push)
+name: Sync with Upstream (approve)
 
 on:
   pull_request_review:
