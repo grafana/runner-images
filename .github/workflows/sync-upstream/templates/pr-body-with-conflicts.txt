@@ -25,4 +25,8 @@ git push --force-with-lease origin sync-upstream-$GITHUB_RUN_NUMBER
 
 Once you have merged the changes successfully, please get somebody else to review and approve this pull request. The bot will then handle merging the changes to `main`. Do not merge manually.
 
+If you need the bot to update the pull request and redo the merge process, you can do so by leaving a review requesting changes with the comment `bot change`.
+
+When you are ready for the bot to merge these changes, you can do so by leaving a review approving the changes with the comment `bot merge`.
+
 ### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.
