@@ -64,48 +64,20 @@ jobs:
       - name: Set PR body
         id: pr-body
         run: |
-          PR_BODY_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
+          export GITHUB_SERVER_URL='${{ github.server_url }}'
+          export GITHUB_REPOSITORY='${{ github.repository }}'
+          export GITHUB_RUN_ID='${{ github.run_id }}'
+          export GITHUB_RUN_NUMBER='${{ github.run_number }}'
+          export UPSTREAM_SHA='${{ steps.merge.outputs.upstream-sha }}'
 
-          This automated pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
-
-          There are updates from upstream to be merged, but our local changes conflict with the upstream changes so we need to resolve the merge manually.
-
-          To merge the changes manually, use the following commands:
-          ```
-          # Checkout the branch
-          git checkout sync-upstream-${{ github.run_number }}
-          # Reset the branch to main
-          git reset --hard origin/main
-          # Pull changes from upstream
-          git remote add upstream https://github.com/actions/runner-images.git
-          git fetch upstream
-          # Merge the changes
-          git merge -m "Merge commit '${{ steps.merge.outputs.upstream-sha }}' from actions/runner-images" ${{ steps.merge.outputs.upstream-sha }}
-
-          # Solve the conflicts and continue the merge
-          git merge --continue
-
-          # Push the changes to the branch
-          git push --force-with-lease origin sync-upstream-${{ github.run_number }}
-          ```
-
-          Once you have merged the changes successfully, please get somebody else to review and approve this pull request. The bot will then handle merging the changes to `main`. Do not merge manually.
-
-          ### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.'
-
-          PR_BODY_NO_CONFLICTS='# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
-
-          This is an automated PR to merge updates from upstream. Please review the changes and approve. The bot will be responsible for pushing the changes to main.
-
-          This pull request was created by the [Sync from Upstream (create)](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) workflow.
-
-          ### :white_check_mark: NO CONFLICTS DURING MERGE.'
+          PR_BODY_NO_CONFLICTS_TEMPLATE='.github/workflows/sync-upstream/templates/pr-body-no-conflicts.txt'
+          PR_BODY_WITH_CONFLICTS_TEMPLATE='.github/workflows/sync-upstream/templates/pr-body-with-conflicts.txt'
 
           echo 'body<<EOF' >> $GITHUB_OUTPUT
           if [ "${{ steps.merge.outputs.conflicts }}" == "true" ]; then
-            echo "$PR_BODY_CONFLICTS" >> $GITHUB_OUTPUT
+            envsubst < $PR_BODY_WITH_CONFLICTS_TEMPLATE  >> $GITHUB_OUTPUT
           else
-            echo "$PR_BODY_NO_CONFLICTS" >> $GITHUB_OUTPUT
+            envsubst < $PR_BODY_NO_CONFLICTS_TEMPLATE  >> $GITHUB_OUTPUT
           fi
           echo EOF >> $GITHUB_OUTPUT
 

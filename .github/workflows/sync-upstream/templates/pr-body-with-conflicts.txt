@@ -1,0 +1,28 @@
+# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
+
+This automated pull request was created by the [Sync from Upstream (create)]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) workflow.
+
+There are updates from upstream to be merged, but our local changes conflict with the upstream changes so we need to resolve the merge manually.
+
+To merge the changes manually, use the following commands:
+```
+# Checkout the branch
+git checkout sync-upstream-$GITHUB_RUN_NUMBER
+# Reset the branch to main
+git reset --hard origin/main
+# Pull changes from upstream
+git remote add upstream https://github.com/actions/runner-images.git
+git fetch upstream
+# Merge the changes
+git merge -m "Merge commit '$UPSTREAM_SHA' from actions/runner-images" $UPSTREAM_SHA
+
+# Solve the conflicts and continue the merge
+git merge --continue
+
+# Push the changes to the branch
+git push --force-with-lease origin sync-upstream-$GITHUB_RUN_NUMBER
+```
+
+Once you have merged the changes successfully, please get somebody else to review and approve this pull request. The bot will then handle merging the changes to `main`. Do not merge manually.
+
+### :x: CONFLICTS DURING MERGE. PLEASE HANDLE THE CONFLICTS APPROPRIATELY.
