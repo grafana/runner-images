@@ -25,9 +25,27 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       # TODO: Change target branch to main once the workflow is ready
-      - name: Push changes to main and delete branch
+      - name: Attempt to push changes
+        id: push
+        run: |
+          if ! output=$(git push origin HEAD:gc/test); then
+            echo "output=$output" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Delete branch on success
+        if: ${{ success() }}
+        run: |
+          git push -d origin ${{ github.event.pull_request.head.ref }}
+
+      - name: Comment error on failure
+        if: ${{ failure() }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          git push origin HEAD:gc/test
-          git push -d origin ${{ github.event.pull_request.head.ref }}
+          gh pr comment ${{ github.event.pull_request.number }} --body 'Failed to push changes to main.
+
+          Output:
+          ```
+          ${{ steps.push.outputs.output }}
+          ```'
