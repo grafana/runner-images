@@ -1,0 +1,13 @@
+# :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
+
+This automated pull request was created by the [Sync from Upstream (create)]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) workflow.
+
+Updates from upstream were able to be merged successfully without conflicts so no manual interaction should be necessary.
+
+Please review and approve this pull request. The bot will then handle merging the changes to `main`. Do not merge manually.
+
+If you need the bot to update the pull request and redo the merge process, you can do so by leaving a review requesting changes with the comment `bot change`.
+
+When you are ready for the bot to merge these changes, you can do so by leaving a review approving the changes with the comment `bot merge`.
+
+### :white_check_mark: NO CONFLICTS DURING MERGE.
