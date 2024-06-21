@@ -27,11 +27,10 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      # TODO: Change target branch to main once the workflow is ready
       - name: Attempt to push changes
         id: push
         run: |
-          if ! output=$(git push origin HEAD:gc/test); then
+          if ! output=$(git push origin HEAD:main); then
             echo "output=$output" >> $GITHUB_OUTPUT
             exit 1
           fi

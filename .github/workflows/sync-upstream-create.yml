@@ -4,10 +4,6 @@ on:
   schedule:
     - cron: "0 0 1 * *" # Runs at 00:00 on the first day of every month
   workflow_dispatch:
-  # TODO: Remove this trigger once the workflow is ready
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: write
@@ -16,8 +12,6 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    # TODO: Remove this condition once the workflow is ready
-    if: github.event.pull_request.user.login != 'github-actions[bot]'
     steps:
       - name: Checkout the repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -33,12 +27,6 @@ jobs:
         run: |
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-
-      #TODO: Remove this step once the workflow is ready
-      - name: Merge the feature branch for the workflow
-        run: |
-          git merge --squash origin/gc/sync-upstream
-          git commit -m "Add sync-upstream.yml workflow (#7)"
 
       - name: Pull changes from upstream and merge
         id: merge
@@ -80,14 +68,13 @@ jobs:
           fi
           echo EOF >> $GITHUB_OUTPUT
 
-      # TODO: Change base branch once the workflow is ready
       - name: Create pull request
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh pr create --title 'Update from upstream' \
           --body '${{ steps.pr-body.outputs.body }}' \
-          --base gc/test --head sync-upstream-${{ github.run_number }} \
+          --base main --head sync-upstream-${{ github.run_number }} \
           --repo ${{ github.repository }} \
           || \
           gh pr edit sync-upstream-${{ github.run_number }} \
