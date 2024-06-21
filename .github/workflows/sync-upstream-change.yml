@@ -1,0 +1,68 @@
+name: Sync with Upstream (change)
+
+on:
+  pull_request_review:
+    types: [edited, submitted]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: >
+      startsWith(github.event.pull_request.head.ref, 'sync-upstream-') &&
+      github.event.review.state == 'changes_requested' &&
+      github.event.review.body == 'bot change'
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Reset branch to main
+        run: |
+          git reset --hard origin/main
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Pull changes from upstream and merge
+        id: merge
+        run: |
+          git remote add upstream https://github.com/actions/runner-images.git
+          git fetch upstream
+          SHA="$(git rev-parse upstream/main)"
+          echo "upstream-sha=$SHA" >> $GITHUB_OUTPUT
+          git merge $SHA || echo "conflicts=true" >> $GITHUB_OUTPUT
+
+      - name: Push changes to branch
+        run: |
+          git push -f origin ${{ github.event.pull_request.head.ref }}
+
+      - name: Set PR body
+        id: pr-body
+        env:
+          GITHUB_SERVER_URL: "${{ github.server_url }}"
+          GITHUB_REPOSITORY: "${{ github.repository }}"
+          GITHUB_RUN_ID: "${{ github.run_id }}"
+          GITHUB_RUN_NUMBER: "${{ github.run_number }}"
+          UPSTREAM_SHA: "${{ steps.merge.outputs.upstream-sha }}"
+          PR_BODY_NO_CONFLICTS_TEMPLATE: ".github/workflows/sync-upstream/templates/pr-body-no-conflicts.txt"
+          PR_BODY_WITH_CONFLICTS_TEMPLATE: ".github/workflows/sync-upstream/templates/pr-body-with-conflicts.txt"
+        run: |
+          echo 'body<<EOF' >> $GITHUB_OUTPUT
+          if [ "${{ steps.merge.outputs.conflicts }}" == "true" ]; then
+            envsubst < $PR_BODY_WITH_CONFLICTS_TEMPLATE  >> $GITHUB_OUTPUT
+          else
+            envsubst < $PR_BODY_NO_CONFLICTS_TEMPLATE  >> $GITHUB_OUTPUT
+          fi
+          echo EOF >> $GITHUB_OUTPUT
+
+      - name: Edit pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit sync-upstream-${{ github.run_number }} \
+          --repo ${{ github.repository }} \
+          --body '${{ steps.pr-body.outputs.body }}'
