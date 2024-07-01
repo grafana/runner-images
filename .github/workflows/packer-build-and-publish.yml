@@ -1,0 +1,36 @@
+name: Packer Build and Publish AMI
+
+on:
+  push:
+    tags:
+      - "*"
+
+  # TODO: Remove this when the PR is ready
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - id: aws-auth
+        uses: grafana/shared-workflows/actions/aws-auth@28a818be69fe2838d577205e53c9e8c411e68e20
+        with:
+          aws-region: "us-east-2"
+          role-arn: "arn:aws:iam::654654387067:role/github-actions/publish-ami-role"
+          set-creds-in-environment: true
+          role-duration-seconds: 36000
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
+
+      - name: Packer Build
+        run: |
+          tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
+          # TODO: Change the image_version to '$tag' when the PR is ready
+          packer build -var provider=aws -var aws_private_ami=true -var image_version=dev templates/ubuntu-22.04.pkr.hcl
