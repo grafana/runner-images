@@ -22,7 +22,8 @@ locals {
   imagedata_file          = "/imagegeneration/imagedata.json"
 
   timestamp = formatdate("YYYYMMDDhhmmss", timestamp())
-  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${local.image_os}-${var.image_version}-${local.timestamp}"
+  image_version = var.image_version != "dev" ? var.image_version : "dev-${local.timestamp}"
+  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${local.image_os}-${local.image_version}"
   cloud_providers = {
     "aws" = "amazon-ebs",
     "azure"  = "azure-arm"
