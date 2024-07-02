@@ -27,6 +27,7 @@ jobs:
           aws-region: "us-east-2"
           role-arn: "arn:aws:iam::654654387067:role/github-actions/publish-ami-role"
           set-creds-in-environment: true
+          role-duration-seconds: 10800
 
       - name: Set up Packer
         uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
