@@ -35,4 +35,4 @@ jobs:
         run: |
           tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
           # TODO: Change the image_version to '$tag' when the PR is ready
-          packer build -var provider=aws -var aws_private_ami=true -var image_version=dev templates/ubuntu-22.04.pkr.hcl
+          packer build -var provider=aws -var aws_private_ami=true -var image_version=dev images/ubuntu/templates/ubuntu-22.04.pkr.hcl
