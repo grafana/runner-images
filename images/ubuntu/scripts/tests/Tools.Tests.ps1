@@ -204,13 +204,13 @@ Describe "MSSQLCommandLineTools" -Skip:((-not (Test-IsUbuntu20)) -and (-not (Tes
     }
 }
 
-Describe "SqlPackage" -Skip:((-not Test-IsAmd64) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
+Describe "SqlPackage" -Skip:((-not (Test-IsAmd64)) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
     It "sqlpackage" {
         "sqlpackage /version" | Should -ReturnZeroExitCode
     }
 }
 
-Describe "R" -Skip:((-not Test-IsAmd64) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
+Describe "R" -Skip:((-not (Test-IsAmd64)) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
     It "r" {
         "R --version" | Should -ReturnZeroExitCode
     }
@@ -267,7 +267,7 @@ Describe "Git-lfs" {
     }
 }
 
-Describe "Heroku" -Skip:((-not Test-IsAmd64) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
+Describe "Heroku" -Skip:((-not (Test-IsAmd64)) -or ((-not (Test-IsUbuntu20)) -and (-not (Test-IsUbuntu22)))) {
     It "heroku" {
         "heroku --version" | Should -ReturnZeroExitCode
     }
