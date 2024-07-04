@@ -30,14 +30,47 @@ jobs:
 
       - name: Set up Packer
         uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
+        with:
+          version: 1.9.4
 
       - name: Packer Build
         run: |
+          # Function to refresh AWS credentials
+          refresh_credentials() {
+            echo "Refreshing AWS credentials..."
+            
+            # Obtain new credentials using your preferred method
+            # Example: Assume role using AWS CLI and save credentials to a file
+            awsCredentials=$(aws sts assume-role --role-arn "arn:aws:iam::654654387067:role/github-actions/packer-role" --role-session-name "GitHubActions")
+            
+            # Extract credentials from the JSON file
+            export AWS_ACCESS_KEY_ID=$(echo $awsCredentials | jq -r '.Credentials.AccessKeyId')
+            export AWS_SECRET_ACCESS_KEY=$(echo $awsCredentials | jq -r '.Credentials.SecretAccessKey')
+            export AWS_SESSION_TOKEN=$(echo $awsCredentials | jq -r '.Credentials.SessionToken')
+
+            # Mask the credentials in the logs
+            echo "::add-mask::$AWS_ACCESS_KEY_ID"
+            echo "::add-mask::$AWS_SECRET_ACCESS_KEY"
+            echo "::add-mask::$AWS_SESSION_TOKEN"
+            
+            echo "AWS credentials refreshed."
+          }
+
+          # Start the Packer build process in the background
+          # TODO: Change the image_version to '$tag' when the PR is ready
+          # TODO: Use matrix for multiple templates
           tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
           packer init images/ubuntu/templates/ubuntu-22.04.pkr.hcl
-          packer build \
-          -var provider=aws \
-          -var aws_private_ami=true \
-          -var image_version=dev \
-          -var aws_assume_role_arn="arn:aws:iam::654654387067:role/github-actions/packer-role" \
-          images/ubuntu/templates/ubuntu-22.04.pkr.hcl
+          packer build -var provider=aws -var aws_private_ami=true -var image_version=dev images/ubuntu/templates/ubuntu-22.04.pkr.hcl &
+
+          # Get the PID of the Packer process
+          PACKER_PID=$!
+
+          # Loop to refresh credentials every 50 minutes
+          while kill -0 $PACKER_PID 2>/dev/null; do
+            sleep 3000 # Sleep for 50 minutes (3000 seconds)
+            refresh_credentials
+          done
+
+          # Wait for the Packer process to complete
+          wait $PACKER_PID

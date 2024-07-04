@@ -192,11 +192,6 @@ variable "aws_force_deregister" {
   default = false
 }
 
-variable "aws_assume_role_arn" {
-  type    = string
-  default = ""
-}
-
 source "azure-arm" "build_image" {
   allowed_inbound_ip_addresses           = "${var.azure_allowed_inbound_ip_addresses}"
   build_resource_group_name              = "${var.azure_build_resource_group_name}"
@@ -278,10 +273,6 @@ source "amazon-ebs" "build_image" {
     }
     owners      = ["099720109477"]
     most_recent = true
-  }
-
-  assume_role {
-    role_arn = var.aws_assume_role_arn
   }
 }
 
