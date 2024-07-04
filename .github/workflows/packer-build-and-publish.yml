@@ -1,0 +1,80 @@
+name: Packer Build and Publish AMI
+
+on:
+  push:
+    tags:
+      - "*"
+
+  # TODO: Remove this when the PR is ready
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - id: aws-auth
+        uses: grafana/shared-workflows/actions/aws-auth@28a818be69fe2838d577205e53c9e8c411e68e20
+        with:
+          aws-region: "us-east-2"
+          role-arn: "arn:aws:iam::654654387067:role/github-actions/packer-role"
+          set-creds-in-environment: true
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
+
+      - name: Packer Build
+        env:
+          PACKER_LOG: 1
+        run: |
+          # Function to refresh AWS credentials
+          refresh_credentials() {
+            echo "Refreshing AWS credentials..."
+            
+            # Obtain new credentials using your preferred method
+            # Example: Assume role using AWS CLI and save credentials to a file
+            awsCredentials=$(aws sts assume-role --role-arn "arn:aws:iam::654654387067:role/github-actions/packer-role" --role-session-name "GitHubActions")
+            
+            # Extract credentials from the JSON file
+            export AWS_ACCESS_KEY_ID=$(echo $awsCredentials | jq -r '.Credentials.AccessKeyId')
+            export AWS_SECRET_ACCESS_KEY=$(echo $awsCredentials | jq -r '.Credentials.SecretAccessKey')
+            export AWS_SESSION_TOKEN=$(echo $awsCredentials | jq -r '.Credentials.SessionToken')
+
+            # Mask the credentials in the logs
+            echo "::add-mask::$AWS_ACCESS_KEY_ID"
+            echo "::add-mask::$AWS_SECRET_ACCESS_KEY"
+            echo "::add-mask::$AWS_SESSION_TOKEN"
+
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set aws_session_token $AWS_SESSION_TOKEN
+            
+            echo "AWS credentials refreshed."
+          }
+
+          # Start the Packer build process in the background
+          # TODO: Change the image_version to '$tag' when the PR is ready
+          # TODO: Use matrix for multiple templates
+          tag=$(echo $GITHUB_REF | sed 's/refs\/tags\///')
+          packer init images/ubuntu/templates/ubuntu-22.04.pkr.hcl
+          packer build -var provider=aws -var aws_private_ami=true -var image_version=dev images/ubuntu/templates/ubuntu-22.04.pkr.hcl &
+
+          # Get the PID of the Packer process
+          PACKER_PID=$!
+
+          # Loop to refresh credentials every 50 minutes
+          while kill -0 $PACKER_PID 2>/dev/null; do
+            sleep 3000 # Sleep for 50 minutes (3000 seconds)
+            refresh_credentials
+          done
+
+          # Wait for the Packer process to complete
+          wait $PACKER_PID
