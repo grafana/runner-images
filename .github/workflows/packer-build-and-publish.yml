@@ -30,10 +30,10 @@ jobs:
 
       - name: Set up Packer
         uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
-        with:
-          version: 1.9.4
 
       - name: Packer Build
+        env:
+          PACKER_LOG: 1
         run: |
           # Function to refresh AWS credentials
           refresh_credentials() {
