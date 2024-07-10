@@ -13,7 +13,8 @@ packer {
 
 locals {
   timestamp = formatdate("YYYYMMDDhhmmss", timestamp())
-  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${var.image_version}-${local.timestamp}"
+  image_version = var.image_version != "dev" ? var.image_version : "dev-${local.timestamp}"
+  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${local.image_version}"
   cloud_providers = {
     "aws" = "amazon-ebs",
     "azure"  = "azure-arm"
@@ -227,6 +228,12 @@ source "amazon-ebs" "build_image" {
   aws_polling {
     delay_seconds = 30
     max_attempts  = 300
+  }
+
+  assume_role {
+    role_arn = "arn:aws:iam::654654387067:role/github-actions/packer-role"
+    // Need to pass the tags here, see packer-build-and-publish.yml for which
+    // ones.
   }
 
   temporary_security_group_source_public_ip = true

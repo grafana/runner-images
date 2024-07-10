@@ -1,0 +1,124 @@
+name: Packer Build and Publish AMI
+
+on:
+  push:
+    tags:
+      - "*"
+
+  # TODO: Remove this when the PR is ready
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: "us-east-2"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
+
+      - name: AWS auth
+        id: auth
+        run: |
+          AUDIENCE="github-actions-cognito-identity-pool"
+          AWS_ACCOUNT_ID="590183704419"
+          COGNITO_IDENTITY_POOL_ID="us-east-2:3a4bca79-07af-4921-a9fb-e21475708406"
+          JUMP_ROLE_ARN="arn:aws:iam::590183704419:role/github-actions-oidc-jump-role"
+          POOL_ID="us-east-2:3a4bca79-07af-4921-a9fb-e21475708406"
+
+          response=$(curl -sLS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUDIENCE}")
+          ACCESS_TOKEN=$(echo "${response}" | jq -r ".value")
+
+          # job_workflow_ref is not available in the environment, so we need to
+          # extract it from the token.
+          payload=$(echo "$ACCESS_TOKEN" | cut -d '.' -f 2)
+          # Pad the JWT if length would cause issues with base64 decoding.
+          payload=$(awk -vstr="$payload" 'BEGIN {l=length(str)+2; print substr(str"==",1,l-l%4)}' | base64 -d | { cat; echo; })
+
+          jobWorkflowRefValue=$(echo "$payload" | jq -r '.job_workflow_ref')
+          echo "job_workflow_ref=${jobWorkflowRefValue}" >> "${GITHUB_OUTPUT}"
+
+          getIdResponse=$(aws cognito-identity get-id --identity-pool-id "${COGNITO_IDENTITY_POOL_ID}" \
+          --account-id "${AWS_ACCOUNT_ID}" \
+          --logins '{"token.actions.githubusercontent.com":"'"${ACCESS_TOKEN}"'"}')
+          identityId=$(echo "${getIdResponse}" | jq -rc '.IdentityId')
+
+          cognitoIdentityTokenResponse=$(aws cognito-identity get-open-id-token --identity-id "${identityId}" \
+          --logins '{"token.actions.githubusercontent.com":"'"${ACCESS_TOKEN}"'"}')
+          cognitoIdentityOidcAccessToken=$(echo "${cognitoIdentityTokenResponse}" | jq -r '.Token')
+
+          echo "::add-mask::$cognitoIdentityOidcAccessToken"
+
+          awsCredentials=$(aws sts assume-role-with-web-identity \
+            --role-session-name "GitHubActions" \
+            --role-arn "${JUMP_ROLE_ARN}" \
+            --duration-seconds 21600 \
+            --web-identity-token "${cognitoIdentityOidcAccessToken}")
+
+          accessKeyId=$(echo "$awsCredentials" | jq -r ".Credentials.AccessKeyId")
+          echo "::add-mask::$accessKeyId"
+
+          secretAccessKey=$(echo "$awsCredentials" | jq -r ".Credentials.SecretAccessKey")
+          echo "::add-mask::$secretAccessKey"
+
+          sessionToken=$(echo "$awsCredentials" | jq -r ".Credentials.SessionToken")
+          echo "::add-mask::$sessionToken"
+
+          echo "AWS_ACCESS_KEY_ID=${accessKeyId}" >> "${GITHUB_ENV}"
+          echo "AWS_SECRET_ACCESS_KEY=${secretAccessKey}" >> "${GITHUB_ENV}"
+          echo "AWS_SESSION_TOKEN=${sessionToken}" >> "${GITHUB_ENV}"
+
+          expiration=$(echo "$awsCredentials" | jq -r ".Credentials.Expiration")
+
+          echo "Jump role session expires at: $expiration"
+
+      - name: Check AWS session
+        run: |
+          aws sts get-caller-identity
+
+      - name: Assume role
+        run: |
+          PACKER_ROLE_ARN="arn:aws:iam::654654387067:role/github-actions/packer-role"
+
+          REPOSITORY_NAME="$(echo $GITHUB_REPOSITORY | cut -d'/' -f2)"
+
+          # In the real implementation, this would be done using `assume_role` inside Packer.
+          # Everything that follows is just showing that this works in theory.
+
+          awsCredentials=$(aws sts assume-role \
+            --role-arn "${PACKER_ROLE_ARN}" \
+            --role-session-name "GitHubActions" \
+            --tags Key=repository_name,Value="${REPOSITORY_NAME}" Key=event_name,Value="${GITHUB_EVENT_NAME}" Key=repository_owner,Value="${GITHUB_REPOSITORY_OWNER}" Key=job_workflow_ref,Value="${{ steps.auth.outputs.job_workflow_ref }}")
+
+          accessKeyId=$(echo "$awsCredentials" | jq -r ".Credentials.AccessKeyId")
+          echo "::add-mask::$accessKeyId"
+
+          secretAccessKey=$(echo "$awsCredentials" | jq -r ".Credentials.SecretAccessKey")
+          echo "::add-mask::$secretAccessKey"
+
+          sessionToken=$(echo "$awsCredentials" | jq -r ".Credentials.SessionToken")
+          echo "::add-mask::$sessionToken"
+
+          # Don't do this part. Packer should have the jump role's credentials.
+          echo "AWS_ACCESS_KEY_ID=${accessKeyId}" >> "${GITHUB_ENV}"
+          echo "AWS_SECRET_ACCESS_KEY=${secretAccessKey}" >> "${GITHUB_ENV}"
+          echo "AWS_SESSION_TOKEN=${sessionToken}" >> "${GITHUB_ENV}"
+
+          expiration=$(echo "$awsCredentials" | jq -r ".Credentials.Expiration")
+
+          # It expires in 1 hour, but it can be renewed if you use the jump role.
+          echo "Chain role session expires at: $expiration"
+
+      - name: Check assumed role
+        run: |
+          aws sts get-caller-identity
