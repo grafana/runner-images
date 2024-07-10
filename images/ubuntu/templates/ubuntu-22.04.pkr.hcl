@@ -230,6 +230,12 @@ source "amazon-ebs" "build_image" {
     max_attempts  = 300
   }
 
+  assume_role {
+    role_arn = "arn:aws:iam::654654387067:role/github-actions/packer-role"
+    // Need to pass the tags here, see packer-build-and-publish.yml for which
+    // ones.
+  }
+
   temporary_security_group_source_public_ip = true
   ami_name                                  = "${local.managed_image_name}"
   ami_virtualization_type                   = "hvm"
