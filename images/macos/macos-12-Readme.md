@@ -1,50 +1,57 @@
+| Announcements |
+|-|
+| [[macOS] GCC 11 will be removed from all macOS images on August 12](https://github.com/actions/runner-images/issues/10213) |
+| [[macOS] Default Xcode on macOS 14 Sonoma will be set to Xcode 15.4 on July, 22](https://github.com/actions/runner-images/issues/10121) |
+***
 # macOS 12
 - OS Version: macOS 12.7.5 (21H1222)
 - Kernel Version: Darwin 21.6.0
-- Image Version: 20240623.1
+- Image Version: 20240721.1
 
 ## Installed Software
 
 ### Language and Runtime
-- .NET Core SDK: 6.0.423, 7.0.102, 7.0.202, 7.0.306, 7.0.410, 8.0.101, 8.0.204, 8.0.302
+- .NET Core SDK: 6.0.424, 7.0.102, 7.0.202, 7.0.306, 7.0.410, 8.0.101, 8.0.204, 8.0.303
 - Bash 3.2.57(1)-release
 - Clang/LLVM 14.0.0
 - Clang/LLVM (Homebrew) 15.0.7 - available on `$(brew --prefix llvm@15)/bin/clang`
 - GCC 11 (Homebrew GCC 11.4.0) - available by `gcc-11` alias
-- GCC 12 (Homebrew GCC 12.3.0) - available by `gcc-12` alias
+- GCC 12 (Homebrew GCC 12.4.0) - available by `gcc-12` alias
 - GCC 13 (Homebrew GCC 13.3.0) - available by `gcc-13` alias
+- GCC 14 (Homebrew GCC 14.1.0_2) - available by `gcc-14` alias
 - GNU Fortran 11 (Homebrew GCC 11.4.0) - available by `gfortran-11` alias
-- GNU Fortran 12 (Homebrew GCC 12.3.0) - available by `gfortran-12` alias
+- GNU Fortran 12 (Homebrew GCC 12.4.0) - available by `gfortran-12` alias
 - GNU Fortran 13 (Homebrew GCC 13.3.0) - available by `gfortran-13` alias
+- GNU Fortran 14 (Homebrew GCC 14.1.0_2) - available by `gfortran-14` alias
 - Julia 1.10.4
 - Kotlin 2.0.0-release-341
-- Go 1.21.11
+- Go 1.21.12
 - Mono 6.12.0.188
-- Node.js 18.20.3
+- Node.js 18.20.4
 - MSBuild 16.10.1.51301 (Mono 6.12.0.188)
 - NVM 0.39.7
-- NVM - Cached node versions: 16.20.2, 18.20.3, 20.15.0
+- NVM - Cached node versions: 16.20.2, 18.20.4, 20.15.1
 - Perl 5.38.2
-- PHP 8.3.8
+- PHP 8.3.9
 - Python 2.7.18
 - Python3 3.12.4
 - R 4.4.1
 - Ruby 3.0.7p220
 
 ### Package Management
-- Bundler 2.5.14
+- Bundler 2.5.16
 - Carthage 0.39.1
 - CocoaPods 1.15.2
 - Composer 2.7.7
-- Homebrew 4.3.6
-- Miniconda 24.4.0
+- Homebrew 4.3.10
+- Miniconda 24.5.0
 - NPM 10.7.0
 - NuGet 6.3.1.1
 - Pip 20.3.4 (python 2.7)
-- Pip3 24.1 (python 3.12)
+- Pip3 24.1.2 (python 3.12)
 - Pipx 1.6.0
-- RubyGems 3.5.14
-- Vcpkg 2024 (build from commit c4467cb68)
+- RubyGems 3.5.16
+- Vcpkg 2024 (build from commit 821100d96)
 - Yarn 1.22.22
 
 #### Environment variables
@@ -56,27 +63,27 @@
 ### Project Management
 - Apache Ant 1.10.14
 - Apache Maven 3.9.8
-- Gradle 8.8
-- Sbt 1.10.0
+- Gradle 8.9
+- Sbt 1.10.1
 
 ### Utilities
 - 7-Zip 17.05
 - aria2 1.37.0
 - azcopy 10.25.1
-- bazel 7.2.0
+- bazel 7.2.1
 - bazelisk 1.20.0
 - bsdtar 3.5.1 - available by 'tar' alias
 - Curl 8.8.0
 - Git 2.45.2
 - Git LFS 3.5.1
-- GitHub CLI 2.51.0
+- GitHub CLI 2.53.0
 - GNU Tar 1.35 - available by 'gtar' alias
 - GNU Wget 1.24.5
 - gpg (GnuPG) 2.4.5
-- ImageMagick 7.1.1-33
+- ImageMagick 7.1.1-35
 - jq 1.7.1
-- mongo 5.0.27
-- mongod 5.0.27
+- mongo 5.0.28
+- mongod 5.0.28
 - OpenSSL 1.1.1w  11 Sep 2023
 - Packer 1.9.4
 - pkg-config 0.29.2
@@ -92,26 +99,26 @@
 
 ### Tools
 - App Center CLI 3.0.1
-- AWS CLI 2.17.0
-- AWS SAM CLI 1.119.0
-- AWS Session Manager CLI 1.2.633.0
-- Azure CLI 2.61.0
+- AWS CLI 2.17.14
+- AWS SAM CLI 1.120.0
+- AWS Session Manager CLI 1.2.650.0
+- Azure CLI 2.62.0
 - Azure CLI (azure-devops) 1.0.1
-- Bicep CLI 0.28.1
+- Bicep CLI 0.29.45
 - Cabal 3.10.3.0
-- Cmake 3.29.6
-- CodeQL Action Bundle 2.17.5
-- Colima 0.6.9
+- Cmake 3.30.1
+- CodeQL Action Bundle 2.18.0
+- Colima 0.6.10
 - Fastlane 2.221.1
 - GHC 9.10.1
-- GHCup 0.1.22.0
+- GHCup 0.1.30.0
 - Jazzy 0.15.1
 - Stack 2.15.7
-- SwiftFormat 0.54.0
+- SwiftFormat 0.54.1
 - Swig 4.2.1
 - Xcbeautify 1.6.0
 - Xcode Command Line Tools 14.2.0.0.1.1668646533
-- Xcodes 1.4.1
+- Xcodes 1.5.0
 
 ### Linters
 - SwiftLint 0.53.0
@@ -120,14 +127,14 @@
 ### Browsers
 - Safari 17.5 (17618.2.12.111.5)
 - SafariDriver 17.5 (17618.2.12.111.5)
-- Google Chrome 126.0.6478.115
-- Google Chrome for Testing 126.0.6478.63
-- ChromeDriver 126.0.6478.63
-- Microsoft Edge 126.0.2592.68
-- Microsoft Edge WebDriver 126.0.2592.68
-- Mozilla Firefox 127.0.1
+- Google Chrome 126.0.6478.183
+- Google Chrome for Testing 126.0.6478.182
+- ChromeDriver 126.0.6478.182
+- Microsoft Edge 126.0.2592.113
+- Microsoft Edge WebDriver 126.0.2592.102
+- Mozilla Firefox 128.0
 - geckodriver 0.34.0
-- Selenium server 4.22.0
+- Selenium server 4.23.0
 
 #### Environment variables
 | Name            | Value                                 |
@@ -139,10 +146,10 @@
 ### Java
 | Version             | Environment Variable |
 | ------------------- | -------------------- |
-| 8.0.412+8 (default) | JAVA_HOME_8_X64      |
-| 11.0.23+9           | JAVA_HOME_11_X64     |
-| 17.0.11+9           | JAVA_HOME_17_X64     |
-| 21.0.3+9.0          | JAVA_HOME_21_X64     |
+| 8.0.422+5 (default) | JAVA_HOME_8_X64      |
+| 11.0.24+8           | JAVA_HOME_11_X64     |
+| 17.0.12+7           | JAVA_HOME_17_X64     |
+| 21.0.4+7.0          | JAVA_HOME_21_X64     |
 
 ### Cached Tools
 
@@ -167,13 +174,13 @@
 
 #### Node.js
 - 16.20.2
-- 18.20.3
-- 20.14.0
+- 18.20.4
+- 20.15.1
 
 #### Go
 - 1.20.14
-- 1.21.11
-- 1.22.4
+- 1.21.12
+- 1.22.5
 
 ### Rust Tools
 - Cargo 1.79.0
@@ -193,15 +200,15 @@
 - PowerShell 7.4.3
 
 #### PowerShell Modules
-- Az: 12.0.0
+- Az: 12.1.0
 - MarkdownPS: 1.10
-- Pester: 5.6.0
+- Pester: 5.6.1
 - PSScriptAnalyzer: 1.22.0
 
 ### Web Servers
 | Name  | Version | ConfigFile                      | ServiceStatus | ListenPort |
 | ----- | ------- | ------------------------------- | ------------- | ---------- |
-| httpd | 2.4.59  | /usr/local/etc/httpd/httpd.conf | none          | 80         |
+| httpd | 2.4.62  | /usr/local/etc/httpd/httpd.conf | none          | 80         |
 | nginx | 1.27.0  | /usr/local/etc/nginx/nginx.conf | none          | 80         |
 
 ### Xamarin
@@ -210,7 +217,7 @@
 | Version        | Build       | Path                                 |
 | -------------- | ----------- | ------------------------------------ |
 | 2019           | 8.10.25.2   | /Applications/Visual Studio 2019.app |
-| 2022 (default) | 17.6.12.410 | /Applications/Visual Studio.app      |
+| 2022 (default) | 17.6.13.424 | /Applications/Visual Studio.app      |
 
 ##### Notes
 ```
@@ -330,7 +337,7 @@ mv "/Applications/Visual Studio 2019.app" "/Applications/Visual Studio.app"
 | Package Name               | Version                                                                                                                                                                                                                 |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Android Command Line Tools | 8.0                                                                                                                                                                                                                     |
-| Android Emulator           | 34.2.15                                                                                                                                                                                                                 |
+| Android Emulator           | 34.2.16                                                                                                                                                                                                                 |
 | Android SDK Build-tools    | 35.0.0<br>34.0.0<br>33.0.0 33.0.1 33.0.2 33.0.3<br>32.0.0<br>31.0.0                                                                                                                                                     |
 | Android SDK Platforms      | android-35 (rev 1)<br>android-34-ext8 (rev 1)<br>android-34-ext12 (rev 1)<br>android-34 (rev 3)<br>android-33-ext5 (rev 1)<br>android-33-ext4 (rev 1)<br>android-33 (rev 3)<br>android-32 (rev 1)<br>android-31 (rev 1) |
 | Android SDK Platform-Tools | 35.0.1                                                                                                                                                                                                                  |
@@ -359,10 +366,11 @@ mv "/Applications/Visual Studio 2019.app" "/Applications/Visual Studio.app"
 #### Environment variables
 | Name              | Value                                                                                     |
 | ----------------- | ----------------------------------------------------------------------------------------- |
-| PARALLELS_DMG_URL | https://download.parallels.com/desktop/v19/19.4.0-54962/ParallelsDesktop-19.4.0-54962.dmg |
+| PARALLELS_DMG_URL | https://download.parallels.com/desktop/v19/19.4.1-54985/ParallelsDesktop-19.4.1-54985.dmg |
 
 ##### Notes
 ```
 If you want to use Parallels Desktop you should download a package from URL stored in
 PARALLELS_DMG_URL environment variable. A system extension is allowed for this version.
 ```
+
