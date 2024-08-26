@@ -1,0 +1,225 @@
+name: Packer Build and Publish AMI
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: us-east-2
+
+    strategy:
+      fail-fast: false
+      matrix:
+        account:
+          - "590183878691" # prod
+          - "654654387067" # dev
+        template:
+          - images/ubuntu/templates/ubuntu-22.04.pkr.hcl
+          - images/ubuntu/templates/ubuntu-22.04.arm64.pkr.hcl
+        prodRelease:
+          # if we are tagging main, the tag starts with v and doesn't contain an hyphen, this is a prod release
+          - ${{ github.base_ref == 'main' && !contains(github.ref_name, '-') }}
+        exclude:
+          # exclude releasing to prod if this is not a prod release
+          - prodRelease: false
+            account: "590183878691"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Assume OIDC role
+        id: auth
+        run: |
+          AUDIENCE="github-actions-cognito-identity-pool"
+          AWS_ACCOUNT_ID="590183704419"
+          COGNITO_IDENTITY_POOL_ID="us-east-2:3a4bca79-07af-4921-a9fb-e21475708406"
+          JUMP_ROLE_ARN="arn:aws:iam::590183704419:role/github-actions-oidc-jump-role"
+
+          response=$(curl -sLS -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${AUDIENCE}")
+          ACCESS_TOKEN=$(echo "${response}" | jq -r ".value")
+
+          # job_workflow_ref is not available in the environment, so we need to
+          # extract it from the token.
+          payload=$(echo "$ACCESS_TOKEN" | cut -d '.' -f 2)
+          # Pad the JWT if length would cause issues with base64 decoding.
+          payload=$(awk -vstr="$payload" 'BEGIN {l=length(str)+2; print substr(str"==",1,l-l%4)}' | base64 -d | { cat; echo; })
+
+          jobWorkflowRefValue=$(echo "$payload" | jq -r '.job_workflow_ref')
+          echo "job_workflow_ref=${jobWorkflowRefValue}" >> "${GITHUB_OUTPUT}"
+
+          repositoryNameValue=$(echo $GITHUB_REPOSITORY | cut -d'/' -f2)
+          echo "repository_name=${repositoryNameValue}" >> "${GITHUB_OUTPUT}"
+
+          getIdResponse=$(aws cognito-identity get-id --identity-pool-id "${COGNITO_IDENTITY_POOL_ID}" \
+          --account-id "${AWS_ACCOUNT_ID}" \
+          --logins '{"token.actions.githubusercontent.com":"'"${ACCESS_TOKEN}"'"}')
+          identityId=$(echo "${getIdResponse}" | jq -rc '.IdentityId')
+
+          cognitoIdentityTokenResponse=$(aws cognito-identity get-open-id-token --identity-id "${identityId}" \
+          --logins '{"token.actions.githubusercontent.com":"'"${ACCESS_TOKEN}"'"}')
+          cognitoIdentityOidcAccessToken=$(echo "${cognitoIdentityTokenResponse}" | jq -r '.Token')
+
+          echo "::add-mask::$cognitoIdentityOidcAccessToken"
+
+          awsCredentials=$(aws sts assume-role-with-web-identity \
+            --role-session-name "GitHubActions" \
+            --role-arn "${JUMP_ROLE_ARN}" \
+            --duration-seconds 18000 \
+            --web-identity-token "${cognitoIdentityOidcAccessToken}")
+
+          accessKeyId=$(echo "$awsCredentials" | jq -r ".Credentials.AccessKeyId")
+          echo "::add-mask::$accessKeyId"
+
+          secretAccessKey=$(echo "$awsCredentials" | jq -r ".Credentials.SecretAccessKey")
+          echo "::add-mask::$secretAccessKey"
+
+          sessionToken=$(echo "$awsCredentials" | jq -r ".Credentials.SessionToken")
+          echo "::add-mask::$sessionToken"
+
+          echo "AWS_ACCESS_KEY_ID=${accessKeyId}" >> "${GITHUB_ENV}"
+          echo "AWS_SECRET_ACCESS_KEY=${secretAccessKey}" >> "${GITHUB_ENV}"
+          echo "AWS_SESSION_TOKEN=${sessionToken}" >> "${GITHUB_ENV}"
+
+          expiration=$(echo "$awsCredentials" | jq -r ".Credentials.Expiration")
+
+          echo "Jump role session expires at: $expiration"
+
+      - name: Set up Packer
+        uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
+
+      - name: Packer build
+        id: build
+        env:
+          PACKER_LOG: 1
+          GITHUB_JOB_WORKFLOW_REF: ${{ steps.auth.outputs.job_workflow_ref }}
+          GITHUB_REPOSITORY_NAME: ${{ steps.auth.outputs.repository_name }}
+        run: |
+          packer init ${{ matrix.template }}
+          packer build \
+            -var provider=aws \
+            -var aws_private_ami=true \
+            -var image_version="${{ github.ref_name }}" \
+            -var aws_assume_role_arn="arn:aws:iam::${{ matrix.account }}:role/github-actions/packer-role" \
+            -var aws_assume_role_session_name=GitHubActions \
+            ${{ matrix.template }}
+
+          echo "name=$(basename ${{ matrix.template }})" >> "${GITHUB_OUTPUT}"
+          echo "readme=$(git diff --name-only -- '*.md')" >> "${GITHUB_OUTPUT}"
+          echo "report=$(git ls-files --others --exclude-standard -- '*.json')" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload software report
+        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+        with:
+          name: "Software Report for ${{ steps.build.outputs.name }}"
+          path: ${{ steps.build.outputs.report }}
+          overwrite: true
+
+      - name: Upload readme
+        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+        with:
+          name: "Readme for ${{ steps.build.outputs.name }}"
+          path: ${{ steps.build.outputs.readme }}
+          overwrite: true
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Download artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          path: artifacts
+
+      - name: Update readmes
+        run: |
+          # Define the base directories
+          artifacts_dir="artifacts"
+          images_dir="images"
+
+          # Loop through all .pkr.hcl files in the images directory
+          find "$images_dir" -type f -name "*.pkr.hcl" | while read -r pkr_file; do
+              # Extract the template filename without the path and extension
+              pkr_filename=$(basename "$pkr_file")
+              
+              # Extract the possible readme folder name based on the .pkr.hcl file name
+              readme_folder="Readme for ${pkr_filename}/"
+              
+              # Find the corresponding readme file within that folder
+              readme_file=$(find "$artifacts_dir" -type f -path "*/${readme_folder}*" -name "*.md")
+              
+              # If the readme file exists, move it to the directory containing the templates folder
+              if [[ -f "$readme_file" ]]; then
+                  destination_dir=$(dirname "$pkr_file")/../
+                  mv -f "$readme_file" "$destination_dir"
+              fi
+          done
+
+      - name: Update reports
+        run: |
+          # Base directory
+          artifacts_dir="artifacts"
+
+          # Iterate over all report directories in the artifacts folder
+          find "$artifacts_dir" -type d -name "Software Report for *.pkr.hcl" | while read -r report_dir; do
+              # Extract the .pkr.hcl file name from the directory name
+              pkr_name=$(echo "$report_dir" | sed -E 's/^.*for (.+)\.pkr\.hcl$/\1/')
+              
+              # Define the current and new file names
+              current_file="$report_dir/software-report.json"
+              new_file="$report_dir/software-report-${pkr_name}.json"
+              
+              # Check if the current file exists
+              if [ -f "$current_file" ]; then
+                  # Rename the file
+                  mv "$current_file" "$new_file"
+              fi
+          done
+
+      - name: Update tag
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add '*.md'
+          git commit -m "Update readmes for ${{ github.ref_name }}"
+          git tag -d ${{ github.ref_name }}
+          git tag -a ${{ github.ref_name }} -m "Release ${{ github.ref_name }}"
+          git push -f origin ${{ github.ref_name }}
+
+      - name: Check if latest
+        id: is_latest
+        run: |
+          # Fetch all version tags from the repository
+          tags=$(git tag | { grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' || true; })
+
+          # Sort the tags using semantic versioning and get latest tag
+          latest_tag=$(echo "$tags" | sort -V | tail -n 1)
+
+          # Compare the tag_to_check with the latest tag
+          if [ "${{ github.ref_name }}" = "$latest_tag" ]; then
+              echo "value=true" >> "${GITHUB_OUTPUT}"
+          else
+              echo "value=false" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Release
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
+        with:
+          files: artifacts/**/*.json
+          body: |
+            Release ${{ github.ref_name }} from workflow [#${{ github.run_id}}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          draft: ${{ github.base_ref != 'main' || contains(github.ref_name, '-') }}
+          make_latest: ${{ !(github.base_ref != 'main' || contains(github.ref_name, '-')) && steps.is_latest.outputs.value }}
+          generate_release_notes: true

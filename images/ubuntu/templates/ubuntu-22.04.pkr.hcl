@@ -13,7 +13,8 @@ packer {
 
 locals {
   timestamp = formatdate("YYYYMMDDhhmmss", timestamp())
-  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${var.image_version}-${local.timestamp}"
+  image_version =  "${var.image_version}-${local.timestamp}"
+  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${local.image_version}"
   cloud_providers = {
     "aws" = "amazon-ebs",
     "azure"  = "azure-arm"
@@ -163,7 +164,7 @@ variable "aws_subnet_id" {
 
 variable "aws_volume_size" {
   type    = number
-  default = 75
+  default = 80
 }
 
 variable "aws_volume_type" {
@@ -189,6 +190,36 @@ variable "aws_private_ami" {
 variable "aws_force_deregister" {
   type    = bool
   default = false
+}
+
+variable "aws_assume_role_arn" {
+  type    = string
+  default = ""
+}
+
+variable "aws_assume_role_session_name" {
+  type    = string
+  default = ""
+}
+
+variable "github_event_name" {
+  type    = string
+  default = "${env("GITHUB_EVENT_NAME")}"
+}
+
+variable "github_repository_owner" {
+  type    = string
+  default = "${env("GITHUB_REPOSITORY_OWNER")}"
+}
+
+variable "github_repository_name" {
+  type    = string
+  default = "${env("GITHUB_REPOSITORY_NAME")}"
+}
+
+variable "github_job_workflow_ref" {
+  type    = string
+  default = "${env("GITHUB_JOB_WORKFLOW_REF")}"
 }
 
 source "azure-arm" "build_image" {
@@ -272,6 +303,17 @@ source "amazon-ebs" "build_image" {
     }
     owners      = ["099720109477"]
     most_recent = true
+  }
+
+  assume_role {
+    role_arn     = "${var.aws_assume_role_arn}"
+    session_name = "${var.aws_assume_role_session_name}"
+    tags = {
+      event_name = "${var.github_event_name}"
+      repository_owner = "${var.github_repository_owner}"
+      repository_name = "${var.github_repository_name}"
+      job_workflow_ref = "${var.github_job_workflow_ref}"
+    }
   }
 }
 

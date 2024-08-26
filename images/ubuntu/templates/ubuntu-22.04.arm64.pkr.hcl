@@ -13,7 +13,8 @@ packer {
 
 locals {
   timestamp = formatdate("YYYYMMDDhhmmss", timestamp())
-  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-arm64-${var.image_version}-${local.timestamp}"
+  image_version =  "${var.image_version}-${local.timestamp}"
+  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-arm64-${local.image_version}"
   cloud_providers = {
     "aws" = "amazon-ebs",
     "azure"  = "azure-arm"
@@ -191,6 +192,36 @@ variable "aws_force_deregister" {
   default = false
 }
 
+variable "aws_assume_role_arn" {
+  type    = string
+  default = ""
+}
+
+variable "aws_assume_role_session_name" {
+  type    = string
+  default = ""
+}
+
+variable "github_event_name" {
+  type    = string
+  default = "${env("GITHUB_EVENT_NAME")}"
+}
+
+variable "github_repository_owner" {
+  type    = string
+  default = "${env("GITHUB_REPOSITORY_OWNER")}"
+}
+
+variable "github_repository_name" {
+  type    = string
+  default = "${env("GITHUB_REPOSITORY_NAME")}"
+}
+
+variable "github_job_workflow_ref" {
+  type    = string
+  default = "${env("GITHUB_JOB_WORKFLOW_REF")}"
+}
+
 source "azure-arm" "build_image" {
   allowed_inbound_ip_addresses           = "${var.azure_allowed_inbound_ip_addresses}"
   build_resource_group_name              = "${var.azure_build_resource_group_name}"
@@ -273,6 +304,17 @@ source "amazon-ebs" "build_image" {
     owners      = ["099720109477"]
     most_recent = true
   }
+
+  assume_role {
+    role_arn     = "${var.aws_assume_role_arn}"
+    session_name = "${var.aws_assume_role_session_name}"
+    tags = {
+      event_name = "${var.github_event_name}"
+      repository_owner = "${var.github_repository_owner}"
+      repository_name = "${var.github_repository_name}"
+      job_workflow_ref = "${var.github_job_workflow_ref}"
+    }
+  }
 }
 
 build {
@@ -283,13 +325,18 @@ build {
     inline          = ["mkdir ${var.image_folder}", "chmod 777 ${var.image_folder}"]
   }
 
+  provisioner "file" {
+    destination = "${var.helper_script_folder}"
+    source      = "${path.root}/../scripts/helpers"
+  }
+
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     script          = "${path.root}/../scripts/build/configure-apt-mock.sh"
   }
 
   provisioner "shell" {
-    environment_vars = ["DEBIAN_FRONTEND=noninteractive"]
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}","DEBIAN_FRONTEND=noninteractive"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     scripts          = [
       "${path.root}/../scripts/build/install-ms-repos.sh",
@@ -301,11 +348,6 @@ build {
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     script          = "${path.root}/../scripts/build/configure-limits.sh"
-  }
-
-  provisioner "file" {
-    destination = "${var.helper_script_folder}"
-    source      = "${path.root}/../scripts/helpers"
   }
 
   provisioner "file" {
