@@ -222,6 +222,11 @@ variable "github_job_workflow_ref" {
   default = "${env("GITHUB_JOB_WORKFLOW_REF")}"
 }
 
+variable "github_workflow_ref" {
+  type    = string
+  default = "${env("GITHUB_WORKFLOW_REF")}"
+}
+
 source "azure-arm" "build_image" {
   allowed_inbound_ip_addresses           = "${var.azure_allowed_inbound_ip_addresses}"
   build_resource_group_name              = "${var.azure_build_resource_group_name}"
@@ -313,6 +318,7 @@ source "amazon-ebs" "build_image" {
       repository_owner = "${var.github_repository_owner}"
       repository_name = "${var.github_repository_name}"
       job_workflow_ref = "${var.github_job_workflow_ref}"
+      workflow_ref = "${var.github_workflow_ref}"
     }
   }
 }
