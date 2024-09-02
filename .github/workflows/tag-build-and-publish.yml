@@ -7,4 +7,4 @@ on:
 
 jobs:
   build-and-publish:
-    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@gc/auto-publish
+    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@main
