@@ -52,9 +52,6 @@ jobs:
           # Pad the JWT if length would cause issues with base64 decoding.
           payload=$(awk -vstr="$payload" 'BEGIN {l=length(str)+2; print substr(str"==",1,l-l%4)}' | base64 -d | { cat; echo; })
 
-          workflowRefValue=$(echo "$payload" | jq -r '.workflow_ref')
-          echo "workflow_ref=${workflowRefValue}" >> "${GITHUB_OUTPUT}"
-
           jobWorkflowRefValue=$(echo "$payload" | jq -r '.job_workflow_ref')
           echo "job_workflow_ref=${jobWorkflowRefValue}" >> "${GITHUB_OUTPUT}"
 
@@ -101,7 +98,7 @@ jobs:
       - name: Packer build
         id: build
         env:
-          GITHUB_WORKFLOW_REF: ${{ steps.auth.outputs.workflow_ref }}
+          GITHUB_REF: ${{ github.ref }}
           GITHUB_JOB_WORKFLOW_REF: ${{ steps.auth.outputs.job_workflow_ref }}
           GITHUB_REPOSITORY_NAME: ${{ steps.auth.outputs.repository_name }}
         run: |
