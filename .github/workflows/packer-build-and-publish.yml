@@ -165,7 +165,7 @@ jobs:
               fi
           done
 
-      - name: Update reports
+      - name: Rename reports
         run: |
           # Base directory
           artifacts_dir="artifacts"
