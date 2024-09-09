@@ -1,0 +1,10 @@
+name: Build and Publish
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-publish:
+    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@main
