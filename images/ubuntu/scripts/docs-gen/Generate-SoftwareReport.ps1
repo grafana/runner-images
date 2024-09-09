@@ -209,7 +209,9 @@ $phpTools.AddNote("Both Xdebug and PCOV extensions are installed, but only Xdebu
 $haskellTools = $installedSoftware.AddHeader("Haskell Tools")
 $haskellTools.AddToolVersion("Cabal", $(Get-CabalVersion))
 $haskellTools.AddToolVersion("GHC", $(Get-GHCVersion))
-$haskellTools.AddToolVersion("GHCup", $(Get-GHCupVersion))
+if (Test-IsAmd64) {
+    $haskellTools.AddToolVersion("GHCup", $(Get-GHCupVersion))
+}
 $haskellTools.AddToolVersion("Stack", $(Get-StackVersion))
 
 # Rust Tools
