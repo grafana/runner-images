@@ -8,22 +8,24 @@ permissions:
   id-token: write
 
 jobs:
-  get-branch:
+  check-main:
     runs-on: ubuntu-latest
     outputs:
-      branch: ${{ steps.branch.outputs.value }}
+      is-main: ${{ steps.is_main.outputs.value }}
     steps:
-      - name: Checkout repository
+      - name: Checkout main branch
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          ref: main
 
-      - name: Determine the branch that contains the tag
-        id: branch
+      - name: Check if main branch contains the commit
+        id: is_main
         run: |
-          branch=$(git branch -r --contains ${{ github.sha }} | grep -v 'HEAD' | head -n 1 | sed 's/ *origin\///')
-          echo "value=$branch" >> $GITHUB_OUTPUT
+          is_main=$(git branch -r --contains ${{ github.sha }} | grep -q 'main' && echo true || echo false)
+          echo "value=$is_main" >> "${GITHUB_OUTPUT}"
 
   build:
-    needs: get-branch
+    needs: check-main
     runs-on: ubuntu-latest
 
     env:
@@ -40,7 +42,7 @@ jobs:
           - images/ubuntu/templates/ubuntu-22.04.arm64.pkr.hcl
         prodRelease:
           # if we are tagging main and the tag doesn't contain an hyphen, this is a prod release
-          - ${{ needs.get-branch.outputs.branch == 'main' && !contains(github.ref_name, '-') }}
+          - ${{ needs.check-main.outputs.is-main == 'true' && !contains(github.ref_name, '-') }}
         exclude:
           # exclude releasing to prod if this is not a prod release
           - prodRelease: false
