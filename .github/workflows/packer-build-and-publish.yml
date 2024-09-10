@@ -8,7 +8,22 @@ permissions:
   id-token: write
 
 jobs:
+  get-branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch: ${{ steps.branch.outputs.value }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Determine the branch that contains the tag
+        id: branch
+        run: |
+          branch=$(git branch -r --contains ${{ github.sha }} | grep -v 'HEAD' | head -n 1 | sed 's/ *origin\///')
+          echo "value=$branch" >> $GITHUB_OUTPUT
+
   build:
+    needs: get-branch
     runs-on: ubuntu-latest
 
     env:
@@ -24,8 +39,8 @@ jobs:
           - images/ubuntu/templates/ubuntu-22.04.pkr.hcl
           - images/ubuntu/templates/ubuntu-22.04.arm64.pkr.hcl
         prodRelease:
-          # if we are tagging main, the tag starts with v and doesn't contain an hyphen, this is a prod release
-          - ${{ github.base_ref == 'main' && !contains(github.ref_name, '-') }}
+          # if we are tagging main and the tag doesn't contain an hyphen, this is a prod release
+          - ${{ needs.get-branch.outputs.branch == 'main' && !contains(github.ref_name, '-') }}
         exclude:
           # exclude releasing to prod if this is not a prod release
           - prodRelease: false
