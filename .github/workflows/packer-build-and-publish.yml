@@ -13,12 +13,18 @@ jobs:
     outputs:
       is-main: ${{ steps.is_main.outputs.value }}
     steps:
+      - name: Error on non-tag events
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          echo "This workflow can only be triggered by tag events."
+          exit 1
+
       - name: Checkout main branch
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: main
 
-      - name: Check if main branch contains the commit
+      - name: Check if main branch contains the tagged commit
         id: is_main
         run: |
           is_main=$(git branch -r --contains ${{ github.sha }} | grep -q 'main' && echo true || echo false)
