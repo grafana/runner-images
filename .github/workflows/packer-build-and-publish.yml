@@ -27,7 +27,7 @@ jobs:
       - name: Check if main branch contains the tagged commit
         id: is_main
         run: |
-          is_main=$(git branch -r --contains ${{ github.sha }} | grep -q 'main' && echo true || echo false)
+          is_main=$([ -n "$(git branch -r --contains ${{ github.sha }} origin/main)" ] && echo true || echo false)
           echo "value=$is_main" >> "${GITHUB_OUTPUT}"
 
   build:
