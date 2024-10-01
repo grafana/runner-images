@@ -53,8 +53,10 @@ function Get-TCAssetArchitecture {
         | Select-Object -First 1
 
     if ([string]::IsNullOrEmpty($asset.arch)) {
+        Write-Host "Asset for $($tool.name) $toolVersion $($arch) not found in versions manifest"
         return $arch
     } else {
+        Write-Host "Asset for $($tool.name) $toolVersion $($arch) found in versions manifest using $($asset.arch)"
         return $asset.arch
     }
 }
@@ -90,6 +92,7 @@ foreach ($tool in $tools) {
 
     # If the tool has a url, get the versions manifest
     if ($tool.url) {
+        Write-Host "Retrieving assets for $($tool.name)..."
         $assets = Invoke-RestMethod $tool.url
     }
 
