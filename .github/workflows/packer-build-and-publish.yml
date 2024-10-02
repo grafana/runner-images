@@ -98,8 +98,8 @@ jobs:
       fail-fast: false
       matrix:
         template:
-          - images/ubuntu/templates/ubuntu-22.04.pkr.hcl
-          - images/ubuntu/templates/ubuntu-22.04.arm64.pkr.hcl
+          - images/ubuntu/templates/ubuntu-24.04.pkr.hcl
+          - images/ubuntu/templates/ubuntu-24.04.arm64.pkr.hcl
 
     steps:
       - name: Checkout repository

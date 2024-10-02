@@ -14,7 +14,7 @@ packer {
 locals {
   timestamp = formatdate("YYYYMMDDhhmmss", timestamp())
   image_version =  "${var.image_version}-${local.timestamp}"
-  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-${local.image_version}"
+  managed_image_name = var.managed_image_name != "" ? var.managed_image_name : "packer-${var.image_os}-arm64-${local.image_version}"
   cloud_providers = {
     "aws" = "amazon-ebs",
     "azure"  = "azure-arm"
@@ -164,7 +164,7 @@ variable "aws_subnet_id" {
 
 variable "aws_volume_size" {
   type    = number
-  default = 80
+  default = 75
 }
 
 variable "aws_volume_type" {
@@ -270,7 +270,7 @@ source "amazon-ebs" "build_image" {
   ami_virtualization_type                   = "hvm"
   ami_groups                                = var.aws_private_ami ? [] : ["all"]
   ebs_optimized                             = true
-  spot_instance_types                       = ["m7i.xlarge"]
+  spot_instance_types                       = ["m7g.xlarge"]
   spot_price                                = "1.00"
   region                                    = "${var.aws_region}"
   ssh_username                              = "ubuntu"
@@ -303,7 +303,7 @@ source "amazon-ebs" "build_image" {
   source_ami_filter {
     filters = {
       virtualization-type = "hvm"
-      name                = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
+      name                = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-arm64-server-*"
       root-device-type    = "ebs"
     }
     owners      = ["099720109477"]
@@ -430,6 +430,7 @@ build {
     environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "DEBIAN_FRONTEND=noninteractive"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     scripts          = [
+      // Commented scripts are unavailable on ARM64
       "${path.root}/../scripts/build/install-actions-cache.sh",
       "${path.root}/../scripts/build/install-runner-package.sh",
       "${path.root}/../scripts/build/install-apt-common.sh",
@@ -442,18 +443,17 @@ build {
       "${path.root}/../scripts/build/install-clang.sh",
       "${path.root}/../scripts/build/install-swift.sh",
       "${path.root}/../scripts/build/install-cmake.sh",
-      "${path.root}/../scripts/build/install-codeql-bundle.sh",
+      // "${path.root}/../scripts/build/install-codeql-bundle.sh",
       "${path.root}/../scripts/build/install-container-tools.sh",
       "${path.root}/../scripts/build/install-dotnetcore-sdk.sh",
-      "${path.root}/../scripts/build/install-microsoft-edge.sh",
+      // "${path.root}/../scripts/build/install-microsoft-edge.sh",
       "${path.root}/../scripts/build/install-gcc-compilers.sh",
       "${path.root}/../scripts/build/install-firefox.sh",
       "${path.root}/../scripts/build/install-gfortran.sh",
       "${path.root}/../scripts/build/install-git.sh",
       "${path.root}/../scripts/build/install-git-lfs.sh",
       "${path.root}/../scripts/build/install-github-cli.sh",
-      "${path.root}/../scripts/build/install-google-chrome.sh",
-      "${path.root}/../scripts/build/install-google-cloud-cli.sh",
+      // "${path.root}/../scripts/build/install-google-chrome.sh",
       "${path.root}/../scripts/build/install-haskell.sh",
       "${path.root}/../scripts/build/install-java-tools.sh",
       "${path.root}/../scripts/build/install-kubernetes-tools.sh",
@@ -461,7 +461,6 @@ build {
       "${path.root}/../scripts/build/install-kotlin.sh",
       "${path.root}/../scripts/build/install-mysql.sh",
       "${path.root}/../scripts/build/install-nginx.sh",
-      "${path.root}/../scripts/build/install-nvm.sh",
       "${path.root}/../scripts/build/install-nodejs.sh",
       "${path.root}/../scripts/build/install-bazel.sh",
       "${path.root}/../scripts/build/install-php.sh",
@@ -500,11 +499,12 @@ build {
     scripts          = ["${path.root}/../scripts/build/install-pipx-packages.sh"]
   }
 
-  provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "DEBIAN_FRONTEND=noninteractive", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
-    execute_command  = "/bin/sh -c '{{ .Vars }} {{ .Path }}'"
-    scripts          = ["${path.root}/../scripts/build/install-homebrew.sh"]
-  }
+  // Homebrew on Linux is not supported on ARM processors.
+  // provisioner "shell" {
+  //   environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "DEBIAN_FRONTEND=noninteractive", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}"]
+  //   execute_command  = "/bin/sh -c '{{ .Vars }} {{ .Path }}'"
+  //   scripts          = ["${path.root}/../scripts/build/install-homebrew.sh"]
+  // }
 
   provisioner "shell" {
     environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}"]
@@ -531,7 +531,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "${path.root}/../Ubuntu2404-Readme.md"
+    destination = "${path.root}/../Ubuntu2404-arm64-Readme.md"
     direction   = "download"
     source      = "${var.image_folder}/software-report.md"
   }
