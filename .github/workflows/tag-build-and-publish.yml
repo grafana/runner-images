@@ -7,4 +7,5 @@ on:
 
 jobs:
   build-and-publish:
-    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@main
+    # TODO: Revert back to @main before the PR is merged
+    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@gc/copy-amis

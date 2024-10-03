@@ -275,7 +275,8 @@ jobs:
   share-and-copy-amis:
     needs:
       - publish
-    if: ${{ !failure() && !cancelled() && needs.publish.outputs.prod_release == 'true' }}
+    # TODO: Re-add "&& needs.publish.outputs.prod_release == 'true'" before the PR is merged
+    if: ${{ !failure() && !cancelled() }}
     runs-on: ubuntu-latest
 
     env:
