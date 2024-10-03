@@ -257,7 +257,7 @@ jobs:
   share-and-copy-amis:
     needs:
       - publish
-    if: needs.publish.outputs.prod_release == 'true'
+    # TODO: Re-add "if: needs.publish.outputs.prod_release == 'true'" before the PR is merged
     runs-on: ubuntu-latest
 
     env:
