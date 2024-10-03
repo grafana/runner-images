@@ -254,12 +254,12 @@ jobs:
   share-and-copy-amis:
     needs:
       - publish
-    if: needs.publish.outputs.prod_release == 'true'
+    # TODO: Re-add "if: needs.publish.outputs.prod_release == 'true'" before the PR is merged
     runs-on: ubuntu-latest
 
     env:
       DEV_ACCOUNT: "654654387067"
-      PROD_ACCOUNT: "590183878691"
+      PROD_ACCOUNT: "654654387067" # TODO: Revert back to 590183878691 before the PR is merged
       AWS_REGION: us-east-2
 
     steps:
@@ -306,6 +306,7 @@ jobs:
             done
           done
 
+      # TODO: Revert "copy-$image_name" to "$image_name" before the PR is merged
       - name: Authenticate with Prod AWS Account
         uses: grafana/shared-workflows/actions/aws-auth@main
         with:
@@ -326,8 +327,8 @@ jobs:
               for AMI_PAIR in "${AMI_LIST[@]}"; do
                 REGION=$(echo $AMI_PAIR | cut -d: -f1)
                 AMI_ID=$(echo $AMI_PAIR | cut -d: -f2)
-                echo "Copying AMI $AMI_ID from region $REGION with name $image_name"
-                NEW_AMI_ID=$(aws ec2 copy-image --source-region $REGION --source-image-id $AMI_ID --region $REGION --name "$image_name" --description "Copied from $AMI_ID in $REGION" --query 'ImageId' --output text)
+                echo "Copying AMI $AMI_ID from region $REGION with name copy-$image_name"
+                NEW_AMI_ID=$(aws ec2 copy-image --source-region $REGION --source-image-id $AMI_ID --region $REGION --name "copy-$image_name" --description "Copied from $AMI_ID in $REGION" --query 'ImageId' --output text)
                 echo "New AMI ID in prod account: $NEW_AMI_ID"
               done
             done
