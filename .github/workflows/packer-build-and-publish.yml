@@ -39,8 +39,8 @@ jobs:
           - "590183878691" # prod
           - "654654387067" # dev
         template:
-          - images/ubuntu/templates/ubuntu-22.04.pkr.hcl
-          - images/ubuntu/templates/ubuntu-22.04.arm64.pkr.hcl
+          - images/ubuntu/templates/ubuntu-24.04.pkr.hcl
+          - images/ubuntu/templates/ubuntu-24.04.arm64.pkr.hcl
         prodRelease:
           # if we are tagging main and the tag doesn't contain an hyphen, this is a prod release
           - ${{ needs.check-if-main.outputs.is-main == 'true' && !contains(github.ref_name, '-') }}
