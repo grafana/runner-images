@@ -8,11 +8,11 @@ permissions:
   id-token: write
 
 jobs:
-  check-if-main:
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
+  check-main:
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     outputs:
-      is-main: ${{ steps.is_main.outputs.value }}
+      is_main: ${{ steps.is_main.outputs.value }}
     steps:
       - name: Checkout main branch
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -25,8 +25,68 @@ jobs:
           is_main=$([ -n "$(git branch -r --contains ${{ github.sha }} origin/main)" ] && echo true || echo false)
           echo "value=$is_main" >> "${GITHUB_OUTPUT}"
 
+  check-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release_found: ${{ steps.get_release_by_commit.outputs.release_found }}
+      release_id: ${{ steps.get_release_by_commit.outputs.release_id }}
+      is_draft: ${{ steps.get_release_by_commit.outputs.is_draft }}
+      body: ${{ steps.get_release_by_commit.outputs.body }}
+      tag: ${{ steps.get_release_by_commit.outputs.tag }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Find release for the commit
+        id: get_release_by_commit
+        run: |
+          # Fetch last 100 releases (it sorts by latest, last 100 should be enough)
+          releases=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/releases?per_page=100")
+
+          # Iterate over each release
+          while read -r release; do
+            release_id=$(echo "$release" | jq -r '.id')
+            tag_name=$(echo "$release" | jq -r '.tag_name')
+            is_draft=$(echo "$release" | jq -r '.draft')
+            body=$(echo "$release" | jq -r '.body')
+
+            # Get the commit for the tag
+            tag_info=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "${{ github.api_url }}/repos/${{ github.repository }}/git/refs/tags/${tag_name}")
+
+            # Handle annotated and lightweight tags
+            tag_type=$(echo "$tag_info" | jq -r '.object.type')
+            if [ "$tag_type" = "tag" ]; then
+              # Annotated tag, get the commit from the tag object
+              tag_object=$(curl -s -H "Authorization: token ${{ github.token }}" \
+                "$(echo "$tag_info" | jq -r '.object.url')")
+              commit_sha=$(echo "$tag_object" | jq -r '.object.sha')
+            else
+              # Lightweight tag, points directly to the commit
+              commit_sha=$(echo "$tag_info" | jq -r '.object.sha')
+            fi
+
+            if [ "$commit_sha" = "${{ github.sha }}" ]; then
+              echo "Release found (ID: $release_id)"
+              echo "release_found=true" >> $GITHUB_OUTPUT
+              echo "release_id=$release_id" >> $GITHUB_OUTPUT
+              echo "is_draft=$is_draft" >> $GITHUB_OUTPUT
+              echo "tag=$tag_name" >> $GITHUB_OUTPUT
+              echo "body<<EOF" >> $GITHUB_OUTPUT
+              echo "$body" >> $GITHUB_OUTPUT
+              echo "EOF" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done < <(echo "$releases" | jq -c '.[]')
+
+          echo "No release found for commit ${{ github.sha }}"
+          echo "release_found=false" >> $GITHUB_OUTPUT
+
   build:
-    needs: check-if-main
+    needs:
+      - check-release
+    if: needs.check-release.outputs.release_found == 'false'
     runs-on: ubuntu-latest
 
     env:
@@ -105,7 +165,6 @@ jobs:
         uses: hashicorp/setup-packer@1aa358be5cf73883762b302a3a03abd66e75b232 # v3.1.0
 
       - name: Packer build
-        id: build
         env:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_JOB_WORKFLOW_REF: ${{ steps.auth.outputs.job_workflow_ref }}
@@ -120,80 +179,47 @@ jobs:
             -var aws_assume_role_session_name=GitHubActions \
             ${{ matrix.template }}
 
-          echo "name=$(basename ${{ matrix.template }})" >> "${GITHUB_OUTPUT}"
-          echo "readme=$(git diff --name-only -- '*.md')" >> "${GITHUB_OUTPUT}"
-          echo "report=$(git ls-files --others --exclude-standard -- '**/software-report.json')" >> "${GITHUB_OUTPUT}"
-          echo "manifest=$(git ls-files --others --exclude-standard -- '**/build-manifest.json')" >> "${GITHUB_OUTPUT}"
+      - name: Preapre artifacts
+        id: artifacts
+        run: |
+          mkdir -p artifacts
+          name=$(basename -s .pkr.hcl ${{ matrix.template }})
+          readme=$(git diff --name-only -- '*.md')
+          mv "$readme" artifacts/readme-${name}.md
+          report=$(git ls-files --others --exclude-standard -- '**/software-report.json')
+          mv "$report" artifacts/software-report-${name}.json
+          manifest=$(git ls-files --others --exclude-standard -- '**/build-manifest.json')
+          mv "$manifest" artifacts/build-manifest-${name}.json
+          echo "name=$name" >> "${GITHUB_OUTPUT}"
 
-      - name: Upload build manifest
+      - name: Upload artifacts
         uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
         with:
-          name: "Build manifest for ${{ steps.build.outputs.name }}"
-          path: ${{ steps.build.outputs.manifest }}
-          overwrite: true
-
-      - name: Upload software report
-        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
-        with:
-          name: "Software report for ${{ steps.build.outputs.name }}"
-          path: ${{ steps.build.outputs.report }}
-          overwrite: true
-
-      - name: Upload readme
-        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
-        with:
-          name: "Readme for ${{ steps.build.outputs.name }}"
-          path: ${{ steps.build.outputs.readme }}
-          overwrite: true
+          name: "Artifacts for ${{ steps.artifacts.outputs.name }}.pkr.hcl"
+          path: artifacts
 
   publish:
     runs-on: ubuntu-latest
     needs:
-      - check-if-main
+      - check-main
+      - check-release
       - build
+    if: ${{ !failure() && !cancelled() }}
+    outputs:
+      release_id: ${{ steps.publish.outputs.id || needs.check-release.outputs.release_id }}
+      prod_release: ${{ env.PROD_RELEASE }}
+    env:
+      PROD_RELEASE: ${{ needs.check-main.outputs.is_main == 'true' && !contains(github.ref_name, '-') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
-      - name: Download artifacts
+      # If no release exists, download artifacts from the build job
+      - name: Download artifacts from build job
+        if: needs.check-release.outputs.release_found == 'false'
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
           path: artifacts
-
-      - name: Rename artifacts
-        run: |
-          # Base artifacts directory
-          artifacts_dir="artifacts"
-
-          # Function to rename artifacts
-          rename_artifacts() {
-              local dir_pattern="$1"
-              local current_filename_pattern="$2"
-              local new_filename_prefix="$3"
-
-              find "$artifacts_dir" -type d -name "$dir_pattern" | while read -r dir; do
-                  # Extract the .pkr.hcl file name from the directory name
-                  pkr_name=$(echo "$dir" | sed -E 's/^.*for (.+)\.pkr\.hcl$/\1/')
-
-                  # Loop over matching files
-                  for current_file in "$dir"/$current_filename_pattern; do
-                      # Check if the file exists and is a regular file
-                      if [ -f "$current_file" ]; then
-                          # Get the file extension
-                          ext="${current_file##*.}"
-                          # Define the new file name
-                          new_file="$dir/${new_filename_prefix}-${pkr_name}.${ext}"
-                          # Rename the file
-                          mv "$current_file" "$new_file"
-                      fi
-                  done
-              done
-          }
-
-          # Rename readme, software report, and build manifest artifacts
-          rename_artifacts "Readme for *.pkr.hcl" "*.md" "readme"
-          rename_artifacts "Software report for *.pkr.hcl" "software-report.json" "software-report"
-          rename_artifacts "Build manifest for *.pkr.hcl" "build-manifest.json" "build-manifest"
 
       - name: Check if latest
         id: is_latest
@@ -215,13 +241,123 @@ jobs:
           fi
 
       - name: Publish release
+        id: publish
+        if: needs.check-release.outputs.release_found == 'false'
         uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
         with:
-          files: |
-            artifacts/**/*.json
-            artifacts/**/*.md
+          files: artifacts/**/*
           body: |
-            Release ${{ github.ref_name }} from workflow [#${{ github.run_id}}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          draft: ${{ needs.check-if-main.outputs.is-main != 'true' || contains(github.ref_name, '-') }}
-          make_latest: ${{ !(github.base_ref != 'main' || contains(github.ref_name, '-')) && steps.is_latest.outputs.value }}
+            Release ${{ github.ref_name }} from workflow [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          draft: ${{ env.PROD_RELEASE == 'false' }}
+          make_latest: ${{ env.PROD_RELEASE == 'true' && steps.is_latest.outputs.value }}
           generate_release_notes: true
+
+      - name: Update release
+        id: update_release
+        if: needs.check-release.outputs.release_found == 'true' && needs.check-release.outputs.is_draft == 'true'
+        env:
+          RELEASE_BODY: ${{ needs.check-release.outputs.body }}
+          RELEASE_TAG: ${{ needs.check-release.outputs.tag }}
+        run: |
+          curl -X PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ github.token }}" \
+            ${{ github.api_url }}/repos/${{ github.repository }}/releases/${{ needs.check-release.outputs.release_id }} \
+            -d "$(jq -n \
+              --arg name "${{ github.ref_name }}" \
+              --arg tag_name "${{ github.ref_name }}" \
+              --argjson draft ${{ env.PROD_RELEASE == 'false' }} \
+              --arg make_latest "${{ env.PROD_RELEASE == 'true' && steps.is_latest.outputs.value }}" \
+              --arg body "$(echo "$RELEASE_BODY" | sed "/Release .* from workflow/ s/$RELEASE_TAG/${{ github.ref_name }}/g; /Full Changelog/ s/$RELEASE_TAG/${{ github.ref_name }}/g")" \
+              '{name: $name, tag_name: $tag_name, draft: $draft, make_latest: $make_latest, body: $body}' \
+            )"
+
+  share-and-copy-amis:
+    needs:
+      - publish
+    if: ${{ !failure() && !cancelled() && needs.publish.outputs.prod_release == 'true' }}
+    runs-on: ubuntu-latest
+
+    env:
+      DEV_ACCOUNT: "654654387067"
+      PROD_ACCOUNT: "590183878691"
+      AWS_REGION: us-east-2
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+
+      - name: Download manifest assets
+        run: |
+          # Get the list of assets for the specified release
+          assets=$(curl -s -H "Authorization: token ${{ github.token }}" \
+            "${{ github.api_url }}/repos/${{ github.repository }}/releases/${{ needs.publish.outputs.release_id }}/assets")
+
+          # Filter assets matching the pattern and download each one
+          echo "$assets" | jq -r '.[] | select(.name | test("^build-manifest-.*\\.json$")) | "\(.id) \(.name)"' | while read -r asset_id asset_name; do
+            echo "Downloading $asset_name (ID: $asset_id)"
+            curl -L -H "Accept: application/octet-stream" \
+              -H "Authorization: token ${{ github.token }}" \
+              "${{ github.api_url }}/repos/${{ github.repository }}/releases/assets/${asset_id}" \
+              -o "${asset_name}"
+          done
+
+      - name: Authenticate with Dev AWS Account
+        uses: grafana/shared-workflows/actions/aws-auth@main
+        with:
+          aws-region: "us-east-2"
+          role-arn: "arn:aws:iam::${{ env.DEV_ACCOUNT }}:role/github-actions/packer-role"
+          set-creds-in-environment: true
+
+      - name: Share AMIs with Prod Account
+        run: |
+          PROD_ACCOUNT_ID="${{ env.PROD_ACCOUNT }}"
+          for file in build-manifest-*.json; do
+            echo "Processing $file for sharing"
+            builds_length=$(jq '.builds | length' "$file")
+            for ((i=0; i<$builds_length; i++)); do
+              artifact_id=$(jq -r ".builds[$i].artifact_id" "$file")
+              IFS=',' read -ra AMI_LIST <<< "$artifact_id"
+              for AMI_PAIR in "${AMI_LIST[@]}"; do
+                REGION=$(echo $AMI_PAIR | cut -d: -f1)
+                AMI_ID=$(echo $AMI_PAIR | cut -d: -f2)
+                echo "Sharing AMI $AMI_ID in region $REGION with account $PROD_ACCOUNT_ID"
+                aws ec2 modify-image-attribute --image-id $AMI_ID --region $REGION --launch-permission "Add=[{UserId=$PROD_ACCOUNT_ID}]"
+
+                # Retrieve the snapshot IDs associated with the AMI
+                SNAPSHOT_IDS=$(aws ec2 describe-images --image-ids $AMI_ID --region $REGION --query 'Images[].BlockDeviceMappings[].Ebs.SnapshotId' --output text)
+
+                # Share each snapshot with the Prod account
+                for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+                  echo "Sharing snapshot $SNAPSHOT_ID with account $PROD_ACCOUNT_ID"
+                  aws ec2 modify-snapshot-attribute --snapshot-id $SNAPSHOT_ID --region $REGION --attribute createVolumePermission --operation-type add --user-ids $PROD_ACCOUNT_ID
+                done
+              done
+            done
+          done
+
+      - name: Authenticate with Prod AWS Account
+        uses: grafana/shared-workflows/actions/aws-auth@main
+        with:
+          aws-region: "us-east-2"
+          role-arn: "arn:aws:iam::${{ env.PROD_ACCOUNT }}:role/github-actions/packer-role"
+          set-creds-in-environment: true
+
+      - name: Copy AMIs to Prod Account
+        run: |
+          for file in build-manifest-*.json; do
+            echo "Processing $file for copying"
+            builds_length=$(jq '.builds | length' "$file")
+            for ((i=0; i<$builds_length; i++)); do
+              artifact_id=$(jq -r ".builds[$i].artifact_id" "$file")
+              image_name=$(jq -r ".builds[$i].custom_data.image_name" "$file")
+              IFS=',' read -ra AMI_LIST <<< "$artifact_id"
+              for AMI_PAIR in "${AMI_LIST[@]}"; do
+                REGION=$(echo $AMI_PAIR | cut -d: -f1)
+                AMI_ID=$(echo $AMI_PAIR | cut -d: -f2)
+                echo "Copying AMI $AMI_ID from region $REGION with name $image_name"
+                NEW_AMI_ID=$(aws ec2 copy-image --source-region $REGION --source-image-id $AMI_ID --region $REGION --name "$image_name" --description "Copied from $AMI_ID in $REGION" --query 'ImageId' --output text)
+                echo "New AMI ID in prod account: $NEW_AMI_ID"
+              done
+            done
+          done
