@@ -272,8 +272,7 @@ source "amazon-ebs" "build_image" {
     "us-west-2",
   ]
 
-  // make underlying snapshot public
-  snapshot_groups = ["all"]
+  snapshot_groups = var.aws_private_ami ? [] : ["all"]
 
   tags = var.aws_tags
 
@@ -312,6 +311,14 @@ source "amazon-ebs" "build_image" {
 
 build {
   sources = ["source.${local.cloud_providers[var.provider]}.build_image"]
+
+  post-processor "manifest" {
+    output = "${path.root}/../build-manifest.json"
+    strip_path = true
+    custom_data = {
+      image_name    = "${local.managed_image_name}"
+    }
+  }
 
   // Create folder to store temporary data
   provisioner "shell" {
