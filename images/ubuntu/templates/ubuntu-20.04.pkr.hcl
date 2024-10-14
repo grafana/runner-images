@@ -326,6 +326,14 @@ source "amazon-ebs" "build_image" {
 build {
   sources = ["source.${local.cloud_providers[var.provider]}.build_image"]
 
+  post-processor "manifest" {
+    output = "${path.root}/../build-manifest.json"
+    strip_path = true
+    custom_data = {
+      image_name    = "${local.managed_image_name}"
+    }
+  }
+
   provisioner "shell" {
     execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     inline          = ["mkdir ${var.image_folder}", "chmod 777 ${var.image_folder}"]
