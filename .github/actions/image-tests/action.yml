@@ -1,0 +1,44 @@
+name: 'Image Tests'
+description: 'Runs Pester tests on images'
+
+inputs:
+  image_os:
+    description: 'The operating system of the image'
+    required: false
+    default: 'ubuntu'
+  os_version:
+    description: 'The version of the operating system of the image'
+    required: false
+    default: '2204'
+  image_tag:
+    description: 'The version of the image'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      id: checkout
+      with:
+        repository: grafana/runner-images
+        ref: ${{ inputs.image_tag }}
+        path: runner-images
+
+    - name: Run Pester Tests
+      shell: pwsh
+      env:
+        IMAGE_OS: ${{ inputs.image_os }}
+        TESTS_PATH: images/${{ inputs.image_os }}/scripts/tests
+        TOOLSET_PATH: images/${{ inputs.image_os }}/toolsets/toolset-${{ inputs.os_version }}.json
+      run: |
+        $ErrorActionPreference = "Stop"
+        $repoPath = (Get-Item -Path "runner-images").FullName
+        Import-Module "$repoPath/$env:TESTS_PATH/Helpers.psm1" -DisableNameChecking
+        function global:Get-ToolsetContentOverride {
+            $toolsetPath = "$repoPath/$env:TOOLSET_PATH"
+            $toolsetJson = Get-Content -Path $toolsetPath -Raw
+            ConvertFrom-Json -InputObject $toolsetJson
+        }
+        Set-Alias -Name Get-ToolsetContent -Value Get-ToolsetContentOverride -Scope global
+        Invoke-Pester -Output Detailed $repoPath/$env:TESTS_PATH
