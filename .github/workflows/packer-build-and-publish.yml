@@ -183,10 +183,9 @@ jobs:
       - name: Preapre artifacts
         id: artifacts
         run: |
-          git add -N .
           mkdir -p artifacts
           name=$(basename -s .pkr.hcl ${{ matrix.template }})
-          readme=$(git diff --name-only -- '*.md')
+          readme=$(git ls-files --others --exclude-standard -- '**/*.md')
           mv "$readme" artifacts/readme-${name}.md
           report=$(git ls-files --others --exclude-standard -- '**/software-report.json')
           mv "$report" artifacts/software-report-${name}.json
