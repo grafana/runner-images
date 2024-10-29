@@ -553,7 +553,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "${path.root}/../Ubuntu2004-Readme.md"
+    destination = "${path.root}/../software-report.md"
     direction   = "download"
     source      = "${var.image_folder}/software-report.md"
   }
