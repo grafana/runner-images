@@ -4,6 +4,11 @@ on:
   pull_request_review:
     types: [edited, submitted]
 
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -12,11 +17,26 @@ jobs:
       github.event.review.state == 'changes_requested' &&
       github.event.review.body == 'bot change'
     steps:
+      - name: Retrieve secrets
+        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        with:
+          repo_secrets: |
+            APP_ID=app:id
+            APP_PRIVATE_KEY=app:private-key
+
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69 # v1.11.0
+        with:
+          app-id: ${{ env.APP_ID }}
+          private-key: ${{ env.APP_PRIVATE_KEY }}
+
       - name: Checkout the repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ steps.generate-token.outputs.token }}
 
       - name: Reset branch to main
         run: |
