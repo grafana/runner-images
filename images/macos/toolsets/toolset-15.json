@@ -3,13 +3,15 @@
         "default": "16",
         "x64": {
             "versions": [
-                { "link": "16.1_beta_2", "version": "16.1.0-Beta.2+16B5014f", "symlinks": ["16.1"], "install_runtimes": "true", "sha256": "a07a709b4b196be118ff5bab7ea19a16a4ca273cad876d73dec5926c8a6da34a"},
+                { "link": "16.2_beta_2", "version": "16.2_beta_2+16C5013f", "symlinks": ["16.2"], "install_runtimes": "true", "sha256": "b04956fca1b4fe468d5de8833b23c651ed787e41fc5a9c0e29f5eadd5b54d923"},
+                { "link": "16.1", "version": "16.1+16B40", "install_runtimes": "true", "sha256": "8ca961d55981f983d21b99a95a6b0ac04905b837f6e11346ee86d28f12afe720"},
                 { "link": "16", "version": "16.0.0+16A242d", "symlinks": ["16.0"], "install_runtimes": "true", "sha256": "4a26c3d102a55c7222fb145e0ee1503249c9c26c6e02dc64d783c8810b37b1e3"}
             ]
         },
         "arm64":{
             "versions": [
-                { "link": "16.1_beta_2", "version": "16.1.0-Beta.2+16B5014f", "symlinks": ["16.1"], "install_runtimes": "true", "sha256": "a07a709b4b196be118ff5bab7ea19a16a4ca273cad876d73dec5926c8a6da34a"},
+                { "link": "16.2_beta_2", "version": "16.2_beta_2+16C5013f", "symlinks": ["16.2"], "install_runtimes": "true", "sha256": "b04956fca1b4fe468d5de8833b23c651ed787e41fc5a9c0e29f5eadd5b54d923"},
+                { "link": "16.1", "version": "16.1+16B40", "install_runtimes": "true", "sha256": "8ca961d55981f983d21b99a95a6b0ac04905b837f6e11346ee86d28f12afe720"},
                 { "link": "16", "version": "16.0.0+16A242d", "symlinks": ["16.0"], "install_runtimes": "true", "sha256": "4a26c3d102a55c7222fb145e0ee1503249c9c26c6e02dc64d783c8810b37b1e3"}
             ]
         }
@@ -25,10 +27,10 @@
         }
     },
     "android": {
-        "cmdline-tools": "commandlinetools-mac-12172612_latest.zip",
+        "cmdline-tools": "commandlinetools-mac-12266719_latest.zip",
         "sdk-tools": "sdk-tools-darwin-4333796.zip",
         "platform_min_version": "35",
-        "build_tools_min_version": "35.0.2",
+        "build_tools_min_version": "35.0.0",
         "extras": [
             "android;m2repository", "google;m2repository", "google;google_play_services"
         ],
@@ -118,13 +120,15 @@
                         "3.9.*",
                         "3.10.*",
                         "3.11.*",
-                        "3.12.*"
+                        "3.12.*",
+                        "3.13.*"
                     ]
                 },
                 "arm64": {
                     "versions": [
                         "3.11.*",
-                        "3.12.*"
+                        "3.12.*",
+                        "3.13.*"
                     ]
                 }
             }
@@ -137,13 +141,15 @@
                 "x64": {
                     "versions": [
                         "18.*",
-                        "20.*"
+                        "20.*",
+                        "22.*"
                     ]
                 },
                 "arm64": {
                     "versions": [
                         "18.*",
-                        "20.*"
+                        "20.*",
+                        "22.*"
                     ]
                 }
             }
