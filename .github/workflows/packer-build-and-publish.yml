@@ -98,8 +98,8 @@ jobs:
       fail-fast: false
       matrix:
         template:
-          - images/ubuntu/templates/ubuntu-22.04.pkr.hcl
-          - images/ubuntu/templates/ubuntu-22.04.arm64.pkr.hcl
+          - images/ubuntu/templates/ubuntu-24.04.pkr.hcl
+          - images/ubuntu/templates/ubuntu-24.04.arm64.pkr.hcl
 
     steps:
       - name: Checkout repository
@@ -183,15 +183,14 @@ jobs:
       - name: Preapre artifacts
         id: artifacts
         run: |
-          git add -N .
           mkdir -p artifacts
           name=$(basename -s .pkr.hcl ${{ matrix.template }})
-          readme=$(git diff --name-only -- '*.md')
-          mv "$readme" artifacts/readme-${name}.md
+          readme=$(git ls-files --others --exclude-standard -- '**/software-report.md')
+          mv "$readme" artifacts/${name}-software-report.md
           report=$(git ls-files --others --exclude-standard -- '**/software-report.json')
-          mv "$report" artifacts/software-report-${name}.json
+          mv "$report" artifacts/${name}-software-report.json
           manifest=$(git ls-files --others --exclude-standard -- '**/build-manifest.json')
-          mv "$manifest" artifacts/build-manifest-${name}.json
+          mv "$manifest" artifacts/${name}-build-manifest.json
           echo "name=$name" >> "${GITHUB_OUTPUT}"
 
       - name: Upload artifacts

@@ -22,6 +22,7 @@ extract_dotnet_sdk() {
     destination="./tmp-$(basename -s .tar.gz $archive_name)"
 
     echo "Extracting $archive_name to $destination"
+    mkdir -p /usr/share/dotnet
     mkdir "$destination" && tar -C "$destination" -xzf "$archive_name"
     rsync -qav --remove-source-files "$destination/shared/" /usr/share/dotnet/shared/
     rsync -qav --remove-source-files "$destination/host/" /usr/share/dotnet/host/
@@ -79,16 +80,6 @@ for version in ${dotnet_versions[@]}; do
 done
 
 sorted_sdks=$(echo ${sdks[@]} | tr ' ' '\n' | sort -r | uniq -w 5)
-
-# Manually install SDK for arm64 in case it's not available in the apt repository
-if [[ $arch == "arm64" && ! -d "/usr/share/dotnet" ]]; then
-    curl -SL -o dotnet.tar.gz https://dotnetcli.blob.core.windows.net/dotnet/Sdk/master/dotnet-sdk-latest-linux-arm64.tar.gz
-    mkdir -p /usr/share/dotnet
-    tar -zxf dotnet.tar.gz -C /usr/share/dotnet
-    rm -f /usr/bin/dotnet
-    ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet
-fi
-
 
 # Download/install additional SDKs in parallel
 export -f download_with_retry

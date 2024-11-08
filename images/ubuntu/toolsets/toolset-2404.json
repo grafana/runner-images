@@ -199,12 +199,18 @@
             {
                 "plugin": "buildx",
                 "version": "latest",
-                "asset": "linux-amd64"
-            },
+                "asset": {
+                    "amd64": "linux-amd64",
+                    "arm64": "linux-arm64"
+                }
+            },            
             {
                 "plugin": "compose",
                 "version": "2.27.1",
-                "asset": "linux-x86_64"
+                "asset": {
+                    "amd64": "linux-x86_64",
+                    "arm64": "linux-aarch64"
+                }
             }
         ]
     },
@@ -314,6 +320,6 @@
         "version": "16"
     },
     "pwsh": {
-        "version": "7.4"
+        "version": "7.4.2"
     }
 }
