@@ -7,5 +7,4 @@ on:
 
 jobs:
   build-and-publish:
-    # TODO: Revert back to @main before the PR is merged
-    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@gc/update-to-ubuntu-24
+    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@main
