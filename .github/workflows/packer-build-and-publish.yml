@@ -295,7 +295,7 @@ jobs:
             "${{ github.api_url }}/repos/${{ github.repository }}/releases/${{ needs.publish.outputs.release_id }}/assets")
 
           # Filter assets matching the pattern and download each one
-          echo "$assets" | jq -r '.[] | select(.name | test("^build-manifest-.*\\.json$")) | "\(.id) \(.name)"' | while read -r asset_id asset_name; do
+          echo "$assets" | jq -r '.[] | select(.name | test(".*build-manifest\\.json$")) | "\(.id) \(.name)"' | while read -r asset_id asset_name; do
             echo "Downloading $asset_name (ID: $asset_id)"
             curl -L -H "Accept: application/octet-stream" \
               -H "Authorization: token ${{ github.token }}" \
@@ -313,7 +313,7 @@ jobs:
       - name: Share AMIs with Prod Account
         run: |
           PROD_ACCOUNT_ID="${{ env.PROD_ACCOUNT }}"
-          for file in build-manifest-*.json; do
+          for file in *build-manifest.json; do
             echo "Processing $file for sharing"
             builds_length=$(jq '.builds | length' "$file")
             for ((i=0; i<$builds_length; i++)); do
@@ -346,7 +346,7 @@ jobs:
 
       - name: Copy AMIs to Prod Account
         run: |
-          for file in build-manifest-*.json; do
+          for file in *build-manifest.json; do
             echo "Processing $file for copying"
             builds_length=$(jq '.builds | length' "$file")
             for ((i=0; i<$builds_length; i++)); do
