@@ -195,6 +195,7 @@
             "sshpass",
             "subversion",
             "sudo",
+            "systemd-coredump",
             "swig",
             "telnet",
             "time",
