@@ -35,10 +35,11 @@ curl -fsSL https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 
 # Temporarily pinning the version
 # Download minikube
-curl -fsSL -O https://storage.googleapis.com/minikube/releases/latest/minikube-linux-$arch
+minikube_version="1.34.0"
+curl -fsSL -O https://storage.googleapis.com/minikube/releases/v$minikube_version/minikube-linux-$arch
 
 # Supply chain security - minikube
-minikube_hash=$(get_checksum_from_github_release "kubernetes/minikube" "linux-$arch" "1.34.0" "SHA256")
+minikube_hash=$(get_checksum_from_github_release "kubernetes/minikube" "linux-$arch" "$minikube_version" "SHA256")
 use_checksum_comparison "minikube-linux-$arch" "${minikube_hash}"
 
 # Install minikube
