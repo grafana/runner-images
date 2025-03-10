@@ -73,6 +73,7 @@ Describe "Android" {
         $platformsInstalled,
         $buildTools,
         $ndkFullVersions,
+        "platform-tools",
         ((Get-ToolsetContent).android.extra_list | ForEach-Object { "extras/${_}" }),
         ((Get-ToolsetContent).android.addon_list | ForEach-Object { "add-ons/${_}" })
     )
