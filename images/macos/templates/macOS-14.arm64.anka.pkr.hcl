@@ -236,6 +236,7 @@ build {
     execute_command  = "chmod +x {{ .Path }}; source $HOME/.bash_profile; {{ .Vars }} {{ .Path }}"
     scripts          = [
       "${path.root}/../scripts/build/install-actions-cache.sh",
+      "${path.root}/../scripts/build/install-runner-package.sh",
       "${path.root}/../scripts/build/install-llvm.sh",
       "${path.root}/../scripts/build/install-openjdk.sh",
       "${path.root}/../scripts/build/install-aws-tools.sh",
@@ -282,6 +283,9 @@ build {
 
   provisioner "shell" {
     execute_command = "chmod +x {{ .Path }}; source $HOME/.bash_profile; {{ .Vars }} {{ .Path }}"
-    scripts         = ["${path.root}/../scripts/build/configure-hostname.sh"]
+    scripts         = [
+      "${path.root}/../scripts/build/configure-hostname.sh",
+      "${path.root}/../scripts/build/configure-system.sh"
+    ]
   }
 }
