@@ -1,11 +1,14 @@
-name: Trigger Windows22 CI
+name: Trigger Windows2022 CI
 run-name: Windows2022 - ${{ github.event.pull_request.title }}
 
 on:
-  pull_request_target:
+  pull_request:
     types: labeled
     paths:
     - 'images/windows/**'
+
+permissions:
+  contents: read
 
 defaults:
   run:
@@ -13,8 +16,12 @@ defaults:
 
 jobs:
   Windows_2022:
+    permissions:
+      contents: read
     if: github.event.label.name == 'CI windows-all' || github.event.label.name == 'CI windows-2022'
     uses: ./.github/workflows/trigger-ubuntu-win-build.yml
     with:
       image_type: 'windows2022'
-    secrets: inherit
+    secrets:
+      CI_PR_TOKEN: ${{ secrets.CI_PR_TOKEN }}
+      CI_REPO: ${{ secrets.CI_REPO }}

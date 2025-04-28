@@ -1,21 +1,21 @@
-name: 'Image tests'
-description: 'Run tests on runner images from within workflow'
+name: "Image tests"
+description: "Run tests on runner images from within workflow"
 
 inputs:
   image_os:
-    description: 'The operating system of the image'
+    description: "The operating system of the image"
     required: false
-    default: 'ubuntu'
+    default: "ubuntu"
   os_version:
-    description: 'The version of the operating system of the image'
+    description: "The version of the operating system of the image"
     required: false
-    default: '2204'
+    default: "2204"
   image_tag:
-    description: 'The version of the image'
+    description: "The version of the image"
     required: true
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Checkout repository
       uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -47,6 +47,19 @@ runs:
 
     - name: Test runner expressions
       shell: bash
+      env:
+        CONTAINS_TRUE: ${{ contains('Hello World', 'World') }}
+        CONTAINS_FALSE: ${{ contains('Hello World', 'Goodbye') }}
+        STARTS_WITH_TRUE: ${{ startsWith('Hello World', 'Hello') }}
+        STARTS_WITH_FALSE: ${{ startsWith('Hello World', 'World') }}
+        ENDS_WITH_TRUE: ${{ endsWith('Hello World', 'World') }}
+        ENDS_WITH_FALSE: ${{ endsWith('Hello World', 'Hello') }}
+        FORMAT_TEST: ${{ format('Hello {0}{1}', 'World', '!') }}
+        JOIN_TEST: ${{ join(fromJSON('["Hello", "World"]'), ' ') }}
+        HASH_FILES_NON_EMPTY: ${{ hashFiles('runner-images') }}
+        HASH_FILES_EMPTY: ${{ hashFiles('/var/empty') }}
+        FROM_JSON_TEST: ${{ fromJSON('{"key":"value"}').key }}
+        TO_JSON_TEST: ${{ toJSON(fromJSON('{"key":"value"}')) }}
       run: |
         echo "::group::Test runner expressions"
         # Initialize the failed flag and counters
@@ -89,18 +102,18 @@ runs:
         mkdir empty-dir
         echo "Testing runner expressions..."
         start_time=$(date +%s)
-        check_result "contains (true)" "${{ contains('Hello World', 'World') }}" "true"
-        check_result "contains (false)" "${{ contains('Hello World', 'Goodbye') }}" "false"
-        check_result "startsWith (true)" "${{ startsWith('Hello World', 'Hello') }}" "true"
-        check_result "startsWith (false)" "${{ startsWith('Hello World', 'World') }}" "false"
-        check_result "endsWith (true)" "${{ endsWith('Hello World', 'World') }}" "true"
-        check_result "endsWith (false)" "${{ endsWith('Hello World', 'Hello') }}" "false"
-        check_result "format" "${{ format('Hello {0}{1}', 'World', '!') }}" "Hello World!"
-        check_result "join" "${{ join(fromJSON('["Hello", "World"]'), ' ') }}" "Hello World"
-        check_result "hashFiles (non-empty)" "${{ hashFiles('runner-images') }}" "non-empty"
-        check_result "hashFiles (empty)" "${{ hashFiles('empty-dir') }}" ""
-        check_result "fromJSON" "${{ fromJSON('{"key":"value"}').key }}" "value"
-        check_result "toJSON" "${{ toJSON(fromJSON('{"key":"value"}')) }}" '{
+        check_result "contains (true)" "$CONTAINS_TRUE" "true"
+        check_result "contains (false)" "$CONTAINS_FALSE" "false"
+        check_result "startsWith (true)" "$STARTS_WITH_TRUE" "true"
+        check_result "startsWith (false)" "$STARTS_WITH_FALSE" "false"
+        check_result "endsWith (true)" "$ENDS_WITH_TRUE" "true"
+        check_result "endsWith (false)" "$ENDS_WITH_FALSE" "false"
+        check_result "format" "$FORMAT_TEST" "Hello World!"
+        check_result "join" "$JOIN_TEST" "Hello World"
+        check_result "hashFiles (non-empty)" "$HASH_FILES_NON_EMPTY" "non-empty"
+        check_result "hashFiles (empty)" "$HASH_FILES_EMPTY" ""
+        check_result "fromJSON" "$FROM_JSON_TEST" "value"
+        check_result "toJSON" "$TO_JSON_TEST" '{
           key: value
         }'
 

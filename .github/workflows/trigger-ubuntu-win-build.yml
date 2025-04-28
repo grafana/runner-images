@@ -6,6 +6,14 @@ on:
       image_type:
         required: true
         type: string
+    secrets:
+      CI_PR_TOKEN:
+        required: true
+      CI_REPO:
+        required: true
+
+permissions:
+  contents: read
 
 defaults:
   run:
@@ -13,6 +21,8 @@ defaults:
 
 jobs:
   trigger-workflow:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Build workflow
@@ -20,6 +30,9 @@ jobs:
           CI_PR_TOKEN: ${{ secrets.CI_PR_TOKEN }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           CI_PR: ${{ secrets.CI_REPO }}
+          IMAGE_TYPE: ${{ inputs.image_type }}
+          REPO_FULL_NAME: ${{ github.event.pull_request.head.repo.full_name }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           $headers = @{
             Authorization="Bearer $env:CI_PR_TOKEN"
@@ -28,13 +41,13 @@ jobs:
           # Private repository for builds
           $apiRepoUrl = "https://api.github.com/repos/$env:CI_PR"
 
-          $eventType = "trigger-${{ inputs.image_type }}-build"
+          $eventType = "trigger-$env:IMAGE_TYPE-build"
           $body = @{
             event_type = $eventType;
             client_payload = @{
               pr_title = "$env:PR_TITLE"
-              custom_repo = "${{ github.event.pull_request.head.repo.full_name }}"
-              custom_repo_commit_hash = "${{ github.event.pull_request.head.sha }}"
+              custom_repo = "$env:REPO_FULL_NAME"
+              custom_repo_commit_hash = "$env:COMMIT_SHA"
             }
           }
 

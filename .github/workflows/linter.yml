@@ -10,16 +10,22 @@ on:
       - '**.md'
       - '**.sh'
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Lint JSON & MD files
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Lint Code Base
         uses: github/super-linter/slim@v4
