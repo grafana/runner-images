@@ -4,6 +4,8 @@ on:
   repository_dispatch:
     types: [update-github-release]
 
+permissions:
+  contents: write
 
 jobs:
   Update_GitHub_release:
@@ -11,20 +13,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
 
-    - name: Update release for ${{ github.event.client_payload.ReleaseBranchName }}
+    - name: Update release
       uses: actions/github-script@v7
+      env:
+        RELEASE_BRANCH_NAME: ${{ github.event.client_payload.ReleaseBranchName }}
+        PRERELEASE: ${{ github.event.client_payload.Prerelease }}
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
             const response = await github.rest.repos.getReleaseByTag({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              tag: "${{ github.event.client_payload.ReleaseBranchName }}"
+              tag: process.env.RELEASE_BRANCH_NAME
             });
             github.rest.repos.updateRelease({
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: response.data.id,
-              prerelease: ${{ github.event.client_payload.Prerelease }}
+              prerelease: process.env.PRERELEASE === 'true'
             });

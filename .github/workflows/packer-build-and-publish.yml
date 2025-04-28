@@ -18,12 +18,15 @@ jobs:
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           ref: main
+          persist-credentials: false
 
       - name: Check if main branch contains the tagged commit
         id: is_main
+        env:
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           git fetch origin main --depth=$((2**31 - 1)) # Fetch all commits from main
-          is_main=$([ -n "$(git branch -r --contains ${{ github.sha }} origin/main)" ] && echo true || echo false)
+          is_main=$([ -n "$(git branch -r --contains $GITHUB_SHA origin/main)" ] && echo true || echo false)
           echo "value=$is_main" >> "${GITHUB_OUTPUT}"
 
   check-release:
@@ -37,13 +40,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          persist-credentials: false
 
       - name: Find release for the commit
         id: get_release_by_commit
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
         run: |
           # Fetch last 100 releases (it sorts by latest, last 100 should be enough)
-          releases=$(curl -s -H "Authorization: token ${{ github.token }}" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/releases?per_page=100")
+          releases=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases?per_page=100")
 
           # Iterate over each release
           while read -r release; do
@@ -53,14 +63,14 @@ jobs:
             body=$(echo "$release" | jq -r '.body')
 
             # Get the commit for the tag
-            tag_info=$(curl -s -H "Authorization: token ${{ github.token }}" \
-              "${{ github.api_url }}/repos/${{ github.repository }}/git/refs/tags/${tag_name}")
+            tag_info=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/git/refs/tags/${tag_name}")
 
             # Handle annotated and lightweight tags
             tag_type=$(echo "$tag_info" | jq -r '.object.type')
             if [ "$tag_type" = "tag" ]; then
               # Annotated tag, get the commit from the tag object
-              tag_object=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              tag_object=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
                 "$(echo "$tag_info" | jq -r '.object.url')")
               commit_sha=$(echo "$tag_object" | jq -r '.object.sha')
             else
@@ -68,7 +78,7 @@ jobs:
               commit_sha=$(echo "$tag_info" | jq -r '.object.sha')
             fi
 
-            if [ "$commit_sha" = "${{ github.sha }}" ]; then
+            if [ "$commit_sha" = "$GITHUB_SHA" ]; then
               echo "Release found (ID: $release_id)"
               echo "release_found=true" >> $GITHUB_OUTPUT
               echo "release_id=$release_id" >> $GITHUB_OUTPUT
@@ -81,7 +91,7 @@ jobs:
             fi
           done < <(echo "$releases" | jq -c '.[]')
 
-          echo "No release found for commit ${{ github.sha }}"
+          echo "No release found for commit $GITHUB_SHA"
           echo "release_found=false" >> $GITHUB_OUTPUT
 
   build:
@@ -104,6 +114,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          persist-credentials: false
 
       - name: Assume OIDC role
         id: auth
@@ -170,21 +182,25 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_JOB_WORKFLOW_REF: ${{ steps.auth.outputs.job_workflow_ref }}
           GITHUB_REPOSITORY_NAME: ${{ steps.auth.outputs.repository_name }}
+          TEMPLATE: ${{ matrix.template }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
-          packer init ${{ matrix.template }}
+          packer init "$TEMPLATE"
           packer build \
             -var provider=aws \
             -var aws_private_ami=true \
-            -var image_version="${{ github.ref_name }}" \
+            -var image_version="$REF_NAME" \
             -var aws_assume_role_arn="arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github-actions/packer-role" \
             -var aws_assume_role_session_name=GitHubActions \
-            ${{ matrix.template }}
+            "$TEMPLATE"
 
       - name: Preapre artifacts
         id: artifacts
+        env:
+          TEMPLATE: ${{ matrix.template }}
         run: |
           mkdir -p artifacts
-          name=$(basename -s .pkr.hcl ${{ matrix.template }})
+          name=$(basename -s .pkr.hcl $TEMPLATE)
           readme=$(git ls-files --others --exclude-standard -- '**/software-report.md')
           mv "$readme" artifacts/${name}-software-report.md
           report=$(git ls-files --others --exclude-standard -- '**/software-report.json')
@@ -195,8 +211,10 @@ jobs:
 
       - name: Upload artifacts
         uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+        env:
+          ARTIFACT_NAME: ${{ steps.artifacts.outputs.name }}
         with:
-          name: "Artifacts for ${{ steps.artifacts.outputs.name }}.pkr.hcl"
+          name: "Artifacts for ${{ env.ARTIFACT_NAME }}.pkr.hcl"
           path: artifacts
 
   publish:
@@ -214,6 +232,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          persist-credentials: false
 
       # If no release exists, download artifacts from the build job
       - name: Download artifacts from build job
@@ -224,6 +244,8 @@ jobs:
 
       - name: Check if latest
         id: is_latest
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           # Fetch all tags from the repository
           git fetch --tags
@@ -235,7 +257,7 @@ jobs:
           latest_tag=$(echo "$tags" | sort -V | tail -n 1)
 
           # Compare the tag_to_check with the latest tag
-          if [ "${{ github.ref_name }}" = "$latest_tag" ]; then
+          if [ "$REF_NAME" = "$latest_tag" ]; then
               echo "value=true" >> "${GITHUB_OUTPUT}"
           else
               echo "value=false" >> "${GITHUB_OUTPUT}"
@@ -245,10 +267,16 @@ jobs:
         id: publish
         if: needs.check-release.outputs.release_found == 'false'
         uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          IS_LATEST: ${{ steps.is_latest.outputs.value }}
         with:
           files: artifacts/**/*
           body: |
-            Release ${{ github.ref_name }} from workflow [#${{ github.run_id }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            Release ${{ env.REF_NAME }} from workflow [#${{ env.GITHUB_RUN_ID }}](${{ env.GITHUB_SERVER_URL }}/${{ env.GITHUB_REPOSITORY }}/actions/runs/${{ env.GITHUB_RUN_ID }})
           draft: ${{ env.PROD_RELEASE == 'false' }}
           make_latest: ${{ env.PROD_RELEASE == 'true' && steps.is_latest.outputs.value }}
           generate_release_notes: true
@@ -259,17 +287,26 @@ jobs:
         env:
           RELEASE_BODY: ${{ needs.check-release.outputs.body }}
           RELEASE_TAG: ${{ needs.check-release.outputs.tag }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+          RELEASE_ID: ${{ needs.check-release.outputs.release_id }}
+          PROD_RELEASE: ${{ env.PROD_RELEASE }}
+          IS_LATEST: ${{ steps.is_latest.outputs.value }}
+          DRAFT_STATUS: ${{ env.PROD_RELEASE == 'false' }}
+          MAKE_LATEST: ${{ env.PROD_RELEASE == 'true' && steps.is_latest.outputs.value }}
         run: |
           curl -X PATCH \
             -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${{ github.token }}" \
-            ${{ github.api_url }}/repos/${{ github.repository }}/releases/${{ needs.check-release.outputs.release_id }} \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            $GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID \
             -d "$(jq -n \
-              --arg name "${{ github.ref_name }}" \
-              --arg tag_name "${{ github.ref_name }}" \
-              --argjson draft ${{ env.PROD_RELEASE == 'false' }} \
-              --arg make_latest "${{ env.PROD_RELEASE == 'true' && steps.is_latest.outputs.value }}" \
-              --arg body "$(echo "$RELEASE_BODY" | sed "/Release .* from workflow/ s/$RELEASE_TAG/${{ github.ref_name }}/g; /Full Changelog/ s/$RELEASE_TAG/${{ github.ref_name }}/g")" \
+              --arg name "$REF_NAME" \
+              --arg tag_name "$REF_NAME" \
+              --argjson draft $DRAFT_STATUS \
+              --arg make_latest "$MAKE_LATEST" \
+              --arg body "$(echo "$RELEASE_BODY" | sed "/Release .* from workflow/ s/$RELEASE_TAG/$REF_NAME/g; /Full Changelog/ s/$RELEASE_TAG/$REF_NAME/g")" \
               '{name: $name, tag_name: $tag_name, draft: $draft, make_latest: $make_latest, body: $body}' \
             )"
 
@@ -287,24 +324,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        with:
+          persist-credentials: false
 
       - name: Download manifest assets
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_API_URL: ${{ github.api_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          RELEASE_ID: ${{ needs.publish.outputs.release_id }}
         run: |
           # Get the list of assets for the specified release
-          assets=$(curl -s -H "Authorization: token ${{ github.token }}" \
-            "${{ github.api_url }}/repos/${{ github.repository }}/releases/${{ needs.publish.outputs.release_id }}/assets")
+          assets=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/$RELEASE_ID/assets")
 
           # Filter assets matching the pattern and download each one
           echo "$assets" | jq -r '.[] | select(.name | test(".*build-manifest\\.json$")) | "\(.id) \(.name)"' | while read -r asset_id asset_name; do
             echo "Downloading $asset_name (ID: $asset_id)"
             curl -L -H "Accept: application/octet-stream" \
-              -H "Authorization: token ${{ github.token }}" \
-              "${{ github.api_url }}/repos/${{ github.repository }}/releases/assets/${asset_id}" \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/releases/assets/${asset_id}" \
               -o "${asset_name}"
           done
 
       - name: Authenticate with Dev AWS Account
-        uses: grafana/shared-workflows/actions/aws-auth@main
+        uses: grafana/shared-workflows/actions/aws-auth@abb283a39f2ddc434391d0e5d9a994f74bf20e35 # aws-auth-v1.0.1
         with:
           aws-region: "us-east-2"
           role-arn: "arn:aws:iam::${{ env.DEV_ACCOUNT }}:role/github-actions/packer-role"
@@ -338,7 +382,7 @@ jobs:
           done
 
       - name: Authenticate with Prod AWS Account
-        uses: grafana/shared-workflows/actions/aws-auth@main
+        uses: grafana/shared-workflows/actions/aws-auth@abb283a39f2ddc434391d0e5d9a994f74bf20e35 # aws-auth-v1.0.1
         with:
           aws-region: "us-east-2"
           role-arn: "arn:aws:iam::${{ env.PROD_ACCOUNT }}:role/github-actions/packer-role"

@@ -1,25 +1,32 @@
-# CI Validation
+# CI PowerShell Validation
 
-name: PowerShell Tests
+name: PowerShell tests
 
 on:
+  workflow_dispatch:
   pull_request:
     branches: [ main ]
     paths:
-      - 'helpers/software-report-base/**'
+      - 'helpers/**'
+
+permissions:
+  contents: read
 
 jobs:
   powershell-tests:
     name: PowerShell tests
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
-      - name: Run Software Report module tests
+      - name: Run tests
         shell: pwsh
         run: |
-            $ErrorActionPreference = "Stop"
-            Invoke-Pester -Output Detailed "helpers/software-report-base/tests"
+          Install-Module -Name Pester -Force
+          Invoke-Pester -Output Detailed "helpers/software-report-base/tests"
         

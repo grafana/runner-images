@@ -1,20 +1,27 @@
+# CI Validation
+
 name: Validate JSON Schema
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
+    paths:
+      - 'images/win/**'
+
+permissions:
+  contents: read
 
 jobs:
   validate-json-schema:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Validate JSON Schema
+        with:
+          persist-credentials: false
+      - name: Validate JSON schema
         shell: pwsh
         run: ./helpers/CheckJsonSchema.ps1

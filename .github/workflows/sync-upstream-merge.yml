@@ -18,7 +18,7 @@ jobs:
       github.event.review.body == 'bot merge'
     steps:
       - name: Retrieve secrets
-        uses: grafana/shared-workflows/actions/get-vault-secrets@main
+        uses: grafana/shared-workflows/actions/get-vault-secrets@28361cdb22223e5f1e34358c86c20908e7248760 # get-vault-secrets-v1.1.0
         with:
           repo_secrets: |
             APP_ID=app:id
@@ -37,6 +37,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ steps.generate-token.outputs.token }}
+          persist-credentials: false
 
       - name: Configure Git
         run: |
@@ -53,17 +54,21 @@ jobs:
 
       - name: Delete branch on success
         if: ${{ success() }}
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          git push -d origin ${{ github.event.pull_request.head.ref }}
+          git push -d origin "$HEAD_REF"
 
       - name: Comment error on failure
         if: ${{ failure() }}
         env:
           GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PUSH_OUTPUT: ${{ steps.push.outputs.output }}
         run: |
-          gh pr comment ${{ github.event.pull_request.number }} --body 'Failed to push changes to main.
+          gh pr comment $PR_NUMBER --body 'Failed to push changes to main.
 
           Output:
           ```
-          ${{ steps.push.outputs.output }}
+          '"$PUSH_OUTPUT"'
           ```'
