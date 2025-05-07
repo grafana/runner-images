@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ steps.generate-token.outputs.token }}
-          persist-credentials: false
+          persist-credentials: true # This is required to push to the repository
 
       - name: Reset branch to main
         run: |
