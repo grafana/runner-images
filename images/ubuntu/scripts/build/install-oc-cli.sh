@@ -16,13 +16,9 @@ if [[ $arch == "arm64" ]]; then
     suffix="-arm64"
 fi
 
-if is_ubuntu20; then
-    toolset_version=$(get_toolset_value '.ocCli.version')
-    download_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/$toolset_version/openshift-client-linux-$toolset_version.tar.gz"
-else 
-    # Install the oc CLI
-    download_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux$suffix.tar.gz"
-fi
+
+# Install the oc CLI
+download_url="https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-linux$arch.tar.gz"
 
 archive_path=$(download_with_retry "$download_url")
 
