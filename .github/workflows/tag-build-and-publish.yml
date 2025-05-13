@@ -10,4 +10,7 @@ permissions:
 
 jobs:
   build-and-publish:
+    permissions:
+      contents: write
+      id-token: write
     uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@main
