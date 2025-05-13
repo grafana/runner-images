@@ -98,7 +98,7 @@ if (Test-IsUbuntu22) {
 # Tools
 $tools = $installedSoftware.AddHeader("Tools")
 $tools.AddToolVersion("Ansible", $(Get-AnsibleVersion))
-if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+if (Test-IsUbuntu22) {
     # TODO: Fix retrieval of apt-fast version on Software Report
     # $tools.AddToolVersion("apt-fast", $(Get-AptFastVersion))
 }
@@ -122,7 +122,7 @@ $tools.AddToolVersion("Git LFS", $(Get-GitLFSVersion))
 $tools.AddToolVersion("Git-ftp", $(Get-GitFTPVersion))
 $tools.AddToolVersion("Haveged", $(Get-HavegedVersion))
 if (Test-IsAmd64) {
-    if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+    if (Test-IsUbuntu22) {
         $tools.AddToolVersion("Heroku", $(Get-HerokuVersion))
     }
 }
@@ -145,7 +145,7 @@ $tools.AddToolVersion("Parcel", $(Get-ParcelVersion))
 $tools.AddToolVersion("Podman", $(Get-PodManVersion))
 $tools.AddToolVersion("Pulumi", $(Get-PulumiVersion))
 if (Test-IsAmd64) {
-    if ((Test-IsUbuntu20) -or (Test-IsUbuntu22)) {
+    if (Test-IsUbuntu22) {
         $tools.AddToolVersion("R", $(Get-RVersion))
     }
 }
