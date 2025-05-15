@@ -259,12 +259,6 @@ Describe "Heroku" -Skip:((-not (Test-IsAmd64)) -or (-not (Test-IsUbuntu22))) {
     }
 }
 
-Describe "HHVM" {
-    It "hhvm" {
-        "hhvm --version" | Should -ReturnZeroExitCode
-    }
-}
-
 Describe "Homebrew" -Skip:(-not (Test-IsAmd64)) {
     It "homebrew" {
         "/home/linuxbrew/.linuxbrew/bin/brew --version" | Should -ReturnZeroExitCode
