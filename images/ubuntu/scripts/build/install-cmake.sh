@@ -30,7 +30,7 @@ else
 
 	# Supply chain security - CMake
 	hash_url=$(resolve_github_release_asset_url "Kitware/CMake" "endswith(\"SHA-256.txt\")" "3.31.6")
-	external_hash=$(get_checksum_from_url "$hash_url" "linux$arch.sh" "SHA256")
+	external_hash=$(get_checksum_from_url "$hash_url" "linux-$arch.sh" "SHA256")
 	use_checksum_comparison "cmakeinstall.sh" "$external_hash"
 
 	# Install CMake and remove the install script
