@@ -114,7 +114,7 @@ runs:
         check_result "hashFiles (empty)" "$HASH_FILES_EMPTY" ""
         check_result "fromJSON" "$FROM_JSON_TEST" "value"
         check_result "toJSON" "$TO_JSON_TEST" '{
-          key: value
+          "key": "value"
         }'
 
         # Calculate total test time
