@@ -228,7 +228,7 @@ jobs:
       release_id: ${{ steps.publish.outputs.id || needs.check-release.outputs.release_id }}
       prod_release: ${{ env.PROD_RELEASE }}
     env:
-      PROD_RELEASE: ${{ needs.check-main.outputs.is_main == 'true' && !contains(github.ref_name, '-') }}
+      PROD_RELEASE: ${{ needs.check-release.outputs.release_found == 'true' && needs.check-main.outputs.is_main == 'true' && !contains(github.ref_name, '-') }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
