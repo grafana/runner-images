@@ -37,7 +37,7 @@ variable "azure_tags" {
 
 variable "azure_build_resource_group_name" {
   type    = string
-  default = "${env("BUILD_RESOURCE_GROUP_NAME")}"
+  default = "${env("BUILD_RG_NAME")}"
 }
 
 variable "azure_client_cert_path" {
@@ -104,7 +104,7 @@ variable "install_password" {
 
 variable "azure_location" {
   type    = string
-  default = "${env("ARM_RESOURCE_LOCATION")}"
+  default = ""
 }
 
 variable "managed_image_name" {
@@ -249,6 +249,15 @@ source "azure-arm" "build_image" {
   virtual_network_resource_group_name    = "${var.azure_virtual_network_resource_group_name}"
   virtual_network_subnet_name            = "${var.azure_virtual_network_subnet_name}"
   vm_size                                = "${var.azure_vm_size}"
+
+  shared_image_gallery_destination {
+    subscription                         = var.subscription_id
+    gallery_name                         = var.gallery_name
+    resource_group                       = var.gallery_resource_group_name
+    image_name                           = var.gallery_image_name
+    image_version                        = var.gallery_image_version
+    storage_account_type                 = var.gallery_storage_account_type
+  }
 
   dynamic "azure_tag" {
     for_each = var.azure_tags
