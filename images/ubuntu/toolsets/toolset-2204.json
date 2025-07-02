@@ -38,11 +38,11 @@
             "url" : "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
             "platform" : "linux",
             "versions": [
-                "1.21.*",
                 "1.22.*",
-                "1.23.*"
+                "1.23.*",
+                "1.24.*"
             ],
-            "default": "1.23.*"
+            "default": "1.24.*"
         },
         {
             "name": "Ruby",
@@ -99,7 +99,7 @@
         {
             "name": "az",
             "versions": [
-                "12.1.0"
+                "12.5.0"
             ]
         }
     ],
@@ -247,7 +247,7 @@
             },            
             {
                 "plugin": "compose",
-                "version": "2.35.1",
+                "version": "2.36.2",
                 "asset": {
                     "amd64": "linux-x86_64",
                     "arm64": "linux-aarch64"
