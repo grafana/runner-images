@@ -13,9 +13,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
 
     - name: Create release for ${{ github.event.client_payload.ReleaseBranchName }}
-      uses: ncipollo/release-action@bcfe5470707e8832e12347755757cec0eb3c22af
+      uses: ncipollo/release-action@440c8c1cb0ed28b9f43e4d1d670870f059653174 # v1.16.0
       with:
         tag: ${{ github.event.client_payload.ReleaseBranchName }}
         name: ${{ github.event.client_payload.ReleaseTitle }}

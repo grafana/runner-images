@@ -16,6 +16,8 @@ defaults:
 
 jobs:
   Windows_2025:
+    permissions:
+      contents: read
     if: github.event.label.name == 'CI windows-all' || github.event.label.name == 'CI windows-2025'
     uses: ./.github/workflows/trigger-ubuntu-win-build.yml
     with:
