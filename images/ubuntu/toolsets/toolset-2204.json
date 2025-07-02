@@ -247,16 +247,11 @@
             },            
             {
                 "plugin": "compose",
-<<<<<<< HEAD
-                "version": "2.35.1",
+                "version": "2.36.2",
                 "asset": {
                     "amd64": "linux-x86_64",
                     "arm64": "linux-aarch64"
                 }
-=======
-                "version": "2.36.2",
-                "asset": "linux-x86_64"
->>>>>>> 0790ef6e2af691401215c0ecb0a34c792c03fde7
             }
         ]
     },
