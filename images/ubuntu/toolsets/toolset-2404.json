@@ -40,11 +40,11 @@
             "arch": "x64",
             "platform" : "linux",
             "versions": [
-                "1.21.*",
                 "1.22.*",
-                "1.23.*"
+                "1.23.*",
+                "1.24.*"
             ],
-            "default": "1.23.*"
+            "default": "1.24.*"
         },
         {
             "name": "Ruby",
@@ -99,7 +99,7 @@
         {
             "name": "az",
             "versions": [
-                "12.1.0"
+                "12.5.0"
             ]
         }
     ],
@@ -213,11 +213,16 @@
             },            
             {
                 "plugin": "compose",
+<<<<<<< HEAD
                 "version": "2.36.0",
                 "asset": {
                     "amd64": "linux-x86_64",
                     "arm64": "linux-aarch64"
                 }
+=======
+                "version": "2.36.2",
+                "asset": "linux-x86_64"
+>>>>>>> 0790ef6e2af691401215c0ecb0a34c792c03fde7
             }
         ]
     },
