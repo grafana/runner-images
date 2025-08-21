@@ -78,7 +78,7 @@ variable "image_folder" {
 
 variable "image_os" {
   type    = string
-  default = "ubuntu24"
+  default = "ubuntu22"
 }
 
 variable "image_version" {
@@ -233,9 +233,9 @@ source "azure-arm" "build_image" {
   client_cert_path                       = "${var.azure_client_cert_path}"
   client_id                              = "${var.azure_client_id}"
   client_secret                          = "${var.azure_client_secret}"
-  image_offer                            = "ubuntu-24_04-lts"
+  image_offer                            = "0001-com-ubuntu-server-jammy"
   image_publisher                        = "canonical"
-  image_sku                              = "server-gen1"
+  image_sku                              = "22_04-lts"
   location                               = "${var.azure_location}"
   managed_image_name                     = "${local.managed_image_name}"
   managed_image_resource_group_name      = "${var.azure_managed_image_resource_group_name}"
@@ -312,7 +312,7 @@ source "amazon-ebs" "build_image" {
   source_ami_filter {
     filters = {
       virtualization-type = "hvm"
-      name                = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
+      name                = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
       root-device-type    = "ebs"
     }
     owners      = ["099720109477"]
@@ -394,7 +394,7 @@ build {
 
   provisioner "file" {
     destination = "${var.installer_script_folder}/toolset.json"
-    source      = "${path.root}/../toolsets/toolset-2404.json"
+    source      = "${path.root}/../toolsets/toolset-2204.json"
   }
 
   provisioner "shell" {
@@ -446,6 +446,7 @@ build {
       "${path.root}/../scripts/build/install-azure-cli.sh",
       "${path.root}/../scripts/build/install-azure-devops-cli.sh",
       "${path.root}/../scripts/build/install-bicep.sh",
+      "${path.root}/../scripts/build/install-aliyun-cli.sh",
       "${path.root}/../scripts/build/install-apache.sh",
       "${path.root}/../scripts/build/install-aws-tools.sh",
       "${path.root}/../scripts/build/install-clang.sh",
@@ -454,9 +455,9 @@ build {
       "${path.root}/../scripts/build/install-codeql-bundle.sh",
       "${path.root}/../scripts/build/install-container-tools.sh",
       "${path.root}/../scripts/build/install-dotnetcore-sdk.sh",
+      "${path.root}/../scripts/build/install-firefox.sh",
       "${path.root}/../scripts/build/install-microsoft-edge.sh",
       "${path.root}/../scripts/build/install-gcc-compilers.sh",
-      "${path.root}/../scripts/build/install-firefox.sh",
       "${path.root}/../scripts/build/install-gfortran.sh",
       "${path.root}/../scripts/build/install-git.sh",
       "${path.root}/../scripts/build/install-git-lfs.sh",
@@ -464,22 +465,32 @@ build {
       "${path.root}/../scripts/build/install-google-chrome.sh",
       "${path.root}/../scripts/build/install-google-cloud-cli.sh",
       "${path.root}/../scripts/build/install-haskell.sh",
+      "${path.root}/../scripts/build/install-heroku.sh",
       "${path.root}/../scripts/build/install-java-tools.sh",
       "${path.root}/../scripts/build/install-kubernetes-tools.sh",
+      "${path.root}/../scripts/build/install-oc-cli.sh",
+      "${path.root}/../scripts/build/install-leiningen.sh",
       "${path.root}/../scripts/build/install-miniconda.sh",
+      "${path.root}/../scripts/build/install-mono.sh",
       "${path.root}/../scripts/build/install-kotlin.sh",
       "${path.root}/../scripts/build/install-mysql.sh",
+      "${path.root}/../scripts/build/install-mssql-tools.sh",
+      "${path.root}/../scripts/build/install-sqlpackage.sh",
       "${path.root}/../scripts/build/install-nginx.sh",
       "${path.root}/../scripts/build/install-nvm.sh",
       "${path.root}/../scripts/build/install-nodejs.sh",
       "${path.root}/../scripts/build/install-bazel.sh",
+      "${path.root}/../scripts/build/install-oras-cli.sh",
       "${path.root}/../scripts/build/install-php.sh",
       "${path.root}/../scripts/build/install-postgresql.sh",
       "${path.root}/../scripts/build/install-pulumi.sh",
       "${path.root}/../scripts/build/install-ruby.sh",
+      "${path.root}/../scripts/build/install-rlang.sh",
       "${path.root}/../scripts/build/install-rust.sh",
       "${path.root}/../scripts/build/install-julia.sh",
+      "${path.root}/../scripts/build/install-sbt.sh",
       "${path.root}/../scripts/build/install-selenium.sh",
+      "${path.root}/../scripts/build/install-terraform.sh",
       "${path.root}/../scripts/build/install-packer.sh",
       "${path.root}/../scripts/build/install-vcpkg.sh",
       "${path.root}/../scripts/build/configure-dpkg.sh",
@@ -493,7 +504,7 @@ build {
   }
 
   provisioner "shell" {
-    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "DOCKERHUB_PULL_IMAGES=NO"]
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "DOCKERHUB_LOGIN=${var.dockerhub_login}", "DOCKERHUB_PASSWORD=${var.dockerhub_password}"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     scripts          = ["${path.root}/../scripts/build/install-docker.sh"]
   }
@@ -556,6 +567,22 @@ build {
     environment_vars = ["HELPER_SCRIPT_FOLDER=${var.helper_script_folder}", "INSTALLER_SCRIPT_FOLDER=${var.installer_script_folder}", "IMAGE_FOLDER=${var.image_folder}"]
     execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
     scripts          = ["${path.root}/../scripts/build/configure-system.sh"]
+  }
+
+  provisioner "file" {
+    destination = "/tmp/"
+    source      = "${path.root}/../assets/ubuntu2204.conf"
+  }
+
+  provisioner "shell" {
+    execute_command = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    inline          = ["mkdir -p /etc/vsts", "cp /tmp/ubuntu2204.conf /etc/vsts/machine_instance.conf"]
+  }
+
+  provisioner "shell" {
+    environment_vars = ["HELPER_SCRIPTS=${var.helper_script_folder}"]
+    execute_command  = "sudo sh -c '{{ .Vars }} {{ .Path }}'"
+    scripts          = ["${path.root}/../scripts/build/post-build-validation.sh"]
   }
 
   provisioner "shell" {

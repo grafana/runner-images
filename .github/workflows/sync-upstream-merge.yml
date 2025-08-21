@@ -44,31 +44,67 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      - name: Attempt to push changes
-        id: push
-        run: |
-          if ! output=$(git push origin HEAD:main); then
-            echo "output=$output" >> $GITHUB_OUTPUT
-            exit 1
-          fi
-
-      - name: Delete branch on success
-        if: ${{ success() }}
+      - name: Extract upstream SHA and prepare clean merge
         env:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          git push -d origin "$HEAD_REF"
+          # Add upstream remote to get the latest info
+          git remote add upstream https://github.com/actions/runner-images.git || true
+          git fetch upstream
+          
+          # Get the current upstream SHA
+          UPSTREAM_SHA="$(git rev-parse upstream/main)"
+          echo "upstream-sha=$UPSTREAM_SHA" >> $GITHUB_OUTPUT
+          
+          # Find the merge base between our branch and main to identify changes
+          MERGE_BASE="$(git merge-base origin/main HEAD)"
+          echo "merge-base=$MERGE_BASE" >> $GITHUB_OUTPUT
+          
+          # Get the tree state of the current branch (this includes all fixes)
+          CURRENT_TREE="$(git rev-parse HEAD^{tree})"
+          echo "current-tree=$CURRENT_TREE" >> $GITHUB_OUTPUT
+          
+          # Reset to main and create a clean merge
+          git reset --hard origin/main
+          
+          # Create a merge commit with the correct message and the current tree state
+          MERGE_COMMIT=$(git commit-tree "$CURRENT_TREE" -p HEAD -p "$UPSTREAM_SHA" -m "Merge commit '$UPSTREAM_SHA' from actions/runner-images")
+          echo "merge-commit=$MERGE_COMMIT" >> $GITHUB_OUTPUT
+          
+          # Update the branch to point to our new clean merge commit
+          git reset --hard "$MERGE_COMMIT"
+
+      - name: Push cleaned branch
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          git push --force-with-lease origin HEAD:"$HEAD_REF"
+
+      - name: Merge PR to main
+        id: merge-pr
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          if ! output=$(gh pr merge $PR_NUMBER --merge --delete-branch --repo $REPOSITORY); then
+            echo "output=$output" >> $GITHUB_OUTPUT
+            exit 1
+          fi
 
       - name: Comment error on failure
         if: ${{ failure() }}
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
-          PUSH_OUTPUT: ${{ steps.push.outputs.output }}
+          MERGE_OUTPUT: ${{ steps.merge-pr.outputs.output }}
+          REPOSITORY: ${{ github.repository }}
         run: |
-          gh pr comment $PR_NUMBER --body 'Failed to push changes to main.
+          gh pr comment $PR_NUMBER \
+          --repo $REPOSITORY \
+          --body 'Failed to merge PR to main.
 
           Output:
           ```
-          '"$PUSH_OUTPUT"'
+          '"$MERGE_OUTPUT"'
           ```'
