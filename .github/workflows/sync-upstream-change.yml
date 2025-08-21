@@ -74,10 +74,11 @@ jobs:
       - name: Set PR body
         id: pr-body
         env:
+          WORKFLOW_NAME: "${{ github.workflow }}"
           GITHUB_SERVER_URL: "${{ github.server_url }}"
           GITHUB_REPOSITORY: "${{ github.repository }}"
           GITHUB_RUN_ID: "${{ github.run_id }}"
-          GITHUB_RUN_NUMBER: "${{ github.run_number }}"
+          HEAD_REF: "${{ github.event.pull_request.head.ref }}"
           UPSTREAM_SHA: "${{ steps.merge.outputs.upstream-sha }}"
           PR_BODY_NO_CONFLICTS_TEMPLATE: ".github/workflows/sync-upstream/templates/pr-body-no-conflicts.txt"
           PR_BODY_WITH_CONFLICTS_TEMPLATE: ".github/workflows/sync-upstream/templates/pr-body-with-conflicts.txt"
@@ -94,10 +95,10 @@ jobs:
       - name: Edit pull request
         env:
           GH_TOKEN: ${{ github.token }}
-          RUN_NUMBER: ${{ github.run_number }}
-          GITHUB_REPO: ${{ github.repository }}
+          REPOSITORY: ${{ github.repository }}
           PR_BODY: ${{ steps.pr-body.outputs.body }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          gh pr edit sync-upstream-$RUN_NUMBER \
-          --repo $GITHUB_REPO \
-          --body '$PR_BODY'
+          gh pr edit $HEAD_REF \
+          --repo $REPOSITORY \
+          --body "$PR_BODY"
