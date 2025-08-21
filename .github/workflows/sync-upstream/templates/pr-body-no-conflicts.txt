@@ -1,6 +1,6 @@
 # :warning: UPSTREAM CHANGES. DO NOT MERGE MANUALLY.
 
-This automated pull request was created by the [Sync from Upstream (create)]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) workflow.
+This automated pull request was created by the [$WORKFLOW_NAME]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID) workflow.
 
 Updates from upstream were able to be merged successfully without conflicts so no manual interaction should be necessary.
 
