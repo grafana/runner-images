@@ -44,10 +44,31 @@ jobs:
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
 
-      - name: Attempt to push changes
+      - name: Craft and push single merge commit
         id: push
         run: |
-          if ! output=$(git push origin HEAD:main); then
+          # Ensure we have all refs
+          git remote add upstream https://github.com/actions/runner-images.git 2>/dev/null || git remote set-url upstream https://github.com/actions/runner-images.git
+          git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
+          git fetch --no-tags --prune upstream +refs/heads/main:refs/remotes/upstream/main
+
+          # Determine the upstream SHA that this PR integrated
+          UPSTREAM_SHA=$(git merge-base HEAD upstream/main || true)
+          if [ -z "$UPSTREAM_SHA" ]; then
+            # Fallback to current upstream/main if merge-base couldn't be determined
+            UPSTREAM_SHA=$(git rev-parse upstream/main)
+          fi
+
+          MAIN_SHA=$(git rev-parse origin/main)
+          TREE_SHA=$(git rev-parse HEAD^{tree})
+
+          COMMIT_MSG="Merge commit '$UPSTREAM_SHA' from actions/runner-images"
+
+          # Create a new merge commit whose tree equals the PR HEAD, with parents (main, upstream)
+          NEW_COMMIT=$(printf "%s\n" "$COMMIT_MSG" | git commit-tree "$TREE_SHA" -p "$MAIN_SHA" -p "$UPSTREAM_SHA")
+
+          # Push as an update to main (fast-forward). Capture output for error reporting.
+          if ! output=$(git push origin "$NEW_COMMIT":refs/heads/main 2>&1); then
             echo "output=$output" >> $GITHUB_OUTPUT
             exit 1
           fi
