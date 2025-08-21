@@ -69,10 +69,11 @@ jobs:
       - name: Set PR body
         id: pr-body
         env:
+          WORKFLOW_NAME: "${{ github.workflow }}"
           GITHUB_SERVER_URL: "${{ github.server_url }}"
           GITHUB_REPOSITORY: "${{ github.repository }}"
           GITHUB_RUN_ID: "${{ github.run_id }}"
-          GITHUB_RUN_NUMBER: "${{ github.run_number }}"
+          GITHUB_HEAD_REF: "sync-upstream-${{ github.run_number }}"
           UPSTREAM_SHA: "${{ steps.merge.outputs.upstream-sha }}"
           PR_BODY_NO_CONFLICTS_TEMPLATE: ".github/workflows/sync-upstream/templates/pr-body-no-conflicts.txt"
           PR_BODY_WITH_CONFLICTS_TEMPLATE: ".github/workflows/sync-upstream/templates/pr-body-with-conflicts.txt"
