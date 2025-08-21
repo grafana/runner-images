@@ -7,6 +7,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  issues: write
   id-token: write
 
 jobs:
@@ -69,7 +70,11 @@ jobs:
 
           # Push as an update to main (fast-forward). Capture output for error reporting.
           if ! output=$(git push origin "$NEW_COMMIT":refs/heads/main 2>&1); then
-            echo "output=$output" >> $GITHUB_OUTPUT
+            {
+              echo "output<<EOF"
+              echo "$output"
+              echo EOF
+            } >> $GITHUB_OUTPUT
             exit 1
           fi
 
