@@ -45,15 +45,19 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       - name: Extract upstream SHA and prepare clean merge
+        id: extract-sha
         env:
           HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
+          # Extract the short SHA from the branch name (sync-upstream-abc1234 -> abc1234)
+          SHORT_SHA="${HEAD_REF#sync-upstream-}"
+          
           # Add upstream remote to get the latest info
           git remote add upstream https://github.com/actions/runner-images.git || true
           git fetch upstream
           
-          # Get the current upstream SHA
-          UPSTREAM_SHA="$(git rev-parse upstream/main)"
+          # Get the full SHA from the short SHA
+          UPSTREAM_SHA="$(git rev-parse "$SHORT_SHA")"
           echo "upstream-sha=$UPSTREAM_SHA" >> $GITHUB_OUTPUT
           
           # Find the merge base between our branch and main to identify changes
