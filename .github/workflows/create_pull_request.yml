@@ -37,15 +37,29 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          let response = await github.rest.pulls.create({
+          const pulls = await github.rest.pulls.list({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            title: process.env.PR_TITLE,
-            head: `${process.env.RELEASE_BRANCH_NAME}-docs`,
+            head: `${context.repo.owner}:${process.env.RELEASE_BRANCH_NAME}-docs`,
             base: process.env.PR_BASE,
-            body: process.env.PR_BODY
+            state: 'open'
           });
-          return response.data.number
+
+          if (pulls.data.length > 0) {
+            console.log(`Pull request already exists: ${pulls.data[0].html_url}`);
+            return pulls.data[0].number;
+          } else {
+            console.log('No existing pull request found, creating new one');
+            let response = await github.rest.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: process.env.PR_TITLE,
+              head: `${process.env.RELEASE_BRANCH_NAME}-docs`,
+              base: process.env.PR_BASE,
+              body: process.env.PR_BODY
+            });
+            return response.data.number;
+          }
 
     - name: Request reviewers
       uses: actions/github-script@v7

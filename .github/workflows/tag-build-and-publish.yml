@@ -13,4 +13,4 @@ jobs:
     permissions:
       contents: write
       id-token: write
-    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@main
+    uses: grafana/runner-images/.github/workflows/packer-build-and-publish.yml@sync-upstream-b15aef1c
