@@ -103,13 +103,16 @@ jobs:
     env:
       AWS_ACCOUNT: "654654387067"
       AWS_REGION: us-east-2
+      TEMPLATES: "images/ubuntu/templates"
 
     strategy:
       fail-fast: false
       matrix:
-        template:
-          - images/ubuntu/templates/ubuntu-24.04.pkr.hcl
-          - images/ubuntu/templates/ubuntu-24.04.arm64.pkr.hcl
+        os: 
+          - ubuntu24
+        arch: 
+          - amd64
+          - arm64
 
     steps:
       - name: Checkout repository
@@ -182,39 +185,41 @@ jobs:
           GITHUB_REF: ${{ github.ref }}
           GITHUB_JOB_WORKFLOW_REF: ${{ steps.auth.outputs.job_workflow_ref }}
           GITHUB_REPOSITORY_NAME: ${{ steps.auth.outputs.repository_name }}
-          TEMPLATE: ${{ matrix.template }}
           REF_NAME: ${{ github.ref_name }}
+          IMAGE_ARCH: ${{ matrix.arch }}
+          IMAGE_OS: ${{ matrix.os }}
         run: |
-          packer init "$TEMPLATE"
+          packer init "$TEMPLATES"
           packer build \
             -var provider=aws \
             -var aws_private_ami=true \
             -var image_version="$REF_NAME" \
             -var aws_assume_role_arn="arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github-actions/packer-role" \
             -var aws_assume_role_session_name=GitHubActions \
-            "$TEMPLATE"
+            -var image_arch="$IMAGE_ARCH" \
+            -var image_os="$IMAGE_OS" \
+            -only "$IMAGE_OS.*" \
+            "$TEMPLATES"
 
       - name: Preapre artifacts
         id: artifacts
         env:
-          TEMPLATE: ${{ matrix.template }}
+          ARTIFACT_NAME: ${{ matrix.os }}-${{ matrix.arch }}
         run: |
           mkdir -p artifacts
-          name=$(basename -s .pkr.hcl $TEMPLATE)
           readme=$(git ls-files --others --exclude-standard -- '**/software-report.md')
-          mv "$readme" artifacts/${name}-software-report.md
+          mv "$readme" artifacts/${ARTIFACT_NAME}-software-report.md
           report=$(git ls-files --others --exclude-standard -- '**/software-report.json')
-          mv "$report" artifacts/${name}-software-report.json
+          mv "$report" artifacts/${ARTIFACT_NAME}-software-report.json
           manifest=$(git ls-files --others --exclude-standard -- '**/build-manifest.json')
-          mv "$manifest" artifacts/${name}-build-manifest.json
-          echo "name=$name" >> "${GITHUB_OUTPUT}"
+          mv "$manifest" artifacts/${ARTIFACT_NAME}-build-manifest.json
 
       - name: Upload artifacts
         uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
         env:
-          ARTIFACT_NAME: ${{ steps.artifacts.outputs.name }}
+          ARTIFACT_NAME: ${{ matrix.os }}-${{ matrix.arch }}
         with:
-          name: "Artifacts for ${{ env.ARTIFACT_NAME }}.pkr.hcl"
+          name: "Artifacts for ${{ env.ARTIFACT_NAME }}"
           path: artifacts
 
   publish:

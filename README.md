@@ -30,7 +30,7 @@ To build a VM machine from this repo's source, see the [instructions](docs/creat
 | macOS 13 Arm64 | `macos-13-xlarge` | [macOS-13-arm64] | ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsubir0071%2F385e39188f4280878bada99250e99db7%2Fraw%2Fmacos-13-arm64.json) |
 | Windows Server 2025 | `windows-2025` | [windows-2025] | ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsubir0071%2F385e39188f4280878bada99250e99db7%2Fraw%2Fwin25.json) |
 | Windows Server 2022 | `windows-latest` or `windows-2022` | [windows-2022] | ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsubir0071%2F385e39188f4280878bada99250e99db7%2Fraw%2Fwin22.json) |
-| Windows Server 2019 | `windows-2019` | [windows-2019] | ![Endpoint Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fsubir0071%2F385e39188f4280878bada99250e99db7%2Fraw%2Fwin19.json) |
+| Windows Server 2019 | `windows-2019` | [windows-2019] | ![Deprecated](https://img.shields.io/badge/-Deprecated-red) |
 
 ### Label scheme
 
@@ -39,9 +39,9 @@ To build a VM machine from this repo's source, see the [instructions](docs/creat
 
 [ubuntu-24.04]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md
 [ubuntu-22.04]: https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2204-Readme.md
+[windows-2019]: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
 [windows-2025]: https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md
 [windows-2022]: https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md
-[windows-2019]: https://github.com/actions/runner-images/blob/main/images/windows/Windows2019-Readme.md
 [macOS-13]: https://github.com/actions/runner-images/blob/main/images/macos/macos-13-Readme.md
 [macOS-13-arm64]: https://github.com/actions/runner-images/blob/main/images/macos/macos-13-arm64-Readme.md
 [macOS-14]: https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md
@@ -120,6 +120,7 @@ The `-latest` migration process is gradual and happens over 1-2 months in order 
 | GCC <br/> GNU Fortran <br/> Clang <br/> GNU C++ | 3 latest major versions |
 | Android NDK | 1 latest non-LTS, 2 latest LTS versions |
 | Xcode     | - only one major version of Xcode will be supported per macOS version <br/> - all minor versions of the supported major version will be available <br/> - beta and RC versions will be provided "as-is" in the latest available macOS image only no matter of beta/GA status of the image <br/> - when a new patch version is released, the previous patch version will be replaced |
+| Xcode Platforms | - only three major.minor versions of platform tools and simulator runtimes will be available for installed Xcode, including beta/RC versions |
 
 ### Package managers usage
 

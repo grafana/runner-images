@@ -12,11 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-      with:
-        persist-credentials: false
-
-    - name: Update release
+    - name: Update release for ${{ github.event.client_payload.ReleaseBranchName }}
       uses: actions/github-script@v7
       env:
         RELEASE_BRANCH_NAME: ${{ github.event.client_payload.ReleaseBranchName }}
