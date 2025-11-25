@@ -20,10 +20,9 @@ jobs:
       contents: read
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
-
       - name: Run tests
         shell: pwsh
         run: |

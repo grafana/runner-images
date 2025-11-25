@@ -19,10 +19,9 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
-
       - name: Validate JSON Schema
         shell: pwsh
         run: ./helpers/CheckJsonSchema.ps1

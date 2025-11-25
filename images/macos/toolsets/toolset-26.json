@@ -4,11 +4,11 @@
         "arm64":{
             "versions": [
                 {
-                    "link": "26.1_beta",
-                    "filename": "26.1_beta_Universal",
-                    "version": "26.1-Beta+17B5025f",
+                    "link": "26.1_Release_Candidate",
+                    "filename": "26.1_Release_Candidate_Universal",
+                    "version": "26.1_Release_Candidate_Universal+17B54",
                     "symlinks": ["26.1"],
-                    "sha256": "432f6cb936ec9547e1075e5a969309e6e0497199810bcb79e10423fa5408891c",
+                    "sha256": "6504F2527444D295585515C7E41A862FFD701E3255D6634A40A714C4895E6CCD",
                     "install_runtimes": "default"
                 },
                 {
@@ -140,7 +140,8 @@
                     "versions": [
                         "3.11.*",
                         "3.12.*",
-                        "3.13.*"
+                        "3.13.*",
+                        "3.14.*"
                     ]
                 }
             }
