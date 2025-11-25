@@ -10,7 +10,8 @@
                 "3.10.*",
                 "3.11.*",
                 "3.12.*",
-                "3.13.*"
+                "3.13.*",
+                "3.14.*"
             ]
         },
         {
@@ -29,9 +30,9 @@
             "url" : "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
             "platform" : "linux",
             "versions": [
-                "18.*",
                 "20.*",
-                "22.*"
+                "22.*",
+                "24.*"
             ]
         },
         {
@@ -41,7 +42,8 @@
             "versions": [
                 "1.22.*",
                 "1.23.*",
-                "1.24.*"
+                "1.24.*",
+                "1.25.*"
             ],
             "default": "1.24.*"
         },
@@ -49,7 +51,6 @@
             "name": "Ruby",
             "platform_version": "22.04",
             "versions": [
-                "3.1.*",
                 "3.2.*",
                 "3.3.*",
                 "3.4.*"
@@ -172,6 +173,7 @@
             "binutils",
             "bison",
             "brotli",
+            "libnss3-tools",
             "coreutils",
             "file",
             "findutils",
@@ -286,7 +288,6 @@
     },
     "gcc": {
         "versions": [
-            "g++-9",
             "g++-10",
             "g++-12"
         ]
