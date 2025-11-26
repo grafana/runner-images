@@ -61,7 +61,7 @@ source "amazon-ebs" "build_image" {
   ami_groups                                = var.aws_private_ami ? [] : ["all"]
   ebs_optimized                             = true
   spot_instance_types                       = local.aws_instance_type
-  spot_price                                = "1.00"
+  spot_price                                = "0"
   region                                    = "${var.aws_region}"
   ssh_username                              = "ubuntu"
   subnet_id                                 = "${var.aws_subnet_id}"
