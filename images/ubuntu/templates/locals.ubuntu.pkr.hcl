@@ -17,8 +17,8 @@ locals {
   image_properties = local.image_properties_map[var.image_os]
 
   aws_instance_type_map = {
-    "amd64" = ["m7i.xlarge", "m6i.xlarge"]
-    "arm64" = ["m7g.xlarge", "m6g.xlarge"]
+    "amd64" = "m7i.xlarge"
+    "arm64" = "m7g.xlarge"
   }
 
   aws_source_image_name_map = {

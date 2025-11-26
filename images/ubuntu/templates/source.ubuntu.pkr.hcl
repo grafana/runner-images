@@ -60,8 +60,7 @@ source "amazon-ebs" "build_image" {
   ami_virtualization_type                   = "hvm"
   ami_groups                                = var.aws_private_ami ? [] : ["all"]
   ebs_optimized                             = true
-  spot_instance_types                       = local.aws_instance_type
-  spot_price                                = "0"
+  instance_type                             = local.aws_instance_type
   region                                    = "${var.aws_region}"
   ssh_username                              = "ubuntu"
   subnet_id                                 = "${var.aws_subnet_id}"
