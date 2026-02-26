@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   Merge_pull_request:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
 
     steps:
     - uses: actions/checkout@v5

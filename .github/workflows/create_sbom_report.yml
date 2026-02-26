@@ -1,12 +1,7 @@
 name: Create SBOM for the release
-# Inherited variables:
-# github.event.client_payload.agentSpec - Current YAML Label
-# github.event.client_payload.ReleaseID - Current release ID
-# github.event.client_payload.imageVersion - AzDO image version "major.minor"
-#
-# Current SYFT tool issues:
-# macOS (major): prompt privileges that blocking process indefinitely (https://github.com/anchore/syft/issues/1367)
+
 run-name: Collecting SBOM for ${{ github.event.client_payload.agentSpec || 'unknown image' }} - ${{ github.event.client_payload.imageVersion || 'unknown version' }}
+
 on:
   repository_dispatch:
     types: [generate-sbom]
@@ -17,14 +12,16 @@ permissions:
 defaults:
   run:
     shell: pwsh
+
 jobs:
-  #Checking current release for SBOM
   sbom-check:
     permissions:
       contents: read
     outputs:
       check_status: ${{ steps.check.outputs.status }}
     runs-on: ubuntu-latest
+    env:
+      RELEASE_ID: ${{ github.event.client_payload.ReleaseID }}
     steps:
     - name: Check release
       id: check
@@ -48,57 +45,72 @@ jobs:
         }
         Write-Host "Release has been found, SBOM is not attached, starting generation."
         echo "status=okay" >> $env:GITHUB_OUTPUT
-  #Generating SBOM
+
   building-sbom:
     permissions:
       contents: write
     needs: sbom-check
     if: ${{ needs.sbom-check.outputs.check_status == 'okay' }}
     runs-on: ${{ github.event.client_payload.agentSpec }}
+    env:
+      AGENT_SPEC: ${{ github.event.client_payload.agentSpec }}
+      RELEASE_ID: ${{ github.event.client_payload.ReleaseID }}
+      IMAGE_VERSION: ${{ github.event.client_payload.imageVersion }}
     steps:
       - name: Available image version check
-        env:
-          RELEASE_BRANCH_NAME: ${{ github.event.client_payload.ReleaseBranchName }}
-          IMAGE_VERSION: ${{ github.event.client_payload.imageVersion }}
         run: |
-          $imageVersionComponents = $env:ImageVersion.Split('.')
-          $imageMajorVersion = $imageVersionComponents[0]
-          $imageMinorVersion = $imageVersionComponents[1]
-          if ("$imageMajorVersion.$imageMinorVersion" -ne "$env:IMAGE_VERSION") {
-            throw "Current runner $imageMajorVersion.$imageMinorVersion image version doesn't match $env:IMAGE_VERSION."
+          $expectedVersion = $env:IMAGE_VERSION
+          $runnerVersion = $env:ImageVersion
+          
+          # Split versions by dot
+          $expectedParts = $expectedVersion.Split('.')
+          $runnerParts = $runnerVersion.Split('.')
+
+          # Determine what parts to compare
+          $minLength = [Math]::Min($expectedParts.Length, $runnerParts.Length)
+          $expectedComparable = $expectedParts[0..($minLength-1)] -join '.'
+          $runnerComparable = $runnerParts[0..($minLength-1)] -join '.'
+          
+          # Perform the comparison
+          if ($expectedComparable -ne $runnerComparable) {
+            throw "Version mismatch: Expected version '$expectedVersion' doesn't match runner version '$runnerVersion'"
           }
+
       - name: Install SYFT tool on Windows
         if: ${{ runner.os == 'Windows' }}
         run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b C:/syft
+
       - name: Install SYFT tool on Ubuntu 
         if: ${{ runner.os == 'Linux' }}
         run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
       - name: Install SYFT v1.24.0 on macOS
         if: ${{ runner.os == 'macOS' }}
         run: curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin v1.24.0
       
-      #Running section.
       - name: Run SYFT on Windows
         if: ${{ runner.os == 'Windows' }}
         run: C:/syft/syft dir:C:/ -vv -o spdx-json=sbom.json
+
       - name: Run SYFT on Ubuntu
         if: ${{ runner.os == 'Linux' }}
         run: syft dir:/ -vv -o spdx-json=sbom.json
+
       - name: Run SYFT on macOS
         if: ${{ runner.os == 'macOS' }}
+        # Skip protected folders to avoid prompt privileges that block process indefinitely (https://github.com/anchore/syft/issues/1367)
         run: sudo syft dir:/ -vv -o spdx-json=sbom.json --exclude ./Users --exclude ./System/Volumes --exclude ./private
         shell: bash
-      #Preparing artifact (raw SBOM.json is too big)
+
       - name: Compress SBOM file
         run: Compress-Archive sbom.json sbom.json.zip
-      #Upload artifact action
+
       - uses: actions/upload-artifact@v4
         with:
-          name: sbom-${{ github.event.client_payload.agentSpec }}-${{ github.event.client_payload.imageVersion }}
+          name: sbom-${{ env.AGENT_SPEC }}-${{ env.IMAGE_VERSION }}
           path: sbom.json.zip
           if-no-files-found: warn
-      #Upload release asset action
-      #Might be changed to softprops/action-gh-release after additional check
+
       - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:

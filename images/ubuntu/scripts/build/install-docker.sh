@@ -67,25 +67,9 @@ systemctl is-enabled --quiet docker.service || systemctl enable docker.service
 sleep 10
 docker info
 
-if [[ "${DOCKERHUB_PULL_IMAGES:-yes}" == "yes" ]]; then
-    # If credentials are provided, attempt to log into Docker Hub
-    # with a paid account to avoid Docker Hub's rate limit.
-    if [[ "${DOCKERHUB_LOGIN}" ]] && [[ "${DOCKERHUB_PASSWORD}" ]]; then
-        docker login --username "${DOCKERHUB_LOGIN}" --password "${DOCKERHUB_PASSWORD}"
-    fi
-
-    # Pull images
-    images=$(get_toolset_value '.docker.images[]')
-    for image in $images; do
-        docker pull "$image"
-    done
-
-    # Always attempt to logout so we do not leave our credentials on the built
-    # image. Logout _should_ return a zero exit code even if no credentials were
-    # stored from earlier.
-    docker logout
-else
-    echo "Skipping docker images pulling"
+# Pull Dependabot docker image
+if ! is_ubuntu22; then
+    docker pull ghcr.io/dependabot/dependabot-updater-core:latest
 fi
 
 # Download amazon-ecr-credential-helper
@@ -105,6 +89,3 @@ rm $GPG_KEY
 rm $REPO_PATH
 
 invoke_tests "Tools" "Docker"
-if [[ "${DOCKERHUB_PULL_IMAGES:-yes}" == "yes" ]]; then
-    invoke_tests "Tools" "Docker images"
-fi
