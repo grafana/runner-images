@@ -7,7 +7,7 @@
 # macOS 26
 - OS Version: macOS 26.3 (25D125)
 - Kernel Version: Darwin 25.3.0
-- Image Version: 20260224.0231.1
+- Image Version: 20260224.0101.1
 
 ## Installed Software
 
@@ -25,6 +25,7 @@
 - Kotlin 2.3.10-release-465
 - Node.js 24.13.1
 - Perl 5.42.0
+- PHP 8.5.3
 - Python3 3.14.3
 - Ruby 3.4.8
 
@@ -32,6 +33,7 @@
 - Bundler 4.0.6
 - Carthage 0.40.0
 - CocoaPods 1.16.2
+- Composer 2.9.5
 - Homebrew 5.0.15
 - NPM 11.8.0
 - Pip3 26.0 (python 3.14)
@@ -52,7 +54,7 @@
 - bazel 9.0.0
 - bazelisk 1.28.1
 - bsdtar 3.5.3 - available by 'tar' alias
-- Curl 8.7.1
+- Curl 8.18.0
 - Git 2.53.0
 - Git LFS 3.7.1
 - GitHub CLI 2.87.3
@@ -83,6 +85,9 @@
 - Xcode Command Line Tools 26.2.0.0.1.1764812424
 - Xcodes 1.6.2
 
+### Linters
+- SwiftLint 0.63.2
+
 ### Browsers
 - Safari 26.3 (21623.2.7.11.6)
 - SafariDriver 26.3 (21623.2.7.11.6)
@@ -96,19 +101,19 @@
 - Selenium server 4.40.0
 
 #### Environment variables
-| Name            | Value                                   |
-| --------------- | --------------------------------------- |
-| CHROMEWEBDRIVER | /usr/local/share/chromedriver-mac-arm64 |
-| EDGEWEBDRIVER   | /usr/local/share/edge_driver            |
-| GECKOWEBDRIVER  | /opt/homebrew/opt/geckodriver/bin       |
+| Name            | Value                                 |
+| --------------- | ------------------------------------- |
+| CHROMEWEBDRIVER | /usr/local/share/chromedriver-mac-x64 |
+| EDGEWEBDRIVER   | /usr/local/share/edge_driver          |
+| GECKOWEBDRIVER  | /usr/local/opt/geckodriver/bin        |
 
 ### Java
 | Version               | Environment Variable |
 | --------------------- | -------------------- |
-| 11.0.30+7             | JAVA_HOME_11_arm64   |
-| 17.0.18+8             | JAVA_HOME_17_arm64   |
-| 21.0.10+7.0 (default) | JAVA_HOME_21_arm64   |
-| 25.0.2+10.0           | JAVA_HOME_25_arm64   |
+| 11.0.30+7             | JAVA_HOME_11_X64     |
+| 17.0.18+8             | JAVA_HOME_17_X64     |
+| 21.0.10+7.0 (default) | JAVA_HOME_21_X64     |
+| 25.0.2+10.0           | JAVA_HOME_25_X64     |
 
 ### Cached Tools
 
@@ -206,20 +211,17 @@
 | DriverKit 25.4            | driverkit25.4        | 26.4          |
 
 #### Installed Simulators
-| Name          | OS     | Simulators                                                                                                                                                                                                                                                             |
-| ------------- | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| iOS 26.0      | 26.0.1 | iPhone 16e<br>iPhone 17<br>iPhone 17 Pro<br>iPhone 17 Pro Max<br>iPhone Air<br>iPad (A16)<br>iPad Air 11-inch (M3)<br>iPad Air 13-inch (M3)<br>iPad mini (A17 Pro)<br>iPad Pro 11-inch (M4)<br>iPad Pro 11-inch (M5)<br>iPad Pro 13-inch (M4)<br>iPad Pro 13-inch (M5) |
-| iOS 26.1      | 26.1   | iPhone 16e<br>iPhone 17<br>iPhone 17 Pro<br>iPhone 17 Pro Max<br>iPhone Air<br>iPad (A16)<br>iPad Air 11-inch (M3)<br>iPad Air 13-inch (M3)<br>iPad mini (A17 Pro)<br>iPad Pro 11-inch (M5)<br>iPad Pro 13-inch (M5)                                                   |
-| iOS 26.2      | 26.2   | iPhone 16e<br>iPhone 17<br>iPhone 17 Pro<br>iPhone 17 Pro Max<br>iPhone Air<br>iPad (A16)<br>iPad Air 11-inch (M3)<br>iPad Air 13-inch (M3)<br>iPad mini (A17 Pro)<br>iPad Pro 11-inch (M5)<br>iPad Pro 13-inch (M5)                                                   |
-| tvOS 26.0     | 26.0   | Apple TV<br>Apple TV 4K (3rd generation)<br>Apple TV 4K (3rd generation) (at 1080p)                                                                                                                                                                                    |
-| tvOS 26.1     | 26.1   | Apple TV<br>Apple TV 4K (3rd generation)<br>Apple TV 4K (3rd generation) (at 1080p)                                                                                                                                                                                    |
-| tvOS 26.2     | 26.2   | Apple TV<br>Apple TV 4K (3rd generation)<br>Apple TV 4K (3rd generation) (at 1080p)                                                                                                                                                                                    |
-| watchOS 26.0  | 26.0   | Apple Watch SE 3 (40mm)<br>Apple Watch SE 3 (44mm)<br>Apple Watch Series 11 (42mm)<br>Apple Watch Series 11 (46mm)<br>Apple Watch Ultra 3 (49mm)                                                                                                                       |
-| watchOS 26.1  | 26.1   | Apple Watch SE 3 (40mm)<br>Apple Watch SE 3 (44mm)<br>Apple Watch Series 11 (42mm)<br>Apple Watch Series 11 (46mm)<br>Apple Watch Ultra 3 (49mm)                                                                                                                       |
-| watchOS 26.2  | 26.2   | Apple Watch SE 3 (40mm)<br>Apple Watch SE 3 (44mm)<br>Apple Watch Series 11 (42mm)<br>Apple Watch Series 11 (46mm)<br>Apple Watch Ultra 3 (49mm)                                                                                                                       |
-| visionOS 26.0 | 26.0   | Apple Vision Pro                                                                                                                                                                                                                                                       |
-| visionOS 26.1 | 26.1   | Apple Vision Pro                                                                                                                                                                                                                                                       |
-| visionOS 26.2 | 26.2   | Apple Vision Pro                                                                                                                                                                                                                                                       |
+| Name         | OS     | Simulators                                                                                                                                                                                                                                                             |
+| ------------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| iOS 26.0     | 26.0.1 | iPhone 16e<br>iPhone 17<br>iPhone 17 Pro<br>iPhone 17 Pro Max<br>iPhone Air<br>iPad (A16)<br>iPad Air 11-inch (M3)<br>iPad Air 13-inch (M3)<br>iPad mini (A17 Pro)<br>iPad Pro 11-inch (M4)<br>iPad Pro 11-inch (M5)<br>iPad Pro 13-inch (M4)<br>iPad Pro 13-inch (M5) |
+| iOS 26.1     | 26.1   | iPhone 16e<br>iPhone 17<br>iPhone 17 Pro<br>iPhone 17 Pro Max<br>iPhone Air<br>iPad (A16)<br>iPad Air 11-inch (M3)<br>iPad Air 13-inch (M3)<br>iPad mini (A17 Pro)<br>iPad Pro 11-inch (M5)<br>iPad Pro 13-inch (M5)                                                   |
+| iOS 26.2     | 26.2   | iPhone 16e<br>iPhone 17<br>iPhone 17 Pro<br>iPhone 17 Pro Max<br>iPhone Air<br>iPad (A16)<br>iPad Air 11-inch (M3)<br>iPad Air 13-inch (M3)<br>iPad mini (A17 Pro)<br>iPad Pro 11-inch (M5)<br>iPad Pro 13-inch (M5)                                                   |
+| tvOS 26.0    | 26.0   | Apple TV<br>Apple TV 4K (3rd generation)<br>Apple TV 4K (3rd generation) (at 1080p)                                                                                                                                                                                    |
+| tvOS 26.1    | 26.1   | Apple TV<br>Apple TV 4K (3rd generation)<br>Apple TV 4K (3rd generation) (at 1080p)                                                                                                                                                                                    |
+| tvOS 26.2    | 26.2   | Apple TV<br>Apple TV 4K (3rd generation)<br>Apple TV 4K (3rd generation) (at 1080p)                                                                                                                                                                                    |
+| watchOS 26.0 | 26.0   | Apple Watch SE 3 (40mm)<br>Apple Watch SE 3 (44mm)<br>Apple Watch Series 11 (42mm)<br>Apple Watch Series 11 (46mm)<br>Apple Watch Ultra 3 (49mm)                                                                                                                       |
+| watchOS 26.1 | 26.1   | Apple Watch SE 3 (40mm)<br>Apple Watch SE 3 (44mm)<br>Apple Watch Series 11 (42mm)<br>Apple Watch Series 11 (46mm)<br>Apple Watch Ultra 3 (49mm)                                                                                                                       |
+| watchOS 26.2 | 26.2   | Apple Watch SE 3 (40mm)<br>Apple Watch SE 3 (44mm)<br>Apple Watch Series 11 (42mm)<br>Apple Watch Series 11 (46mm)<br>Apple Watch Ultra 3 (49mm)                                                                                                                       |
 
 ### Android
 | Package Name               | Version                                                                                                                                                                          |
