@@ -38,8 +38,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
+          git config --local user.email "173407367+gh-runner-images-updater[bot]@users.noreply.github.com"
+          git config --local user.name "gh-runner-images-updater[bot]"
 
       - name: Pull changes from upstream and merge
         id: merge
@@ -89,7 +89,7 @@ jobs:
 
       - name: Create pull request
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
           PR_BODY: ${{ steps.pr-body.outputs.body }}
           HEAD_REF: ${{ steps.merge.outputs.branch }}
           REPOSITORY: ${{ github.repository }}
