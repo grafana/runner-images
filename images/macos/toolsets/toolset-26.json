@@ -4,19 +4,26 @@
         "x64": {
             "versions": [
                 {
-                    "link": "26.4_beta_2",
-                    "filename": "Xcode_26.4_beta_2_Universal",
-                    "version": "26.4+17E5170d",
-                    "symlinks": ["26.4"],
-                    "sha256": "962d6bf68816f0328a6cc632153110943be4b2f59b6e0ce05ce6c07ce3edad95",
+                    "link": "26.5_beta_2",
+                    "filename": "Xcode_26.5_beta_2_Universal",
+                    "version": "26.5+17F5022i",
+                    "symlinks": ["26.5"],
+                    "sha256": "4e08f652cf56fe32d209f55d64f1ec71c20c8acfeb92898a21215ca71e17ff7d",
                     "install_runtimes": "none"
                 },
                 {
-                    "link": "26.3_Release_Candidate_2",
-                    "filename": "Xcode_26.3_Release_Candidate_2_Universal",
-                    "version": "26.3+17C528",
-                    "symlinks": ["26.3"],
-                    "sha256": "2efa14c778b7e26b25ee6f544801ce2f1ac2f51809af7e0a3f82077fa71deffb",
+                    "link": "26.4.1",
+                    "filename": "Xcode_26.4.1_Universal",
+                    "version": "26.4.1+17E202",
+                    "symlinks": ["26.4"],
+                    "sha256": "e2698ef350e5b38740132b1110d02bd22a1feb928c3e019c168d373ce00e3ffa",
+                    "install_runtimes": "default"
+                },
+                {
+                    "link": "26.3",
+                    "filename": "Xcode_26.3_Universal",
+                    "version": "26.3+17C529",
+                    "sha256": "cf87232e0419785170edcfa070b750f28808ec00b489ab540c08b7d197c79ae4",
                     "install_runtimes": "none"
                 },
                 {
@@ -24,7 +31,11 @@
                     "filename": "Xcode_26.2_Universal",
                     "version": "26.2+17C52",
                     "sha256": "8f29ab6a9ac6670d3cf53545ffdb1c317d11607fa8db38fc56d3391df7783fbd",
-                    "install_runtimes": "default"
+                    "install_runtimes": [
+                        { "iOS": ["26.2"] },
+                        { "watchOS": ["default"] },
+                        { "tvOS": ["default"] }
+                    ]
                 },
                 {
                     "link": "26.1.1",
@@ -40,26 +51,33 @@
                     "version": "26.0.1+17A400",
                     "symlinks": ["26.0"],
                     "sha256": "9881c457068c86ac91e94cca2d7116dfd01cb7179c22b0863b63c7f3bb7e7695",
-                    "install_runtimes": "default"
+                    "install_runtimes": "none"
                 }
             ]
         },
         "arm64": {
             "versions": [
                 {
-                    "link": "26.4_beta_2",
-                    "filename": "Xcode_26.4_beta_2_Universal",
-                    "version": "26.4+17E5170d",
-                    "symlinks": ["26.4"],
-                    "sha256": "962d6bf68816f0328a6cc632153110943be4b2f59b6e0ce05ce6c07ce3edad95",
+                    "link": "26.5_beta_2",
+                    "filename": "Xcode_26.5_beta_2_Universal",
+                    "version": "26.5+17F5022i",
+                    "symlinks": ["26.5"],
+                    "sha256": "4e08f652cf56fe32d209f55d64f1ec71c20c8acfeb92898a21215ca71e17ff7d",
                     "install_runtimes": "none"
                 },
                 {
-                    "link": "26.3_Release_Candidate_2",
-                    "filename": "Xcode_26.3_Release_Candidate_2_Universal",
-                    "version": "26.3+17C528",
-                    "symlinks": ["26.3"],
-                    "sha256": "2efa14c778b7e26b25ee6f544801ce2f1ac2f51809af7e0a3f82077fa71deffb",
+                    "link": "26.4.1",
+                    "filename": "Xcode_26.4.1_Universal",
+                    "version": "26.4.1+17E202",
+                    "symlinks": ["26.4"],
+                    "sha256": "e2698ef350e5b38740132b1110d02bd22a1feb928c3e019c168d373ce00e3ffa",
+                    "install_runtimes": "default"
+                },
+                {
+                    "link": "26.3",
+                    "filename": "Xcode_26.3_Universal",
+                    "version": "26.3+17C529",
+                    "sha256": "cf87232e0419785170edcfa070b750f28808ec00b489ab540c08b7d197c79ae4",
                     "install_runtimes": "none"
                 },
                 {
@@ -67,7 +85,12 @@
                     "filename": "Xcode_26.2_Universal",
                     "version": "26.2+17C52",
                     "sha256": "8f29ab6a9ac6670d3cf53545ffdb1c317d11607fa8db38fc56d3391df7783fbd",
-                    "install_runtimes": "default"
+                    "install_runtimes": [
+                        { "iOS": ["26.2"] },
+                        { "watchOS": ["default"] },
+                        { "tvOS": ["default"] },
+                        { "visionOS": ["default"] }
+                    ]
                 },
                 {
                     "link": "26.1.1",
@@ -83,7 +106,7 @@
                     "version": "26.0.1+17A400",
                     "symlinks": ["26.0"],
                     "sha256": "9881c457068c86ac91e94cca2d7116dfd01cb7179c22b0863b63c7f3bb7e7695",
-                    "install_runtimes": "default"
+                    "install_runtimes": "none"
                 }
             ]
         }
