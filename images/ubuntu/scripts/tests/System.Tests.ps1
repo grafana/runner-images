@@ -37,7 +37,10 @@ Describe "ReadAhead udev rule" -Skip:(-not (Test-IsUbuntu24)) {
 
     It "All sd* devices have read_ahead_kb set to 128" {
         $devices = Get-ChildItem "/sys/block/sd*/queue/read_ahead_kb" -ErrorAction SilentlyContinue
-        $devices | Should -Not -BeNullOrEmpty -Because "there should be at least one sd* block device"
+        if ($null -eq $devices -or $devices.Count -eq 0) {
+            Set-ItResult -Skipped -Because "no sd* block devices on this platform (e.g. AWS EC2 presents EBS volumes as nvme*/xvd*)"
+            return
+        }
         foreach ($dev in $devices) {
             $value = (Get-Content $dev.FullName).Trim()
             $value | Should -Be "128" -Because "read_ahead_kb for $($dev.FullName) should be 128 to prevent I/O thrashing"
